@@ -1,0 +1,21 @@
+
+	 )
+
+   port map (
+      DO => rdata1,                -- 8-bit Data Output
+      DOP => dp1,                  -- 1-bit parity Output
+      ADDR => addr(10 downto 0),   -- 11-bit Address Input
+      CLK => clk,                  -- Clock
+      DI => wdata,                 -- 8-bit Data Input
+      DIP => dp1,                  -- 1-bit parity Input
+      EN => cs1,                   -- RAM Enable Input
+      SSR => rst,                  -- Synchronous Set/Reset Input
+      WE => we                     -- Write Enable Input
+   );
+   -- End of RAMB16_S9_inst instantiation
+ 
+   RAM_2 : RAMB16_S9	-- $F800 - $FFFF
+   generic map (
+      INIT => X"000", --  Value of output RAM registers at startup
+      SRVAL => X"000", --  Ouput value upon SSR assertion
+      WRITE_MODE => "WRITE_FIRST", --  WRITE_FIRST, READ_FIRST or NO_CHANGE

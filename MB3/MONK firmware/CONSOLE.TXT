@@ -1,0 +1,203 @@
+* Keyboard status routine.
+stakey   btst.b  #0,psr+pia0
+         rts
+*
+* Serial status routine.
+stater0  btst.b  #0,acia+stat0
+         rts
+*
+stater1  btst.b  #0,acia+stat1
+         rts
+****************************
+* Keyboard input routine.
+inkey    move.b  pia0+padr,d0
+         and.l   #$7f,d0
+         rts
+*
+* Serial input routine.
+inter0   move.b  acia+data0,d0
+         andi.l  #$7f,d0
+         rts
+*
+inter1   move.b  acia+data1,d0
+         andi.l  #$7f,d0
+         rts
+****************************
+* Serial output routine.
+outter0  btst.b  #2,acia+stat0
+         beq.s   outter0
+         andi.b  #$7f,d0
+         move.b  d0,acia+data0
+         rts
+*
+outter1  btst.b  #2,acia+stat1
+         beq.s   outter1
+         andi.b  #$7f,d0
+         move.b  d0,acia+data1
+         rts
+*
+outpri   btst.b  #2,pia0+psr
+         beq.s   outpri
+         move.b  d0,pia0+pbdr
+         rts
+*
+outvdu   movem.l d0-d7/a0-a6,-(sp)
+         lea.l   vduparms,a6
+         movem.l (a6)+,d4-d7/a5
+         and.l   #$7f,d0
+         btst.l  #31,d7
+         bne     esc_proc
+         cmp.b   #$20,d0
+         blo     c_code
+         bsr.s   putchr
+         cmp.b   #79,d5
+         beq.s   ov1
+         addq    #1,d5
+ov1      movem.l d4-d7/a5,-(a6)
+         movem.l (sp)+,d0-d7/a0-a6
+         rts
+*
+putchr bsr.s rctocr
+ sub.b #$20,d0
+ moveq #11,d3
+ mulu d3,d0
+ move.w #80,d3
+ lea.l chrtab,a0
+ lea.l (a0,d0.w),a0
+ move.b (a0)+,(a1)
+ add.w d3,a1
+ move.b (a0)+,(a1)
+ add.w d3,a1
+ move.b (a0)+,(a1)
+ add.w d3,a1
+ move.b (a0)+,(a1)
+ add.w d3,a1
+ move.b (a0)+,(a1)
+ add.w d3,a1
+ move.b (a0)+,(a1)
+ add.w d3,a1
+ move.b (a0)+,(a1)
+ add.w d3,a1
+ move.b (a0)+,(a1)
+ add.w d3,a1
+ move.b (a0)+,(a1)
+ add.w d3,a1
+ move.b (a0)+,(a1)
+ add.w d3,a1
+ move.b (a0)+,(a1)
+ rts
+*
+rctocr move.l #960,d3
+ mulu d4,d3
+ add.l d5,d3
+ add.l a5,d3
+ cmp.l #$4b00,d3
+ blt crok
+ sub.l #$4b00,d3
+crok add.l #$70000,d3
+ move.l d3,a1
+ rts
+*
+c_code   asl.l   #1,d0
+         move.w  table(pc,d0.w),d0
+         jsr     table(pc,d0)
+         bra     ov1
+table    dc.w    nu-table,nu-table,nu-table,nu-table
+         dc.w    nu-table,ho-table,nu-table,bl-table
+         dc.w    bs-table,ht-table,lf-table,vt-table
+         dc.w    ff-table,cr-table,mv-table,ho-table
+         dc.w    il-table,dl-table,el-table,ep-table
+         dc.w    nu-table,nu-table,nu-table,nu-table
+         dc.w    nu-table,nu-table,nu-table,es-table
+         dc.w    nu-table,nu-table,nu-table,nu-table
+*
+esc_proc bra     ov1
+*
+nu       rts
+*
+bl       bra     beep
+*
+bs       cmp.b   #0,d5
+         beq.s   bse
+         subq    #1,d5
+bse      rts
+*
+ht       cmp.b   #79,d5
+         bne.s   hte
+         addq    #1,d5
+hte      rts
+*
+lf       cmp.b   d7,d4
+         beq     scr_up
+         addq    #1,d4
+         rts
+*
+vt       cmp.b   d6,d4
+         beq     vte
+         subq    #1,d4
+vte      rts
+*
+ff       bra     cleart
+*
+cr       clr.l   d5
+         rts
+*
+mv       rts
+*
+ho       clr.l   d5
+         move.l  d6,d4
+         rts
+*
+il       rts
+*
+dl       rts
+*
+el       rts
+*
+ep       rts
+*
+es       rts
+*
+scr_up add.w #960,a5
+ cmp.w #$4b00,a5
+ blt scrok
+ move.l #0,a5
+scrok move.b $ffe2a,d0
+ and.b #$fc,d0
+ cmp.b #$00,d0
+ bne.l scr1
+ move.l #$ffe2c,a0
+ move.w a5,d0
+ move.b d0,3(a0)
+ lsr.w #8,d0
+ move.b d0,2(a0)
+scr1 clr.l d5
+ bsr rctocr
+ move.w #239,d0
+ clr.l d3
+scrloop move.l d3,(a1)+
+ dbf d0,scrloop
+ rts
+*
+cleart moveq #0,d0
+ lea.l  $70000,a0
+ move.l #4799,d1
+ctl1 move.l d0,(a0)+
+ dbf d1,ctl1
+*
+         clr.l d4
+         clr.l d5
+         clr.l d6
+         moveq   #19,d7
+         move.l d4,a5
+ move.l #$ffe2c,a0
+ move.w a5,d0
+ move.b d0,3(a0)
+ lsr.w #8,d0
+ move.b d0,2(a0)
+         lea.l   vduparms+20,a6
+         movem.l  d4-d7/a5,-(a6)
+ lea.l 20(a6),a6
+         rts
+*
+

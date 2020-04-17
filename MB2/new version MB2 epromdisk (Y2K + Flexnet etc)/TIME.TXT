@@ -1,0 +1,160 @@
+ NAM TIME
+ OPT NOL
+ LIB FLEXLINK
+ OPT LIS
+ ORG $C100
+*
+*
+FLAG RMB 1
+*
+*
+OOPS FCC ' Power failure in real time clock.....Reset time. ',4
+SUN FCC 'Sunday ',4
+MON FCC 'Monday ',4
+TUE FCC 'Tuesday ',4
+WED FCC 'Wednesday ',4
+THU FCC 'Thursday ',4
+FRI FCC 'Friday ',4
+SAT FCC 'Saturday ',4
+JAN FCC 'January ',4
+FEB FCC 'February ',4
+MAR FCC 'March ',4
+APR FCC 'April ',4
+MAY FCC 'May ',4
+JUN FCC 'June ',4
+JUL FCC 'July ',4
+AUG FCC 'August ',4
+SEP FCC 'September ',4
+OCT FCC 'October ',4
+NOV FCC 'November ',4
+DEC FCC 'December ',4
+ST  FCC 'st ',4,'nd ',4,'rd ',4
+ RPT 17
+ FCC 'th ',4
+ FCC 'st ',4,'nd ',4,'rd ',4
+ RPT 7
+ FCC 'th ',4
+ FCC 'st ',4
+PS FCC 'm  ',4
+ni fcc '19',4
+t0 fcc '200',4
+t1 fcc '20',4
+*
+TIME JSR FPCRLF
+ TST RTCFAIL
+ BNE OK
+*
+ LDX #OOPS
+ JSR FPSTRNG
+ JMP FWARM
+*
+OK LDB #4
+ JSR TPRINT
+ LDB #4
+ JSR TGETRTC
+ ANDA #$80
+ STA FLAG
+ LDA #':
+ JSR PUTCHR
+ LDB #2
+ JSR TPRINT
+ LDA #':
+ JSR PUTCHR
+ LDB #0
+ JSR TPRINT
+ TST FLAG
+ BEQ AM
+ LDA #'p
+ BRA ROUND
+AM LDA #'a 
+ROUND JSR PUTCHR
+ LDX #PS
+ JSR PDATAN
+ LDB #6
+ JSR TGETRTC
+ LDX #SUN
+ DECA
+ JSR FIND
+ LDB #7
+ JSR TPRINT
+ LDB #7
+ JSR TGETRTC
+ STA DAY
+ LDX #ST
+ DECA
+ JSR FIND
+ LDB #8
+ JSR TGETRTC
+ STA MONTH
+*
+ LDX #JAN print out month
+ DECA
+ JSR FIND
+*
+ LDB #9   print out year (Y2K compliant!)
+ JSR TGETRTC
+ ANDA #$7F
+ cmpa #10
+ bge ge10  2000-2009?
+ ldx #t0
+ jsr PDATAN
+ bra pyr
+ge10 cmpa #75
+ bge ge75
+ ldx #t1  2010-2074
+ jsr PDATAN
+ bra pyr
+ge75 ldx #ni  1975-1999
+ jsr PDATAN
+pyr ldb #9
+ JSR TPRINT
+*
+ LDB #9
+ JSR TGETRTC
+ STA YEAR
+*
+ JMP FWARM
+*
+* PDATA1 replacement routine (needed as MON09 calls will mess up PRETTY
+P JSR PUTCHR
+PDATAN LDA ,X+
+ CMPA #$04
+ BNE P
+ RTS
+*
+* print decimal number from RTC (no leading zeros)
+* (B) = RTC address
+TPRINT JSR TGETRTC
+ ANDA #$7F
+ CLRB
+ STB TEMP
+ STA TEMP+1
+ LDX #TEMP
+ JSR OUTDEC
+ RTS
+*
+* Find and print out nth message in list
+* (A) = message index
+FIND TSTA
+ BNE F1
+ JSR PDATAN
+ RTS
+F1 LDB 0,X+ step through to end of message marker
+ CMPB #4
+ BNE F1
+ DECA
+ BRA FIND
+*
+* get a byte from the RTC
+* (B) = RTC address
+* value returned in (A)
+TGETRTC LDA #$0A
+ STA RTCADD
+ LDA RTCDAT
+ BMI TGETRTC
+ STB RTCADD
+ LDA RTCDAT
+ RTS
+*
+*
+ END TIME 

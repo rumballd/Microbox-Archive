@@ -1,0 +1,42 @@
+-------------------------------------------------------------------
+| DECIMAL | HEX | ASCII |                FUNCTION                 |
+-------------------------------------------------------------------
+|    0    |  00 |   @   |      NULL                               |
+|    1    |  01 |   A   |      -                                  |
+|    2    |  02 |   B   |      -                                  |
+|    3    |  03 |   C   |      -                                  |
+|    4    |  04 |   D   |      EOT                                |
+|    5    |  05 |   E   |      -                                  |
+|    6    |  06 |   F   |      -                                  |
+|    7    |  07 |   G   |      BELL                               |
+|    8    |  08 |   H   |      BACKSPACE       (CURSOR LEFT)      |
+|    9    |  09 |   I   |      CURSOR RIGHT                       |
+|    10   |  0A |   J   |      LINE FEED       (CURSOR DOWN)      |
+|    11   |  0B |   K   |      CURSOR UP                          |
+|    12   |  0C |   L   |      CLEAR SCREEN                       |
+|    13   |  0D |   M   |      RETURN                             |
+|    14   |  0E |   N   |      MOVE CURSOR     (SEE NOTE)         |
+|    15   |  0F |   O   |      HOME                               |
+|    16   |  10 |   P   |      -                                  |
+|    17   |  11 |   Q   |      -                                  |
+|    18   |  12 |   R   |      -                                  |
+|    19   |  13 |   S   |      -                                  |
+|    20   |  14 |   T   |      -                                  |
+|    21   |  15 |   U   |      -                                  |
+|    22   |  16 |   V   |      INVERT ON                          |
+|    23   |  17 |   W   |      INVERT OFF                         |
+|    24   |  18 |   X   |      -                                  |
+|    25   |  19 |   Y   |      ERASE TO END OF LINE               |
+|    26   |  1A |   Z   |      ERASE LINE                         |
+|    27   |  1B |   -   |      ESCAPE                             |
+|    28   |  1C |   -   |      -                                  |
+|    29   |  1D |   -   |      -                                  |
+|    30   |  1E |   -   |      -                                  |
+|    31   |  1F |   -   |      -                                  |
+-------------------------------------------------------------------
+    
+NOTE:  Move  cursor  has two parameters. The control code should be 
+followed  by  two  bytes, row and column. The home position is 0,0. 
+The  value $20 should be added to each value. ie to move the cursor 
+to row 4 col 7, send the byte sequence  $0E,$24,$27 .
+    

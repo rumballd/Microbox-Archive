@@ -1,0 +1,74 @@
+---------------------------------------------------------
+--
+-- PS2 Keycode look up table
+-- converts 7 bit key code to ASCII
+-- Address bit 7 = CAPS Lock
+-- Address bit 8 = Shift
+--
+-- J.E.Kent
+-- 18th Oct 2004
+--
+-- keycodes updated and corrected D.A.Rumball Feb 2005
+--
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_ARITH.ALL;
+library UNISIM;
+use UNISIM.VComponents.all;
+		
+entity key_b4 is
+    Port (
+       clk   : in  std_logic;
+		 rst   : in  std_logic;
+		 cs    : in  std_logic;
+		 rw    : in  std_logic;
+       addr  : in  std_logic_vector (8 downto 0);
+       rdata : out std_logic_vector (7 downto 0);
+       wdata : in  std_logic_vector (7 downto 0)
+    );
+end key_b4;
+
+architecture rtl of key_b4 is
+
+signal we : std_logic;
+
+begin
+
+  ROM : RAMB4_S8
+    generic map (
+    INIT_00 => x"00327761737A000000317100000000000060090110131700081A030E19000500",
+    INIT_01 => x"003837756A6D00000036796768626E0000357274667620000033346564786300",
+    INIT_02 => x"00005C005D0D000000003D5B00270000002D703B6C2F2E000039306F696B2C00",
+    INIT_03 => x"0000022A2D062B18001B15121C042E00000000090C000A000008000000000000",
+    INIT_04 => x"00325741535A00000031510000000000007E090110131700081A030E19000500",
+    INIT_05 => x"003837554A4D00000036594748424E0000355254465620000033344544584300",
+    INIT_06 => x"00005C005D0D000000003D5B00270000002D503B4C2F2E000039304F494B2C00",
+    INIT_07 => x"0000022A2D062B18001B15121C042E00000000090C000A000008000000000000",
+    INIT_08 => x"00405741535A00000021510000000000007E090110131700081A030E19000500",
+    INIT_09 => x"002A26554A4D0000005E594748424E0000255254465620000023244544584300",
+    INIT_0a => x"00007C007D0D000000002B7B00220000005F503A4C3F3E000028294F494B3C00",
+    INIT_0b => x"0000022A2D062B18001B15121C042E00000000090C000A000008000000000000",
+    INIT_0c => x"00407761737A00000021710000000000007E090110131700081A030E19000500",
+    INIT_0d => x"002A26756A6D0000005E796768626E0000257274667620000023246564786300",
+    INIT_0e => x"00007C007D0D000000002B7B00220000005F703A6C3F3E000028294F696B3C00",
+    INIT_0f => x"0000022A2D062B18001B15121C042E00000000090C000A000008000000000000"
+
+    )
+
+    port map ( clk => clk,
+	            en => cs,
+				   we   => we,
+				   rst  => rst,
+				   addr => addr,
+                       di   => wdata,
+				   do   => rdata
+	);
+
+
+my_ram_512 : process ( rw )
+begin
+	 we <= not rw;
+end process;
+
+end architecture rtl;
+

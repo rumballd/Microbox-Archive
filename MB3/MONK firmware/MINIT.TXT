@@ -1,0 +1,181 @@
+* Device base addresses and equates.
+ NOLIST
+rms      equ     $000ffe00    RMS registers base address.
+acia     equ     $000ff001    Acia base address.
+rtc      equ     $000f0001    Real Time Clock Base Address
+pia0     equ     $000ff101    Pia0 base address.
+pia1     equ     $000ff201    Pia1 base address.
+fdc      equ     $000f4001    Floppy dics controller base address.
+*
+* RMS  (68486 & 68487)
+*
+mem_map  equ     $00      RMS memory map register.
+display_mode equ $01      List mode + lines/char row + bits/pel
+int_stat equ     $02      Interrupt status.
+border_col equ   $03      Wrap mode + mapa + video on + border colour.
+to_free  equ     $04      True object free register.
+vector_map equ   $06      Vector mapping register.
+vert_scroll equ  $07      Vertical scroll register.
+hori_scroll equ  $08      Horizontal scroll register.
+drcs_tsa equ     $0a      DRCS definition table start.
+to_dsa   equ     $0c      True object table start.
+fo_tsa   equ     $0e      Fixed object table start.
+collision equ    $18      Collison reports.
+rt_output equ    $1c      Real time output.
+rt_input equ     $20      Real time input.
+mem_type equ     $24      Memory type and banks.
+video_op equ     $25      Video interlace + format.
+sync_mode equ    $26      Sync mode and output.
+screen_base equ  $28      Virtual screen base address.
+vert_off equ     $2c      Vertical offset register.
+hori_off equ     $30      Horizontal offset register.
+screen_size equ  $34      Virtual screen size.
+screen_width equ $38      Virtual screen width.
+clut     equ     $40      Colour look up tables.
+*
+* ACIA  (68681)
+*
+mode0    equ     00           Mode register A.
+stat0    equ     02           Status reg A + Clock select reg.
+com0     equ     04           Command reg A.
+data0    equ     06           Xmit and recve reg.
+ipcr     equ     08           Input change reg + Aux control reg.
+isr      equ     10           Interrupt mask + interrupt status.
+ctur0    equ     12           Counter timer upper register.
+ctlr0    equ     14           Counter timer lower register.
+*
+mode1    equ     16           Mode register B.
+stat1    equ     18           Status reg B + Clock select reg.
+com1     equ     20           Command reg B.
+data1    equ     22           Xmit and recve reg.
+ivr      equ     24           Interrupt vector register.
+sysreg   equ     26           Input port + output port config reg.
+clrreg   equ     28           set (reset) output port bits + start counter.
+setreg   equ     30           reset (set) output port bits + stop counter.
+*
+* SYSREG
+drv      equ     $80          bit7=drive select bit.
+dden     equ     $40          bit6=drive density bit.
+side     equ     $20          bit5=drive side select.
+remote   equ     $10          bit4=local/remote video switch.
+program  equ     $08          bit3=Program enable bit.
+bell     equ     $04          bit2=Bell enable.
+init_spare equ   2            Disk change flag.    switch0
+init_ip  equ     3            Initial input port.  switch1
+init_op  equ     4            Initial output port. switch2
+a_boot   equ     5            Auto boot switch.    switch3
+*
+* PIA0 (68230)
+pgcr     equ     $00          Port general control register.
+pacr     equ     $0c          Port a control register.
+pbcr     equ     $0e          Port b control register.
+paddr    equ     $04          Port a data direction register.
+pbddr    equ     $06          Port b data direction register.
+padr     equ     $10          Port a data register.
+pbdr     equ     $12          Port b data register.
+psr      equ     $1a          Port status register.
+*
+ LIST
+* Initialise RMS.
+ move.l #rms,a0
+ move.b #$20,mem_map(a0)
+ move.b #$80,display_(a0)
+ move.b #$20,border_c(a0)
+ move.b #$00,vert_scr(a0)
+ move.b #$00,hori_scr(a0)
+ move.b #$c4,mem_type(a0)
+ move.b #$2f,video_op(a0)
+ move.b #$05,sync_mod(a0)
+*
+ move.l #rms+screen_b,a0
+ lea.l  rmstab(pc),a1
+ moveq #19,d0
+rmsl1 move.b (a1)+,(a0)+
+ dbf d0,rmsl1
+*
+ move.l #rms+clut,a0
+ move.b #0,(a0)+
+ move.b #0,(a0)+
+ moveq #61,d0
+rmsl2 move.b #$ff,(a0)+
+ dbf d0,rmsl2
+ bra.s clt
+*
+rmstab dc.l $00070000
+ dc.l $00000000
+ dc.l $00000000
+ dc.l $00004b00
+ dc.l $00000050
+*
+* Initialise screen to text.
+clt      bsr     cleart
+*
+* Initialise floppy disc controller.
+ move.b #$ff,rtrk
+ move.b #$ff,wtrk
+         move.b  $0,fdc
+*
+* Initialise acia.
+         move.l  #acia,a0      Initailise acia. (1200 baud)
+         move.b  #$13,mode0(a0)
+         move.b  #$0f,mode0(a0)
+         move.b  #$bb,stat0(a0)
+         move.b  #$05,com0(a0)
+         move.b  #$13,mode1(a0)
+         move.b  #$0f,mode1(a0)
+         move.b  #$bb,stat1(a0)
+         move.b  #$05,com1(a0)
+         move.b  #$04,ipcr(a0)
+         move.b  #2,isr(a0)
+*
+* Initialise rtc
+*        lea.l time_st,a0
+*        jsr getrtc
+*
+* Initialise system pia.
+         move.b  #$78,pbcr+pia0
+         move.b  #$ff,pbddr+pia0
+         move.b  #$30,pgcr+pia0
+*
+* Initialise buss watchdog to 50ms.
+         move.b  #$b3,$ff121
+         move.b  #$00,$ff127
+         move.b  #$30,$ff129
+         move.b  #$85,$ff12b
+*
+* Initialise SASI pia.
+         lea.l   pia1,a0
+         move.b  #$1c,(a0)
+         moveq   #0,d0
+         move.b  d0,$02(a0)
+         move.b  d0,$04(a0)
+         move.b  d0,$08(a0)
+         move.b  d0,$20(a0)
+         move.b  #$ff,$10(a0)
+         move.b  #$ff,$18(a0)
+         move.b  #$90,$08(a0)
+         move.b  #$a0,$0c(a0)
+*
+* Seed random number generator.
+         move.w  #$300,d0
+         bsr     random
+*
+* Initialse sysreg and set initial input and output ports.
+         lea.l   acia,a0
+         move.b  ipcr(a0),d0 Clear dcf.
+         move.b  #$fc,clrreg(a0)  clear all bits.
+         move.b  #$60,setreg(a0)  dden+side=1
+         move.b sysreg(a0),d0
+         btst.b  #init_ip,d0
+         bne.s   is1
+         move.b  #4,iport
+         bra.s   is2
+is1      move.b  #0,iport
+is2      btst.b  #init_op,d0
+         bne.s   is3
+         move.b  #4,oport
+         bra.s   is4
+is3      move.b  #0,oport
+is4      btst.l  #a_boot,d0
+         beq     boot
+*

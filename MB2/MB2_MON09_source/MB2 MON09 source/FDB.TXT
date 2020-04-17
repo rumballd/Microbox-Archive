@@ -1,0 +1,38 @@
+ FDB GETTIM Get time string from RTC.
+ FDB PUTTIM Put time string to RTC.
+ FDB GETRTC Get a byte from the RTC.
+ FDB PUTRTC Put a byte to the RTC.
+ FDB BEEP Sound a 100ms tone.
+ FDB GCOM Send command to GDC.
+ FDB GPRM Send parameter to GDC.
+ FDB GPRMI Get parameter from GDC.
+ FDB MASK Load mask register.
+ FDB SETPEN Define drawing mode.
+ FDB SETPAT Define graphics pattern.
+ FDB FIGSF Start figure drawing.
+ FDB FIGSG Start graphics drawing.
+ FDB SETPAR Define display partitions.
+ FDB SETCRG Set graphics cursor.
+ FDB GETCRG Get graphics cursor.
+ FDB SETCRT Set text cursor.
+ FDB GETCRT Get text cursor.
+ FDB OFF Turn display off.
+ FDB ON Turn display on.
+ FDB GRAPH Set display to graphics.
+ FDB TEXT Set display to text
+ FDB MODE Set GDC mode.
+ FDB ZOOM Set zoom factors.
+ FDB FILL Area fill routine.
+ FDB CLEARX Clear (X) display words.
+ FDB CLEARG Clear graphics display.
+ FDB CLEART Clear text display.
+ FDB GDCINIT Initialise GDC.
+ FDB GDCOUT Output a character.
+ FDB INKEY Get a character from the keyboard.
+ FDB POINT Plot a point.
+ FDB LINE Plot a line.
+ FDB RECT Plot a rectangle.
+ FDB CIRCLE Plot a circle.
+ FDB ARC Plot an arc.
+ FDB CLINK Link in new char set.
+ FDB SYNC Sync to vertical blanking.

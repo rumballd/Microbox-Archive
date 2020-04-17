@@ -1,0 +1,47 @@
+JDF G
+// Created by Project Navigator ver 1.0
+PROJECT MB2K
+DESIGN mb2k
+DEVFAM spartan3
+DEVFAMTIME 0
+DEVICE xc3s200
+DEVICETIME 0
+DEVPKG ft256
+DEVPKGTIME 0
+DEVSPEED -5
+DEVSPEEDTIME 0
+DEVTOPLEVELMODULETYPE Schematic
+TOPLEVELMODULETYPETIME 0
+DEVSYNTHESISTOOL XST (VHDL/Verilog)
+SYNTHESISTOOLTIME 0
+DEVSIMULATOR Other
+SIMULATORTIME 0
+DEVGENERATEDSIMULATIONMODEL VHDL
+GENERATEDSIMULATIONMODELTIME 0
+SOURCE MB2K.sch
+SOURCE cpu09.vhd
+SOURCE scratch_ram.vhd
+SOURCE decode-data_mux.vhd
+SOURCE external_ram.vhd
+SOURCE keyboard.vhd
+SOURCE MON09_rom.vhd
+SOURCE vdu8.vhd
+SOURCE char_rom_b16.vhd
+SOURCE ram2k_b16.vhd
+SOURCE s3_clock_pcb_monitor.vhd
+SOURCE PROM_reader_serial.vhd
+SOURCE clock_management.vhd
+SOURCE shift_compare_serial.vhd
+SOURCE key_b4.vhd
+SOURCE ACIA.vhd
+SOURCE uart_rx.vhd
+SOURCE uart_tx.vhd
+SOURCE kcuart_tx.vhd
+SOURCE kcuart_rx.vhd
+SOURCE bbfifo_16x8.vhd
+SOURCE system_regs.vhd
+SOURCE clocks.vhd
+SOURCE ps2_keyboard.vhd
+DEPASSOC mb2k mb2k.ucf
+[STRATEGY-LIST]
+Normal=True

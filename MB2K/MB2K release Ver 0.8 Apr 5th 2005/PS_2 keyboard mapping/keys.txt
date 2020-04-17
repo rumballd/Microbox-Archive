@@ -1,0 +1,565 @@
+* Keyboard mapping for PS-2 keyboard and MB2K.
+*
+*
+ ORG $0000
+*
+******************************************
+* First dataset, shift = 0, shiftlock = 0
+******************************************
+ FCB $00	Scancode = $00		
+ FCB $05	Scancode = $01		F9	CEDRIC - delete char
+ FCB $00	Scancode = $02		
+ FCB $19	Scancode = $03		F5	CEDRIC - cut
+ FCB $0E	Scancode = $04		F3	CEDRIC - search and replace
+ FCB $03	Scancode = $05		F1	CEDRIC - search forward
+ FCB $1A	Scancode = $06		F2	CEDRIC - search back
+ FCB $08	Scancode = $07		F12	CEDRIC - delete left (backspace)
+ FCB $00	Scancode = $08		
+ FCB $17	Scancode = $09		F10	CEDRIC - delete word
+ FCB $13	Scancode = $0A		F8	CEDRIC - 
+ FCB $10	Scancode = $0B		F6	CEDRIC - paste
+ FCB $01	Scancode = $0C		F4	CEDRIC - global replace
+ FCB $09	Scancode = $0D		Tab
+ FCB '`'	Scancode = $0E		`
+ FCB $00	Scancode = $0F		
+*
+ FCB $00	Scancode = $10		
+ FCB $00	Scancode = $11		
+ FCB $00	Scancode = $12		
+ FCB $00	Scancode = $13		
+ FCB $00	Scancode = $14		
+ FCB 'q'	Scancode = $15		q
+ FCB '1'	Scancode = $16		1
+ FCB $00	Scancode = $17		
+ FCB $00	Scancode = $18		
+ FCB $00	Scancode = $19		
+ FCB 'z'	Scancode = $1A		z
+ FCB 's'	Scancode = $1B		s
+ FCB 'a'	Scancode = $1C		a
+ FCB 'w'	Scancode = $1D		w
+ FCB '2'	Scancode = $1E		2
+ FCB $00	Scancode = $1F		
+*
+ FCB $00	Scancode = $20		
+ FCB 'c'	Scancode = $21		c
+ FCB 'x'	Scancode = $22		x
+ FCB 'd'	Scancode = $23		d
+ FCB 'e'	Scancode = $24		e
+ FCB '4'	Scancode = $25		4
+ FCB '3'	Scancode = $26		3
+ FCB $00	Scancode = $27		
+ FCB $00	Scancode = $28		
+ FCB ' '	Scancode = $29		Space
+ FCB 'v'	Scancode = $2A		v
+ FCB 'f'	Scancode = $2B		f
+ FCB 't'	Scancode = $2C		t
+ FCB 'r'	Scancode = $2D		r
+ FCB '5'	Scancode = $2E		5
+ FCB $00	Scancode = $2F		
+*
+ FCB $00	Scancode = $30		
+ FCB 'n'	Scancode = $31		n
+ FCB 'b'	Scancode = $32		b
+ FCB 'h'	Scancode = $33		h
+ FCB 'g'	Scancode = $34		g
+ FCB 'y'	Scancode = $35		y
+ FCB '6'	Scancode = $36		6
+ FCB $00	Scancode = $37		
+ FCB $00	Scancode = $38		
+ FCB $00	Scancode = $39		
+ FCB 'm'	Scancode = $3A		m
+ FCB 'j'	Scancode = $3B		j
+ FCB 'u'	Scancode = $3C		u
+ FCB '7'	Scancode = $3D		7
+ FCB '8'	Scancode = $3E		8
+ FCB $00	Scancode = $3F		
+*
+ FCB $00	Scancode = $40		
+ FCB ','	Scancode = $41		,
+ FCB 'k'	Scancode = $42		k
+ FCB 'i'	Scancode = $43		i
+ FCB 'o'	Scancode = $44		o
+ FCB '0'	Scancode = $45		0
+ FCB '9'	Scancode = $46		9
+ FCB $00	Scancode = $47		
+ FCB $00	Scancode = $48		
+ FCB '.'	Scancode = $49		.
+ FCB '/'	Scancode = $4A		/
+ FCB 'l'	Scancode = $4B		l
+ FCB $3B	Scancode = $4C		;   note: hex definition as as09 swallows the ';' char
+ FCB 'p'	Scancode = $4D		p
+ FCB '-'	Scancode = $4E		-
+ FCB $00	Scancode = $4F		
+*
+ FCB $00	Scancode = $50		
+ FCB $00	Scancode = $51		
+ FCB $27	Scancode = $52		'	note: hex definition as as09 swallows the "'" char 
+ FCB $00	Scancode = $53		
+ FCB '['	Scancode = $54		[
+ FCB '='	Scancode = $55		=
+ FCB $00	Scancode = $56		
+ FCB $00	Scancode = $57		
+ FCB $00	Scancode = $58		
+ FCB $00	Scancode = $59		
+ FCB $0D	Scancode = $5A		Enter
+ FCB ']'	Scancode = $5B		]
+ FCB $00	Scancode = $5C		
+ FCB '\'	Scancode = $5D		\
+ FCB $00	Scancode = $5E		
+ FCB $00	Scancode = $5F		
+*
+ FCB $00	Scancode = $60		
+ FCB $00	Scancode = $61		
+ FCB $00	Scancode = $62		
+ FCB $00	Scancode = $63		
+ FCB $00	Scancode = $64		
+ FCB $00	Scancode = $65		
+ FCB $08	Scancode = $66		Backspace
+ FCB $00	Scancode = $67		
+ FCB $00	Scancode = $68		
+ FCB $0A	Scancode = $69		KP1	CEDRIC - move to line end
+ FCB $00	Scancode = $6A		
+ FCB $0C	Scancode = $6B		KP4	CEDRIC - move cursor left
+ FCB $09	Scancode = $6C		KP7	CEDRIC - (Tab)
+ FCB $00	Scancode = $6D		
+ FCB $00	Scancode = $6E		
+ FCB $00	Scancode = $6F		
+*
+ FCB $00	Scancode = $70		KP0
+ FCB '.'	Scancode = $71		KP.
+ FCB $04	Scancode = $72		KP2	CEDRIC - move cursor down
+ FCB $1C	Scancode = $73		KP5	CEDRIC - point here
+ FCB $12	Scancode = $74		KP6	CEDRIC - move cursor right
+ FCB $15	Scancode = $75		KP8	CEDRIC - move cursor up
+ FCB $1B	Scancode = $76		Escape
+ FCB $00	Scancode = $77		
+ FCB $18	Scancode = $78		F11	CEDRIC - delete line
+ FCB '+'	Scancode = $79		KP+
+ FCB $06	Scancode = $7A		KP3	CEDRIC - move one line forward
+ FCB '-'	Scancode = $7B		KP-
+ FCB '*'	Scancode = $7C		KP*
+ FCB $02	Scancode = $7D		KP9	CEDRIC - line back
+ FCB $00	Scancode = $7E		
+ FCB $00	Scancode = $7F		
+*
+*
+******************************************
+* Second dataset, shift = 0, shiftlock = 1
+******************************************
+ FCB $00	Scancode = $00		
+ FCB $05	Scancode = $01		F9	CEDRIC - delete char
+ FCB $00	Scancode = $02		
+ FCB $19	Scancode = $03		F5	CEDRIC - cut
+ FCB $0E	Scancode = $04		F3	CEDRIC - search and replace
+ FCB $03	Scancode = $05		F1	CEDRIC - search forward
+ FCB $1A	Scancode = $06		F2	CEDRIC - search back
+ FCB $08	Scancode = $07		F12	CEDRIC - delete left (backspace)
+ FCB $00	Scancode = $08		
+ FCB $17	Scancode = $09		F10	CEDRIC - delete word
+ FCB $13	Scancode = $0A		F8	CEDRIC - 
+ FCB $10	Scancode = $0B		F6	CEDRIC - paste
+ FCB $01	Scancode = $0C		F4	CEDRIC - global replace
+ FCB $09	Scancode = $0D		Tab
+ FCB '~'	Scancode = $0E		`
+ FCB $00	Scancode = $0F		
+*
+ FCB $00	Scancode = $10		
+ FCB $00	Scancode = $11		
+ FCB $00	Scancode = $12		
+ FCB $00	Scancode = $13		
+ FCB $00	Scancode = $14		
+ FCB 'Q'	Scancode = $15		Q
+ FCB '1'	Scancode = $16		1
+ FCB $00	Scancode = $17		
+ FCB $00	Scancode = $18		
+ FCB $00	Scancode = $19		
+ FCB 'Z'	Scancode = $1A		Z
+ FCB 'S'	Scancode = $1B		S
+ FCB 'A'	Scancode = $1C		A
+ FCB 'W'	Scancode = $1D		W
+ FCB '2'	Scancode = $1E		2
+ FCB $00	Scancode = $1F		
+*
+ FCB $00	Scancode = $20		
+ FCB 'C'	Scancode = $21		C
+ FCB 'X'	Scancode = $22		X
+ FCB 'D'	Scancode = $23		D
+ FCB 'E'	Scancode = $24		E
+ FCB '4'	Scancode = $25		4
+ FCB '3'	Scancode = $26		3
+ FCB $00	Scancode = $27		
+ FCB $00	Scancode = $28		
+ FCB ' '	Scancode = $29		Space
+ FCB 'V'	Scancode = $2A		V
+ FCB 'F'	Scancode = $2B		F
+ FCB 'T'	Scancode = $2C		T
+ FCB 'R'	Scancode = $2D		R
+ FCB '5'	Scancode = $2E		5
+ FCB $00	Scancode = $2F		
+*
+ FCB $00	Scancode = $30		
+ FCB 'N'	Scancode = $31		N
+ FCB 'B'	Scancode = $32		B
+ FCB 'H'	Scancode = $33		H
+ FCB 'G'	Scancode = $34		G
+ FCB 'Y'	Scancode = $35		Y
+ FCB '6'	Scancode = $36		6
+ FCB $00	Scancode = $37		
+ FCB $00	Scancode = $38		
+ FCB $00	Scancode = $39		
+ FCB 'M'	Scancode = $3A		M
+ FCB 'J'	Scancode = $3B		J
+ FCB 'U'	Scancode = $3C		U
+ FCB '7'	Scancode = $3D		7
+ FCB '8'	Scancode = $3E		8
+ FCB $00	Scancode = $3F		
+*
+ FCB $00	Scancode = $40		
+ FCB ','	Scancode = $41		,
+ FCB 'K'	Scancode = $42		K
+ FCB 'I'	Scancode = $43		I
+ FCB 'O'	Scancode = $44		O
+ FCB '0'	Scancode = $45		0
+ FCB '9'	Scancode = $46		9
+ FCB $00	Scancode = $47		
+ FCB $00	Scancode = $48		
+ FCB '.'	Scancode = $49		.
+ FCB '/'	Scancode = $4A		/
+ FCB 'L'	Scancode = $4B		L
+ FCB $3B	Scancode = $4C		;   note: hex definition as as09 swallows the ';' char
+ FCB 'P'	Scancode = $4D		P
+ FCB '-'	Scancode = $4E		-
+ FCB $00	Scancode = $4F		
+*
+ FCB $00	Scancode = $50		
+ FCB $00	Scancode = $51		
+ FCB $27	Scancode = $52		'	note: hex definition as as09 swallows the "'" char 
+ FCB $00	Scancode = $53		
+ FCB '['	Scancode = $54		[
+ FCB '='	Scancode = $55		=
+ FCB $00	Scancode = $56		
+ FCB $00	Scancode = $57		
+ FCB $00	Scancode = $58		
+ FCB $00	Scancode = $59		
+ FCB $0D	Scancode = $5A		Enter
+ FCB ']'	Scancode = $5B		]
+ FCB $00	Scancode = $5C		
+ FCB '\'	Scancode = $5D		\
+ FCB $00	Scancode = $5E		
+ FCB $00	Scancode = $5F		
+*
+ FCB $00	Scancode = $60		
+ FCB $00	Scancode = $61		
+ FCB $00	Scancode = $62		
+ FCB $00	Scancode = $63		
+ FCB $00	Scancode = $64		
+ FCB $00	Scancode = $65		
+ FCB $08	Scancode = $66		Backspace
+ FCB $00	Scancode = $67		
+ FCB $00	Scancode = $68		
+ FCB $0A	Scancode = $69		KP1	CEDRIC - move to line end
+ FCB $00	Scancode = $6A		
+ FCB $0C	Scancode = $6B		KP4	CEDRIC - move cursor left
+ FCB $09	Scancode = $6C		KP7	CEDRIC - (Tab)
+ FCB $00	Scancode = $6D		
+ FCB $00	Scancode = $6E		
+ FCB $00	Scancode = $6F		
+*
+ FCB $00	Scancode = $70		KP0
+ FCB '.'	Scancode = $71		KP.
+ FCB $04	Scancode = $72		KP2	CEDRIC - move cursor down
+ FCB $1C	Scancode = $73		KP5	CEDRIC - point here
+ FCB $12	Scancode = $74		KP6	CEDRIC - move cursor right
+ FCB $15	Scancode = $75		KP8	CEDRIC - move cursor up
+ FCB $1B	Scancode = $76		Escape
+ FCB $00	Scancode = $77		
+ FCB $18	Scancode = $78		F11	CEDRIC - delete line
+ FCB '+'	Scancode = $79		KP+
+ FCB $06	Scancode = $7A		KP3	CEDRIC - move one line forward
+ FCB '-'	Scancode = $7B		KP-
+ FCB '*'	Scancode = $7C		KP*
+ FCB $02	Scancode = $7D		KP9	CEDRIC - line back
+ FCB $00	Scancode = $7E		
+ FCB $00	Scancode = $7F		
+*
+*
+******************************************
+* Third dataset, shift = 1, shiftlock = 0
+******************************************
+ FCB $00	Scancode = $00		
+ FCB $05	Scancode = $01		F9	CEDRIC - delete char
+ FCB $00	Scancode = $02		
+ FCB $19	Scancode = $03		F5	CEDRIC - cut
+ FCB $0E	Scancode = $04		F3	CEDRIC - search and replace
+ FCB $03	Scancode = $05		F1	CEDRIC - search forward
+ FCB $1A	Scancode = $06		F2	CEDRIC - search back
+ FCB $08	Scancode = $07		F12	CEDRIC - delete left (backspace)
+ FCB $00	Scancode = $08		
+ FCB $17	Scancode = $09		F10	CEDRIC - delete word
+ FCB $13	Scancode = $0A		F8	CEDRIC - 
+ FCB $10	Scancode = $0B		F6	CEDRIC - paste
+ FCB $01	Scancode = $0C		F4	CEDRIC - global replace
+ FCB $09	Scancode = $0D		Tab
+ FCB '~'	Scancode = $0E		~
+ FCB $00	Scancode = $0F		
+*
+ FCB $00	Scancode = $10		
+ FCB $00	Scancode = $11		
+ FCB $00	Scancode = $12		
+ FCB $00	Scancode = $13		
+ FCB $00	Scancode = $14		
+ FCB 'Q'	Scancode = $15		Q
+ FCB '!'	Scancode = $16		!
+ FCB $00	Scancode = $17		
+ FCB $00	Scancode = $18		
+ FCB $00	Scancode = $19		
+ FCB 'Z'	Scancode = $1A		Z
+ FCB 'S'	Scancode = $1B		S
+ FCB 'A'	Scancode = $1C		A
+ FCB 'W'	Scancode = $1D		W
+ FCB '@'	Scancode = $1E		@
+ FCB $00	Scancode = $1F		
+*
+ FCB $00	Scancode = $20		
+ FCB 'C'	Scancode = $21		C
+ FCB 'X'	Scancode = $22		X
+ FCB 'D'	Scancode = $23		D
+ FCB 'E'	Scancode = $24		E
+ FCB '$'	Scancode = $25		$
+ FCB '#'	Scancode = $26		#
+ FCB $00	Scancode = $27		
+ FCB $00	Scancode = $28		
+ FCB ' '	Scancode = $29		Space
+ FCB 'V'	Scancode = $2A		V
+ FCB 'F'	Scancode = $2B		F
+ FCB 'T'	Scancode = $2C		T
+ FCB 'R'	Scancode = $2D		R
+ FCB '%'	Scancode = $2E		%
+ FCB $00	Scancode = $2F		
+*
+ FCB $00	Scancode = $30		
+ FCB 'N'	Scancode = $31		N
+ FCB 'B'	Scancode = $32		B
+ FCB 'H'	Scancode = $33		H
+ FCB 'G'	Scancode = $34		G
+ FCB 'Y'	Scancode = $35		Y
+ FCB '^'	Scancode = $36		^
+ FCB $00	Scancode = $37		
+ FCB $00	Scancode = $38		
+ FCB $00	Scancode = $39		
+ FCB 'M'	Scancode = $3A		M
+ FCB 'J'	Scancode = $3B		J
+ FCB 'U'	Scancode = $3C		U
+ FCB '&'	Scancode = $3D		&
+ FCB '*'	Scancode = $3E		*
+ FCB $00	Scancode = $3F		
+*
+ FCB $00	Scancode = $40		
+ FCB '<'	Scancode = $41		<
+ FCB 'K'	Scancode = $42		K
+ FCB 'I'	Scancode = $43		I
+ FCB 'O'	Scancode = $44		O
+ FCB ')'	Scancode = $45		)
+ FCB '('	Scancode = $46		(
+ FCB $00	Scancode = $47		
+ FCB $00	Scancode = $48		
+ FCB '>'	Scancode = $49		>
+ FCB '?'	Scancode = $4A		?
+ FCB 'L'	Scancode = $4B		L
+ FCB ':'	Scancode = $4C		:
+ FCB 'P'	Scancode = $4D		P
+ FCB '_'	Scancode = $4E		_
+ FCB $00	Scancode = $4F		
+*
+ FCB $00	Scancode = $50		
+ FCB $00	Scancode = $51		
+ FCB '"'	Scancode = $52		"
+ FCB $00	Scancode = $53		
+ FCB '{'	Scancode = $54		{
+ FCB '+'	Scancode = $55		+
+ FCB $00	Scancode = $56		
+ FCB $00	Scancode = $57		
+ FCB $00	Scancode = $58		
+ FCB $00	Scancode = $59		
+ FCB $0D	Scancode = $5A		Enter
+ FCB '}'	Scancode = $5B		}
+ FCB $00	Scancode = $5C		
+ FCB '|'	Scancode = $5D		|
+ FCB $00	Scancode = $5E		
+ FCB $00	Scancode = $5F		
+*
+ FCB $00	Scancode = $60		
+ FCB $00	Scancode = $61		
+ FCB $00	Scancode = $62		
+ FCB $00	Scancode = $63		
+ FCB $00	Scancode = $64		
+ FCB $00	Scancode = $65		
+ FCB $08	Scancode = $66		Backspace
+ FCB $00	Scancode = $67		
+ FCB $00	Scancode = $68		
+ FCB $0A	Scancode = $69		KP1	CEDRIC - move to line end
+ FCB $00	Scancode = $6A		
+ FCB $0C	Scancode = $6B		KP4	CEDRIC - move cursor left
+ FCB $09	Scancode = $6C		KP7	CEDRIC - (Tab)
+ FCB $00	Scancode = $6D		
+ FCB $00	Scancode = $6E		
+ FCB $00	Scancode = $6F		
+*
+ FCB $00	Scancode = $70		KP0
+ FCB '.'	Scancode = $71		KP.
+ FCB $04	Scancode = $72		KP2	CEDRIC - move cursor down
+ FCB $1C	Scancode = $73		KP5	CEDRIC - point here
+ FCB $12	Scancode = $74		KP6	CEDRIC - move cursor right
+ FCB $15	Scancode = $75		KP8	CEDRIC - move cursor up
+ FCB $1B	Scancode = $76		Escape
+ FCB $00	Scancode = $77		
+ FCB $18	Scancode = $78		F11	CEDRIC - delete line
+ FCB '+'	Scancode = $79		KP+
+ FCB $06	Scancode = $7A		KP3	CEDRIC - move one line forward
+ FCB '-'	Scancode = $7B		KP-
+ FCB '*'	Scancode = $7C		KP*
+ FCB $02	Scancode = $7D		KP9	CEDRIC - line back
+ FCB $00	Scancode = $7E		
+ FCB $00	Scancode = $7F		
+*
+*
+******************************************
+* Fourth dataset, shift = 1, shiftlock = 1	
+******************************************
+ FCB $00	Scancode = $00		
+ FCB $05	Scancode = $01		F9	CEDRIC - delete char
+ FCB $00	Scancode = $02		
+ FCB $19	Scancode = $03		F5	CEDRIC - cut
+ FCB $0E	Scancode = $04		F3	CEDRIC - search and replace
+ FCB $03	Scancode = $05		F1	CEDRIC - search forward
+ FCB $1A	Scancode = $06		F2	CEDRIC - search back
+ FCB $08	Scancode = $07		F12	CEDRIC - delete left (backspace)
+ FCB $00	Scancode = $08		
+ FCB $17	Scancode = $09		F10	CEDRIC - delete word
+ FCB $13	Scancode = $0A		F8	CEDRIC - 
+ FCB $10	Scancode = $0B		F6	CEDRIC - paste
+ FCB $01	Scancode = $0C		F4	CEDRIC - global replace
+ FCB $09	Scancode = $0D		Tab
+ FCB '~'	Scancode = $0E		~
+ FCB $00	Scancode = $0F		
+*
+ FCB $00	Scancode = $10		
+ FCB $00	Scancode = $11		
+ FCB $00	Scancode = $12		
+ FCB $00	Scancode = $13		
+ FCB $00	Scancode = $14		
+ FCB 'q'	Scancode = $15		q
+ FCB '!'	Scancode = $16		!
+ FCB $00	Scancode = $17		
+ FCB $00	Scancode = $18		
+ FCB $00	Scancode = $19		
+ FCB 'z'	Scancode = $1A		z
+ FCB 's'	Scancode = $1B		s
+ FCB 'a'	Scancode = $1C		a
+ FCB 'w'	Scancode = $1D		w
+ FCB '@'	Scancode = $1E		@
+ FCB $00	Scancode = $1F		
+*
+ FCB $00	Scancode = $20		
+ FCB 'c'	Scancode = $21		c
+ FCB 'x'	Scancode = $22		x
+ FCB 'd'	Scancode = $23		d
+ FCB 'e'	Scancode = $24		e
+ FCB '$'	Scancode = $25		$
+ FCB '#'	Scancode = $26		#
+ FCB $00	Scancode = $27		
+ FCB $00	Scancode = $28		
+ FCB ' '	Scancode = $29		Space
+ FCB 'v'	Scancode = $2A		v
+ FCB 'f'	Scancode = $2B		f
+ FCB 't'	Scancode = $2C		t
+ FCB 'r'	Scancode = $2D		r
+ FCB '%'	Scancode = $2E		%
+ FCB $00	Scancode = $2F		
+*
+ FCB $00	Scancode = $30		
+ FCB 'n'	Scancode = $31		n
+ FCB 'b'	Scancode = $32		b
+ FCB 'h'	Scancode = $33		h
+ FCB 'g'	Scancode = $34		g
+ FCB 'y'	Scancode = $35		y
+ FCB '^'	Scancode = $36		^
+ FCB $00	Scancode = $37		
+ FCB $00	Scancode = $38		
+ FCB $00	Scancode = $39		
+ FCB 'm'	Scancode = $3A		m
+ FCB 'j'	Scancode = $3B		j
+ FCB 'u'	Scancode = $3C		u
+ FCB '&'	Scancode = $3D		&
+ FCB '*'	Scancode = $3E		*
+ FCB $00	Scancode = $3F		
+*
+ FCB $00	Scancode = $40		
+ FCB '<'	Scancode = $41		<
+ FCB 'k'	Scancode = $42		k
+ FCB 'i'	Scancode = $43		i
+ FCB 'O'	Scancode = $44		o
+ FCB ')'	Scancode = $45		)
+ FCB '('	Scancode = $46		(
+ FCB $00	Scancode = $47		
+ FCB $00	Scancode = $48		
+ FCB '>'	Scancode = $49		>
+ FCB '?'	Scancode = $4A		?
+ FCB 'l'	Scancode = $4B		l
+ FCB ':'	Scancode = $4C		:
+ FCB 'p'	Scancode = $4D		p
+ FCB '_'	Scancode = $4E		_
+ FCB $00	Scancode = $4F		
+*
+ FCB $00	Scancode = $50		
+ FCB $00	Scancode = $51		
+ FCB '"'	Scancode = $52		"
+ FCB $00	Scancode = $53		
+ FCB '{'	Scancode = $54		{
+ FCB '+'	Scancode = $55		+
+ FCB $00	Scancode = $56		
+ FCB $00	Scancode = $57		
+ FCB $00	Scancode = $58		
+ FCB $00	Scancode = $59		
+ FCB $0D	Scancode = $5A		Enter
+ FCB '}'	Scancode = $5B		}
+ FCB $00	Scancode = $5C		
+ FCB '|'	Scancode = $5D		|
+ FCB $00	Scancode = $5E		
+ FCB $00	Scancode = $5F		
+*
+ FCB $00	Scancode = $60		
+ FCB $00	Scancode = $61		
+ FCB $00	Scancode = $62		
+ FCB $00	Scancode = $63		
+ FCB $00	Scancode = $64		
+ FCB $00	Scancode = $65		
+ FCB $08	Scancode = $66		Backspace
+ FCB $00	Scancode = $67		
+ FCB $00	Scancode = $68		
+ FCB $0A	Scancode = $69		KP1	CEDRIC - move to line end
+ FCB $00	Scancode = $6A		
+ FCB $0C	Scancode = $6B		KP4	CEDRIC - move cursor left
+ FCB $09	Scancode = $6C		KP7	CEDRIC - (Tab)
+ FCB $00	Scancode = $6D		
+ FCB $00	Scancode = $6E		
+ FCB $00	Scancode = $6F		
+*
+ FCB $00	Scancode = $70		KP0
+ FCB '.'	Scancode = $71		KP.
+ FCB $04	Scancode = $72		KP2	CEDRIC - move cursor down
+ FCB $1C	Scancode = $73		KP5	CEDRIC - point here
+ FCB $12	Scancode = $74		KP6	CEDRIC - move cursor right
+ FCB $15	Scancode = $75		KP8	CEDRIC - move cursor up
+ FCB $1B	Scancode = $76		Escape
+ FCB $00	Scancode = $77		
+ FCB $18	Scancode = $78		F11	CEDRIC - delete line
+ FCB '+'	Scancode = $79		KP+
+ FCB $06	Scancode = $7A		KP3	CEDRIC - move one line forward
+ FCB '-'	Scancode = $7B		KP-
+ FCB '*'	Scancode = $7C		KP*
+ FCB $02	Scancode = $7D		KP9	CEDRIC - line back
+ FCB $00	Scancode = $7E		
+ FCB $00	Scancode = $7F		
+*
+ END

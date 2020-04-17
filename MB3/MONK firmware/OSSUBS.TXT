@@ -1,0 +1,239 @@
+* CPM 68k BIOS for Microbox III.
+* First written Dec 85. D.A.Rumball.
+*
+* Cold start (jumped to from ram vector at $6000).
+init     move.l  #traphndl,$8c   Set up trap 3.
+ movea.l #cpmbase+$f00,a0
+ lea.l dph0,a1
+ move.l #63,d0
+inlp move.l (a1)+,(a0)+
+ dbf.s d0,inlp
+         bsr     flush        Flush read and write track buffers.
+         move.l  #0,d0        User 0, drive A.
+         rts
+* Memory region for tpa.
+cpmbase equ $7000  cpm scratch ram.
+memrgn   dc.w    1            One memory region.
+         dc.l    $08000        from 32k,
+         dc.l    $18000       length 96k.
+*
+* Disk drive allocation tables
+dph0 dc.l xlt                 Floppy disk 0.
+ dc.w 0
+ dc.w 0
+ dc.w 0
+ dc.l cpmbase
+ dc.l dpb
+ dc.l cpmbase+$100
+ dc.l cpmbase+$200
+*
+dph1 dc.l xlt                  Floppy disk 1.
+ dc.w 0
+ dc.w 0
+ dc.w 0
+ dc.l cpmbase
+ dc.l dpb
+ dc.l cpmbase+$300
+ dc.l cpmbase+$400
+*
+dph2 dc.l xlt                  Hard disk.
+ dc.w 0
+ dc.w 0
+ dc.w 0
+ dc.l cpmbase
+ dc.l dpb
+ dc.l cpmbase+$500
+ dc.l cpmbase+$600
+*
+dph3 dc.l xlt                  Ramdisk
+ dc.w 0
+ dc.w 0
+ dc.w 0
+ dc.l cpmbase
+ dc.l dpb
+ dc.l cpmbase+$700
+ dc.l cpmbase+$800
+*
+dph4 dc.l xlt                  Promdisk.
+ dc.w 0
+ dc.w 0
+ dc.w 0
+ dc.l cpmbase
+ dc.l dpb1
+ dc.l cpmbase+$900
+ dc.l cpmbase+$a00
+*
+dpb  dc.w 16
+ dc.b 4
+ dc.b 15
+ dc.b 0
+ dc.b 0
+ dc.w 157
+ dc.w 63
+ dc.w 0
+ dc.w 16
+ dc.w 2
+*
+dpb1 dc.w 16
+ dc.b 3
+ dc.b 7
+ dc.b 0
+ dc.b 0
+ dc.w 15
+ dc.w 15
+ dc.w 0
+ dc.w 4
+ dc.w 0
+*
+xlt  dc.b 00,01,02,03,04,05,06,07
+     dc.b 08,09,10,11,12,13,14,15
+*
+*
+* Main entry point for trap function calls.
+traphndl cmpi.b  #23,d0       function call ok?
+         bcc.s   trapng       if not return
+         and.l   #$ff,d0
+         lsl.l   #2,d0        times 4
+         add.l   #bbase,d0
+         movea.l d0,a0        Pick up function address
+         movea.l (a0),a0
+         jsr     (a0)
+trapng   rte                  return from exception.
+* Trap function table.
+bbase    dc.l    init
+         dc.l    wboot
+         dc.l    constat
+         dc.l    conin
+         dc.l    conout
+         dc.l    lstout
+         dc.l    pun
+         dc.l    rdr
+         dc.l    cpmrst
+         dc.l    cpmsel
+         dc.l    settrk
+         dc.l    setsec
+         dc.l    setdma
+         dc.l    cpmread
+         dc.l    cpmwrite
+         dc.l    listst
+         dc.l    sectran
+         dc.l    setdma
+         dc.l    getseg
+         dc.l    getiob
+         dc.l    setiob
+         dc.l    flush
+         dc.l    setexc
+*
+* FUNCTION 1 CPM warm boot.
+wboot    jsr     flush
+         jmp     $4b8        warm boot cpm.
+*
+* FUNCTION 2....Read console character status.
+constat  bsr status
+         beq.s   conend
+         move.l  #$ff,d0
+         rts
+conend   clr.l   d0
+         rts
+*
+* FUNCTION 3...Console character read.
+conin    bra inch1
+*
+* FUNCTION 4...Console write character.
+conout   move.b  d1,d0
+ cmp.b #$0c,d1 filter clear screens.
+ bne outch
+ rts
+*
+* FUNCTION 5....Printer out.
+lstout move.b d1,d0
+         bra outpri
+*
+* FUNCTION 6....Auxilary out.
+pun move.b d1,d0
+ bra outter1
+*
+* FUNCTION 7....Auxilary input.
+rdr bra inter1
+*
+* FUNCTION 8....Restore drive
+cpmrst lea.l sys_dcb,a0
+ bra restore
+*
+* FUNCTION 9....Select drive
+cpmsel lea.l sys_dcb,a0
+ move.b d1,(a0)
+ bsr select
+ beq.s cpmsok
+ moveq.l #0,d0
+ rts
+cpmsok move.l #26,d0
+ and.l #$ff,d1
+ mulu d1,d0
+ add.l #cpmbase+$f00,d0
+ rts
+*
+* FUNCTION 10....Set track.
+settrk   lea.l sys_dcb,a0
+         move.b  d1,3(a0)
+         rts
+*
+* FUNCTION 11....Set sector.
+setsec   lea.l sys_dcb,a0
+         move.b  d1,5(a0)
+         rts
+*
+* FUNCTION 12....Set data move address.
+setdma   lea.l sys_dcb,a0
+         move.l  d1,6(a0)
+         rts
+*
+* FUNCTION 13....Read sector.
+cpmread lea.l sys_dcb,a0
+ bra read
+*
+* FUNCTION 14...Write sector.
+cpmwrite lea.l sys_dcb,a0
+ bra write
+*
+* FUNCTION 15....Return list status.
+listst btst.b #2,pia0+psr
+ beq.s lst1
+ move.w #$ff,d0
+ rts
+lst1 move.w #0,d0
+ rts
+*
+* FUNCTION 16....Translate logical to physical sector.
+sectran  andi.l  #$ff,d1      Sector <= 255
+         tst.l   d2           If d2=0 then return sector
+         bne.s   secmore      Else translate.
+         move.l  d1,d2
+         rts
+secmore  movea.l d2,a0
+         ext.l   d1
+         move.b  0(a0,d1),d0
+         ext.l   d0
+         rts
+*
+* FUNCTION 18....Return memory bounds.
+getseg   move.l  #memrgn,d0
+         rts
+*
+* FUNCTION 19....Get i/o byte.
+getiob   rts
+*
+* FUNCTION 20....Set i/o byte.
+setiob   rts
+*
+* FUNCTION 21....Flush buffers.
+**** In disk section. *****
+*
+* FUNCTION 22....Set exception vector.
+setexc   andi.l  #$ff,d1
+         lsl.l   #2,d1
+         movea.l d1,a0
+         move.l  (a0),d0
+         move.l  d2,(a0)
+noset    rts
+*

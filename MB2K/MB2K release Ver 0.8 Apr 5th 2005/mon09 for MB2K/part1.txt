@@ -1,0 +1,37 @@
+--
+-- MON09 monitor ROM for the MB2K 
+-- Version 5.0	 31-3-05	   (6Kbyte ROM using three block RAMs)
+--
+library IEEE, UNISIM;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_ARITH.ALL;
+use UNISIM.vcomponents.all;
+		
+entity MON09_rom is
+    Port (
+       clk   : in  std_logic;
+	  rst   : in  std_logic;
+	  cs    : in  std_logic;
+	  rw    : in  std_logic;
+       addr  : in  std_logic_vector (12 downto 0);
+       rdata : out std_logic_vector (7 downto 0);
+       wdata : in  std_logic_vector (7 downto 0)
+    );
+end MON09_rom;
+ 
+architecture Behavioral of MON09_rom is
+
+   -- RAMB16_S9: Virtex-II/II-Pro, Spartan-3 2k x 8 + 1 Parity bit Single-Port RAM
+   -- Xilinx  HDL Language Template version 6.3.1i
+
+   signal dp0, dp1, dp2 : std_logic_vector(0 downto 0);	-- loop parity bit output to input
+   signal we, cs0, cs1, cs2 : std_logic;
+   signal rdata0, rdata1, rdata2 : std_logic_vector(7 downto 0);
+
+begin
+   
+   RAM_0 : RAMB16_S9    -- $E800 - EFFF
+   generic map (
+      INIT => X"000", --  Value of output RAM registers at startup
+      SRVAL => X"000", --  Ouput value upon SSR assertion
+      WRITE_MODE => "WRITE_FIRST", --  WRITE_FIRST, READ_FIRST or NO_CHANGE

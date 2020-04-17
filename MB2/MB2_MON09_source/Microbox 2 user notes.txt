@@ -1,0 +1,4222 @@
+
+                                           PAGE 1.0
+    
+              Microbox ][ User Notes
+                                                           Section 1 Introduction
+    
+    
+    
+    
+                                           CONTENTS
+                                           --------
+                        Introduction......................Section 1
+                        Construction guide................Section 2
+                        Setting up........................Section 3
+                        Monitor commands..................Section 4
+                        Flex commands.....................Section 5
+                        Programming guide.................Section 6
+    
+                        Parts list..........................Appendix 1
+                        Layout sheets A & B.................Appendix 2
+                        Circuit diagrams....................Appendix 3
+                        Connection diagrams.................Appendix 4
+                        Memory maps.........................Appendix 5
+                        Terminal emulator control codes.....Appendix 6
+                        Flexlink & Monlink source...........Appendix 7
+                        Graphics display code...............Appendix 8
+                        Default character set...............Appendix 9
+                        Supplied disc directory.............Appendix 10
+    
+    
+    
+    
+    
+    
+    
+              Section 1  Introduction.
+              ---------  ------------
+    
+                  This   documentation   is   organised   into   three  parts,  a  
+              construction  guide,  a description of the monitor commands and the 
+              extra supplied FLEX software and a description of the user callable 
+              monitor subroutines and the graphics package.
+    
+                  Please check that you have all the parts in this kit.
+              You should have :-
+    
+                        1.. PCB
+                        2.. 2764 EPROM marked MON09 Ver 4.2
+                        3.. 5 1/4 inch floppy disc.
+                        4.. This documentation
+    
+              If  any  of these parts have been damaged in transit, please get in 
+              contact immediately.
+                  Before  you  start  on  the  construction  of  your Microbox ][ 
+              computer,  please read the documentation all of the way through. If 
+              you  feel  that  the  construction is outside your experience, then 
+              just  return  the  kit and your money will be refunded by return of 
+              post.
+                  It  is recommended that data sheets are obtained for all of the 
+              IC's  in  the  Microbox  ][.  This  will help if any problems arise 
+              during construction.
+    
+    
+    
+    
+    
+    
+                                           PAGE 1.1
+    
+              Microbox ][ User Notes
+                                                           Section 1 Introduction
+    
+              ERATA       There  are  a  number  of small corrections on the pcb. 
+              Please  phone D.A.Rumball for the latest details before constucting 
+              your board.
+    
+                  If  you  have  any questions or (constructive) criticism please 
+              write to 
+                        D.A.Rumball
+                        22, Chalkdell path,
+                        Hitchin,
+                        Herts.    SG5 2LG
+              Or in dire emergency phone 0462-58965 after 7:30pm
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+                                           PAGE 1.2
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+                                           PAGE 2.0
+    
+              Microbox ][ User Notes
+                                                     Section 2 Construction guide
+    
+              Section 2    Construction notes.
+              ---------    ------------------
+    
+              2.1 Introduction
+                  These  notes are provided as a guide to the construction of the 
+              main  pcb.  They  are  suggestions  only, and can be ignored if you 
+              wish.
+                  Tools required :-
+                        Small   soldering  iron  with  1mm  bit  and  fine  gauge  
+                        multicore solder
+                        Solder sucker or desoldering braid.
+                        Screwdrivers, sidecutters, long nose pliers.
+                        Magnifying glass, sharp knife.
+                        Multimeter
+                        Oscilliscope (optional).
+    
+              2.2 Construction
+               1)  Start by examining the pcb against a strong light source. look 
+              for  shorted  or broken traces. Shorts may be cleared with a knife, 
+              broken  traces  may be repaired by overlaying the crack with a fine 
+              piece of wire.
+              2)  Check  that  the  sockets, connectors and the larger components 
+              fit.  If  necessary  enlarge  the  holes  with  a drill bit. If any 
+              feedthroughs  from  the  top of the board to the bottom are broken, 
+              make a note to solder on both sides of the board at that point.
+              3)  Fit  the  IC  sockets. This is best done in a single operation. 
+              First  place  the  sockets  in  position,  then  place  a  piece of 
+              cardboard  over  the  top  of  the sockets and turn the board over, 
+              checking  that  all  of the sockets are bedded down. Now solder two 
+              opposing  corner  pins  on each socket, and again check that all of 
+              the  sockets are in the correct position and against the board. Now 
+              solder  all  of  the  remaining  pins  on  each  socket. After this 
+              operation  check  that there are no open or shorted connections. DO 
+              NOT insert any IC's at this stage.
+              4)  Now  insert  the  discrete  resistors,  capacitors,  diodes and 
+              transistors etc (noting the polarity of the diodes and electrolytic 
+              capacitors) but not the crystals or the battery.
+              5)  Finally insert the rest of the plugs and sockets etc (but still 
+              not the battery).
+    
+              2.3 Testing
+                  At this point it is best to leave the construction of the board 
+              for  a  while,  preferably  overnight.  This way there is more of a 
+              chance  of  spotting  any  mistakes.  Now  comes  the  tedious bit, 
+              checking the board! Firstly check that there are no open or shorted 
+              solder joints, and that all the components and sockets are inserted 
+              in  the  correct place, and with the correct orientation. Now check 
+              the  address  and  data  busses  for  continuity  and shorts with a 
+              multimeter. Check the following busses :-
+                        a) The CPU-SAM-EPROM address lines.
+                        b) The CPU-EPROM-BUFFER data lines.
+                        c) The peripheral data and address lines.
+                        d) The CPU ram address lines.
+                        e) The GDC ram address lines.
+                  Time  spent at this stage checking the board will save a lot of 
+              trouble at a later stage.
+                 Now remove any IC's on the board (you couldn't wait, could you!)
+               and apply power to the +5v rail. Check that the +5v appears in all 
+    
+    
+    
+                                           PAGE 2.1
+    
+              Microbox ][ User Notes
+                                                     Section 2 Construction guide
+    
+              of   the  correct  places  (and  nowhere  else)  and  that  the  0v  
+              connections are correct. Check also the + and - 12v rails.
+                  Now  insert  the  IC's  (note  that some of them have differing 
+              orientations).  Connect  the  power  supply  (+5v  @  3A, +&- 12v @ 
+              100mA),  a  video  monitor  and keyboard then check that all of the 
+              configuration switches are off.
+                  The  big moment! - apply power to the board! If all is well (ie 
+              no smoke or bangs) the screen will clear, and the header and prompt 
+              (=>)  will appear. If this does not happen, then read the debugging 
+              notes in section 1.5.
+    
+              2.4 More testing
+                  Check  that typing at the keyboard plots the correct characters 
+              on  the  screen.  If all is well use the TM command to test the ram 
+              between  0000-DE00,  and  whilst  this test is in progress, tap the 
+              board  and  gently press the IC's to show up any bad solder joints. 
+              Now  test  the  other monitor commands. Install the real time clock 
+              battery,  remembering that it is probably fully charged on arrival, 
+              so  unplug  the soldering iron so as not to short the battery. When 
+              the  battery  is  installed momentarily short C9 to ensure that the 
+              monitor will load the default parameter set into the RTC ram.
+                 The  floppy  drives should now be connected (don't forget to set 
+              the  option links on the drives for head load with MOTOR ON and the 
+              DRIVE  SELECTS) and the drive stepping rate switch set on the board 
+              (off  =  6ms   on = 30ms). Use the TS command to test the drive for 
+              selection  and  stepping,  then  format  a  blank disc using the DF 
+              command and test the drives again, this time using the TD command.
+              Now  test  the  drives for writing and reading sectors using the WS 
+              and  RS  commands  until  you  are convinced that everything is ok.          
+                 Now  for big moment number two. Insert the FLEX system disc into 
+              logical  drive  0 and type BO. FLEX should now boot, and you should 
+              see  the +++ prompt (note that you will not be asked for the date). 
+              Now use build to generate a STARTUP.TXT file something like 
+    
+                      TIME:ASN:ECHO It works!
+    
+               and   append   ASNFIX.BIN   to  your  ASN.CMD  and  TTYFIX.BIN  to  
+              TTYSET.CMD.  Finally  use SETTIME to set the time and date and EXEC 
+              STARTUP.TXT.
+                  This completes the initial testing of your Microbox ][, so make 
+              yourself  a  nice cup of tea (or whatever), sit down with your feet 
+              up, type DEMO and watch the pretty pictures!
+    
+              2.5 Debugging
+                 It  is  difficult to suggest what is wrong with a system without 
+              knowing  the exact symptoms, but here are some things that could be 
+              checked for a start:-
+                        1) Are the configuration switches set correctly?
+                        2) Is the 16Mhz clock being generated?
+                        3) Are E & Q getting to the processor?
+                        4) Are there any spurious interrupts?
+                        5) Is the monitor eprom getting the correct signals?
+                        6) Do any address or data lines seem shorted?
+                        7) Is the 64k ram getting the correct signals?
+                  If the processor is in a stable loop checking the input device, 
+              but  there  is no flashing cursor, check that the GDC ram RAS, CAS, 
+              and  WE are all ok, and that a video signal is being clocked out of 
+              the shift registers.
+    
+    
+                                           PAGE 2.2
+    
+              Microbox ][ User Notes
+                                                     Section 2 Construction guide
+    
+                 If all this fails, then phone  0462-58965 after 7-30pm.
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+                                           PAGE 2.3
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+                                           PAGE 3.0
+    
+              Microbox ][ User Notes
+                                                             Section 3 Setting up
+    
+    
+              Section 3  Setting up
+              ---------------------
+    
+              3.1 General
+                 to  set  up the computer, connect a power supply of 1.5A @5v and 
+              100mA  @+-12v,  a  75ohm  video monitor to the bnc socket (or a TTL 
+              monitor  to  the  four  pin  plug next to the bnc socket), either a 
+              parralell keyboard to the keyboard socket, or an RS-232 terminal to 
+              serial  port  0 (9600 baud, 8 bits, 2 stop bits, no parity), and at 
+              floppy  drives  (if  used)  to the floppy interface connector. Then 
+              check  the  four  on  board  configuration switches are off (or the 
+              first  two  are  on for a serial terminal) and power up. The screen 
+              should  clear,  and  the MON09 header and prompt (=>) should appear 
+              together with a flashing cursor. Assuming that the RTC contents are 
+              ok,  FLEX  may  now be booted with the BO command. To return to the 
+              monitor  from FLEX use the MON command, and to return to FLEX again 
+              use the JF command (Jump to Flex). Pressing the reset button at any 
+              time will return control to the monitor program.
+              3.2 The configuration switches
+                  There  are  four  switches mounted on the pcb close to the 6821 
+              PIA. Switch zero is closest to the RTC battery.
+    
+                        Switch  0  Sets  the  initial input port to be used after 
+                        reset. on = PORT 1 (serial port 0)
+                               off = PORT 0 (keyboard)
+                        Switch  2   Sets the initial output port to be used after 
+                        reset. on = PORT 1 (serial port 0)
+                               off = PORT 0 (GDC screen)
+                        Switch  2   Sets the floppy disc stepping rate.
+                               on = 30ms stepping rate (for full height drives)
+                               off = 6ms stepping rate (for half height drives)
+                        Switch  4   Sets the auto boot function.
+                               on = Auto boot FLEX on reset
+                               off = Monitor program on reset
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+                                           PAGE 3.1
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+                                           PAGE 4.0
+    
+              Microbox ][ User Notes
+                                                    Section 4    Monitor commands
+    
+    
+    
+              Section 4   MON09 commands
+              ---------   --------------
+    
+                  There  are twenty-seven monitor commands, each represented by a 
+              two  letter  name. Typing the two letters will invoke that command, 
+              which will then prompt for any necessary parameters. There are four 
+              types of parameters :-
+                        Four digit hex number................XXXX
+                        Two digit hex number...................YY
+                        One digit hex number....................Z
+                        Text string or character................T
+              All commands are uppercase only.
+                  The  first  three  commands  are  concerned  with examining and 
+              modifying  memory.  They have a common control format, so that a CR 
+              will  examine  the  next  location  or page, a '-' will examine the 
+              previous  location  or  page, and any other character will exit the 
+              command.
+    
+              Command:  AD   Ascii Dump
+              Format:   Ascii dump of memory from XXXX
+              Action: Displays a 1024 byte sectiom of memory as ascii characters. 
+              Any non-printable character will be represented by a '.'.
+    
+              Command:  HD   Hex Dump
+              Format: Hex dump of memory from XXXX
+              Action:  Displays  a  256  byte  block  of  memory as two digit hex 
+              values.
+    
+              Command:  ME   Memory Examine and alter
+              Format: Memory examine and alter from XXXX
+              Action:  Displays  an address and the contents of that address. The 
+              contents  may  be changed by typing a space followed by the new two 
+              digit value. A verify is performed on the location changed.
+    
+              Command: PM   Poke Memory
+              Format: Poke memory location at XXXX value YY
+              Action:  Deposits  the  data into the location without verifying or 
+              reading the next address. Used for testing memory mapped peripheral 
+              devices where a read would corrupt data.
+    
+              Command: FM   Fill Memory with constant
+              Format: Fill memory with constant from XXXX to XXXX value YY
+              Action:  Fills  the  indicated  memory  range  with  the  data.  No 
+              verification
+    
+              Command: SM   Shift Memory
+              Format: Shift memory from XXXX to XXXX length XXXX
+              Action: Shifts the block of memory indicated.
+    
+              Command: LK   Load text from Keyboard
+              Format:  Load  memory  with  text from keyboard to XXXX value T...T 
+              (EOT)
+              Action: Loads text from the input device directly to memory. To end 
+              the input type an EOT (hex 04 or control D). This command generates 
+              text suitable for use in the PDATA1 and PSTRNG routines.
+    
+    
+    
+    
+                                           PAGE 4.1
+    
+              Microbox ][ User Notes
+                                                    Section 4    Monitor commands
+    
+              Command: FI FInd hex string
+              Format: Find byte string from XXXX to XXXX
+                      Byte string YY YY YY YY(CR)
+              Action:  Finds  and displays all occurrences of the given string of 
+              hex bytes within the range indicated.
+    
+                 The  next  five  commands  are  concerned  with running programs 
+              directly  from  MON09.  A  SWI  instruction (hex 3F) may be used to 
+              return  control  to  MON09  from  a  program.  This  will  cause an 
+              automatic display of registers. The register values may be modified 
+              using  the  ME  command.  The  register values are stored in the 10 
+              bytes below the location pointed to by the stack pointer S.
+    
+              Command: DR   Display Registers
+              Format: Display registers
+              Action: Displays the current program register set.
+    
+              Command: RP   Run Program
+              Format: Run program from XXXX
+              Action:  Loads  processor registers, then jumps to program starting 
+              at address given.
+    
+              Command: CP   Continue Program
+              Format: Continue program after SWI....
+              Action: Continues execution of a program from a SWI instruction.
+    
+              Command: JU   JUmp to program
+              Format: Jump to program at XXXX
+              Action:  Execute  a  program  starting at the given address without 
+              loading the registers first.
+    
+              Command:  JF   Jump to Flex warm start
+              Format: Jump to flex warm start.....
+              Action: Jumps to address $CD03
+    
+                 The  monitor  input/output  may  come  independently from one of 
+              three sources :-
+                        PORT NUMBER       INPUT             OUTPUT
+                               0          Keyboard          GDC screen
+                               1          serial port 0     Serial port 0
+                               2          serial port 1     Serial port 1
+              The initial ports are set on reset by the configuration switches.
+    
+              Command: SI   Set Input port
+              Format: Set input port to Z
+              Action: Sets the active input port
+    
+              Command: SO   Set output port
+              Format: Set output port to Z
+              Action: Sets the active output port.
+    
+              Command: SB   Set Baud rate
+              Format: Set baud rate for serial port Z rate = YY
+              Action:  Sets  the  baud rate for the indicated port, note that the 
+              baud  rates  are  stored  in the RTC ram, so will not need reseting 
+              after power down.
+    
+              Seven  commands  are  for  disk  control and testing. Note that any 
+    
+    
+    
+                                           PAGE 4.2
+    
+              Microbox ][ User Notes
+                                                    Section 4    Monitor commands
+    
+              errors  reported  will  be  a  copy  of  the disc controller status 
+              register.
+    
+              Command: DF   Disc Format to FLEX standard
+              Format: Disc format on drive Z Scratch disc in drive? T
+              Action:  Formats  a  disc  to  single sided, single density, fourty 
+              track  FLEX  standard (390 sectors free). Note that the date is not 
+              set, nor are the sectors tested.
+    
+              Command: TS   Test drive Stepping
+              Format: Test stepping on drive Z
+                      Hit any key to stop
+              Action:  Selects  and steps drive between track 00 and track 39 and 
+              back again.
+    
+              Command: TD   Test floppy Drive
+              Format: Random sector read on drive Z
+              Action: Reads random sectors on the drive. Note that double density 
+              disks will give false errors now and again.
+    
+              Command: RS   Read Sector
+              Format: Read sector on drive Z track YY sector YY to XXXX
+              Action: Reads a 256 byte sector from the logical drive to memory.
+    
+              Command: WS   Write sector
+              Format: Write sector to drive Z track YY sector YY from XXXX
+              Action: Writes a sector from memory to the drive.
+    
+              Command: BO   BOot FLEX
+              Format: Booting flex.....
+              Action:  Boot's FLEX from logical drive 0 by firstly looking in the 
+              directory  for  either  FLEX.SYS or FLEX.COR, if found it will load 
+              the file, append the console and disk jump tables, disable the date 
+              PROMPT, and set the TTYSET and ASN parameters before jumping to the 
+              FLEX  cold start point. Note that is not necessary to configure and 
+              link  a  version  of  FLEX  for  the  Microbox ][, any copy of FLEX 
+              regardless  of  the  machine it was designed to run on may be used. 
+              FLEX  is  not supplied with the Microbox ][. BO will work on single 
+              or double density, 40 or 80 track disks.
+    
+              Commands: BF   Boot from Floppy
+              Format: Booting FLEX.......
+              Action:  Boots FLEX as above, but from the drive TYPE 0 rather than 
+              logical type zero (ie from floppy 0). 
+    
+                 The  last  four  commands  are  concerned  with  testing memory, 
+              calculating branch displacements and the real time clock.
+    
+              Command: TM   Test Memory
+              Format: Test memory from XXXX to XXXX
+              Action:  Tests  memory  in  the range given. Any data in the memory 
+              will be overwritten.
+    
+              Command: CD Calculate Displacement
+              Format: Calculate displacement form XXXX to XXXX
+                      Long or short (L-S)? T
+              Action:  Calculates  the  two's  complement displacement for branch 
+              instructions. the result is in the form of a four digit number. For 
+    
+    
+    
+                                           PAGE 4.3
+    
+              Microbox ][ User Notes
+                                                    Section 4    Monitor commands
+    
+              short branches, the first two digits should be ignored.
+    
+              Command: DC   Display RTC contents
+              Format: Display clock contents
+              Action: Displays the RTC ram in the following way :-
+              xx xx xx xx xx xx xx xx xx xx xx xx xx xx         Clock + calendar
+              xx                                           Not used but reserved
+              xx                                           Serial port baud rates
+              xx xx xx xx                   Logical/physical drive mapping (0123)
+              xx xx xx xx xx xx xx xx xx xx xx                  TTYSET parameters
+              xx xx                                                ASN PARAMETERS
+              xx xx xx xx xx xx xx xx                         GDC init parameters
+              xx xx xx xx xx xx xx                          Not used but reserved
+              xx xx xx xx xx xx xx xx xx xx xx xx xx xx xx xx            Not used
+    
+              Command: MC   Modify RTC
+              Format: RTC examine and alter from YY
+              Action: Examine and modify RTC ram contents in the same way as ME.
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+                                           PAGE 4.4
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+                                           PAGE 5.0
+    
+              Microbox ][ User Notes
+                                                       Section 5    Flex commands
+    
+    
+              Section 5  Flex commands and software
+              -------------------------------------
+    
+              5.1 Introduction
+                  This  section  deals  explains the software on the floppy disc. 
+              This  software  consists  of  extra commands and data to add to the 
+              standard FLEX set of commands in order to use the hardware features 
+              of the Microbox ][.
+    
+              RAMDISK.CMD
+              This command formats the ramdisk (drive type 3). It will format the 
+              ram in one of three ways, (see memory maps) :-
+                        1)  If text screen and graphics screen are in use the 170 
+                        sectors will be free.
+                        2)   If  only  the text screen is in use then 390 sectors 
+                        will  be  free. Note that this represents the same format 
+                        as  a  single  density  single  sided 40 track floppy, so 
+                        sector copy programs may be used with this format (SCOPY)
+                        3)    If neither screens are in use then 500 sectors will 
+                        be free.
+              The program checks first to see if the ramdisk is already formatted 
+              first.
+    
+              BB.TXT & PROMDISK.TXT
+              These  two  EXEC command files will build a promdisk. BB copies the 
+              commands  from  floppy  to  ramdisk,  and  PROMDISK does the actual 
+              programming. Atypical command sequence would be :-
+    
+              EXEC BB:EXEC PROMDISK
+    
+              PROMCOPY.CMD
+              This  command  copies 64 sectors starting at the track/sector given 
+              from the ramdisk into the prom programming area (0000-3FFF hex).
+              ie PROMCOPY 0001 will copy the first 64 sectors.
+    
+              PROMPROG.CMD
+              This  command will program either 2764 or 27128 eproms. The data to 
+              be  placed  in the eprom should be in the area 0000-3FFF hex before 
+              this command is issued. The eprom is placed in position zero on the 
+              promboard.
+    
+              PROMREAD.CMD 
+              This  program  will  copy the contents of a 2764/128 eprom into the 
+              programming area.
+    
+              TIME.CMD
+              This  program gives the date/time from the RTC. It also updates the 
+              FLEX  date  registers,  and  so  should be included in your startup 
+              file.
+    
+              SETTIME.CMD
+              This program sets the RTC time and date. 
+    
+              ALLOCATE.CMD
+              In  the  Microbox  ][  there  is  no fixed relationship between the 
+              logical drive numbers of FLEX and the physical drives. The allocate 
+              command  sets  up  this  mapping.  Just typing allocate without any 
+    
+    
+    
+                                           PAGE 5.1
+    
+              Microbox ][ User Notes
+                                                       Section 5    Flex commands
+    
+              parameters  will give the current mapping. Typing allocate followed 
+              by a space and then four characters from the list :-
+                        0.....Drive type 0 is floppy 0
+                        1.....Drive type 1 is floppy 1
+                        2.....Drive type 2 is the epromdisk
+                        3.....Drive type 3 is the ramdisk
+              If  a  logical  drive  is  not to be allocated then a '.' should be 
+              used. ie
+              ALLOCATE 0123 
+              would assign FLEX drive zero to floppy zero, drive 1 to floppy one, 
+              the promdisk to drive two and the ramdisk to drive three.
+              ALLOCATE 20.3
+              would assign the promdisk to drive zero. floppy drive zero to drive 
+              one,  nothing  to drive two, and the ramdisk to drive 3. An extreme 
+              case would be :-
+              ALLOCATE 3333
+              This  has  assigned the ramdisk to all four FLEX logical drives! If 
+              the RTC ram should fail then the default allocation is (01..).
+    
+              ASNFIX.BIN &TTYFIX.BIN
+              These  two  files  should  be appended to your standard ASN.CMD and 
+              TTYSET.CMD  commands so that they will update the parameters stored 
+              in  the  RTC. In this way the TTYSET and ASN parameters will be set 
+              automatically  when  booting  FLEX  and  will remain set even after 
+              power down. To append these files use the following commands :-
+              RENAME TTYSET.CMD TTYSET.BIN
+              RENAME ASN.CMD ASN.BIN
+              APPEND TTYFIX.BIN TTYSET.BIN TTYSET.CMD
+              APPEND ASNFIX.BIN ASN.BIN ASN.CMD
+    
+              NEWDISK.CMD
+              This  program  is  the  standard FLEX newdisk program. Note that it 
+              will format single or double density disks.
+    
+              FLEXLINK.TXT & MONLINK.TXT
+              These  files  contain  all  of the FLEX and MON09 equates rmb's and 
+              jump  table  entries for use in your own programs. To use them in a 
+              program use the LIB psuedo op :-
+               OPT NOL               SWITCH OFF LISTING 
+               LIB FLEXLINK          LINK IN FLEXLINK AND MONLINK
+               OPT LIS               SWITCH ON LISTING
+              *
+               ORG $C100             ORIGIN IS FLEX TPA
+              *
+              START JSR [CLEARG]     JUST CLEAR THE GRAPHICS SCREEN
+               JMP FWARM             AND RETURN TO FLEX
+              *
+               END START             TRANSFER ADDRESS IS START
+              Note  that  the monitor subroutine call is done by an indirect JSR. 
+              The source of flexlink and monlink is presented in annex 7.
+    
+              DENSE.CMD
+              This program changes the screen format from 108 cols x 24 lines, to 
+              128 cols by 72 lines. This is ideal for spreadsheet programs etc.
+    
+              UNLINK.CMD
+              This program will return the screen format to normal after DENSE.
+    
+    
+    
+    
+                                           PAGE 5.2
+    
+              Microbox ][ User Notes
+                                                       Section 5    Flex commands
+    
+              PRINT.SYS
+              This is the printer driver for the parallel port.
+    
+              SPRINT.SYS
+              This is the printer driver for a printer using serial port 1.
+    
+              SCOPY.CMD 
+              This  is  a  fast disk copy program that will work for any two like 
+              sized disks.
+    
+              SDC.CMD
+              This  is a single disk copy program. Up to five files map be copied 
+              in one go. ie SDC fred.txt bert.bin thing.out george.bak widgit.bas
+    
+              STYIO.TXT & STY-MB2.TXT
+              These  two  files  are  the  drivers  to  adapt the word processing 
+              program  STYLOGRAPH to the Microbox ][. To adapt the program follow 
+              the procedure laid out in the STYLOGRAPH manual.
+    
+              DEMO.CMD
+              This is a graphics demo for the Microbox ][.
+    
+              TEXT.CMD
+              This program sets the display to the text screen.
+    
+              GRAPH.CMD
+              This program sets the display to the graphics screen.
+    
+              CLEARG.CMD
+              This  command  clears  the  graphics  screen.  The  ramdisk will be 
+              deallocated by this command.
+    
+              RECORD.CMD
+              This  program  will  accept bytes from serial port 1 and store them 
+              into  memory. The program assumes that the graphics display code of 
+              annex 8 is being used.
+    
+              INTERP.CMD
+              This  program  will  decode  the  graphics  display  code in memory 
+              (starting  from  0000),  and display the commands and parameters on 
+              the text output device.
+    
+              PLAY.CMD
+              This  program  will  display  the  graphics images generated by the 
+              graphics display code in memory.
+    
+              GRAPHICS.MAC
+              This  is  the  graphics display code macro set. (see appendix 8 for 
+              more details)
+    
+              CHARS.TXT
+              This  is  the source code of the default character set. This may be 
+              used  as  a  guide  to create your own character set. Note that the 
+              characters  are defined on a 5x8 matrix, and are stored sideways to 
+              conserve storage space.
+    
+    
+    
+    
+    
+    
+                                           PAGE 5.3
+    
+              Microbox ][ User Notes
+                                                       Section 5    Flex commands
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+                                           PAGE 5.4
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+                                           PAGE 6.0
+    
+              Microbox ][ User Notes
+                                                    Section 6   Programming guide
+    
+              Section 6  Programming guide
+              ----------------------------
+    
+              6.1 Introduction
+               This  section  documents  all  of the user callable subroutines in 
+              MON09 including the graphics package. To use these routines in your 
+              program  insert  a LIB flexlink directive at the beginning, and the 
+              use an indirect jump to subroutine whenever a routine is used. ie
+               opt nol
+               lib flexlink
+              opt lis
+                 .
+                 .
+               ldx #100
+               ldy #354
+               jsr [LINE]
+                 .
+                 .   etc etc
+    
+              6.2 monitor routines
+    
+              STATUS
+              * Status routine.
+              * Entry: no parameters.
+              * Exit:  (Z)=0 if character ready.
+    
+              INCH1
+              * Input character with no echo and  input.
+              * Entry: no parameters.
+              * Exit:  (A) = character.
+    
+              INCH
+              * Input character with echo INCH
+              * Entry: no parameters
+              * Exit: (A) = character.
+    
+              OUTCH
+              * Output char.
+              * Entry: (A) = character.
+              * Exit:  no change.
+    
+    
+              READ
+              * Read sector routine.
+              * Entry: (X) = address where sector is to be placed.
+              *        (A) = Track  number.
+              *        (B) = Sector number.
+              * Exit:  (B) = Error code  (z)=1 if no error.
+    
+              WRITE
+              * Write track routine.
+              *  Entry:  (X) = Address of area of memory from which the data will 
+              be taken.
+              *        (A) = Track number.
+              *        (B) = Sector number.
+              * Exit:  (B) = Error condition, (Z)=1 no an error.
+    
+              VERIFY
+    
+    
+    
+                                           PAGE 6.1
+    
+              Microbox ][ User Notes
+                                                    Section 6   Programming guide
+    
+              * Verify sector routine.
+              * Entry: no parameters.
+              * Exit:  (B) = Error condition (Z)=1 if no error.
+    
+              RST
+              * Restore drive to track 00.
+              * Entry: (X) = FCB address (3,X contains drive number).
+              * Exit:  (B) = Error condition, (Z)=1 if no error.
+    
+              DRV
+              * Select current drive.
+              * Entry: (X) = FCB address (3,X contains drive number).
+              * Exit:  (B) = Error condition, (Z)=0 and (c)=1 if error.
+              *        (B) = $0F if non existent drive.
+    
+              CHKRDY
+              * Check for drive ready.
+              * Entry: (X) = FCB address (3,X contains drive number)>
+              *  Exit:   (B)  =  Error condition, (Z)=0 AND (C)=1 if drive is not 
+              ready.
+    
+              QUICK
+              * Quick drive ready check.
+              * Entry: (X) = FCB address (3,X contains drive number).
+              * Exit:  (B) = Error condition, (Z)=0 AND (c)=1 if drive not ready.
+    
+              DINIT
+              * Init (cold start).
+              * Entry: no parameters.
+              * Exit: no change.
+    
+              WARM
+              * Warm start.
+              * Entry: no parameters.
+              * Exit: no change.
+    
+              SEEK
+              * Seek track.
+              * Entry: (A) = Track number.
+              *        (B) = Sector number.
+              * Exit:  (B) = Error condition, (Z)=1 if no error.
+    
+              PCRLF
+              * Print a CR followed by a LF.
+              * Entry: no parameters.
+              * Exit: (A) destroyed.
+    
+              PDATA1
+              * Print character string .
+              * Entry: (X) = Pointer to character string.
+              * Exit:  (X) = Pointer to end of string token Hex(04).
+              *        (A)   Destroyed.
+    
+              PSTRNG
+              * Print character string preceded by a CR,LF.
+              * Entry: (X) = Pointer to character string.
+              * Exit:  (X) = Pointer to end of string token Hex(04).
+              *        (A) = Destroyed.
+    
+    
+    
+                                           PAGE 6.2
+    
+              Microbox ][ User Notes
+                                                    Section 6   Programming guide
+    
+    
+              PRINTA
+              * Print the A reg.
+              * Entry : (A) = Data to be printed.
+    
+              PRINTX
+              * Print the X reg.
+              * Entry : (X) = Data to be printed.
+    
+              DELAY
+              * Delay routine.
+              * Entry: (X) = Delay time in milli seconds.
+              * Exit:  no change.
+    
+              BADDR
+              * Build a four hex digit address.
+              * Entry: no parameters.
+              * Exit:  (X) = Address.
+              *        (A) = Destroyed.
+              *        (B) = Destroyed.
+    
+              BYTE
+              * Get a two digit hex byte.
+              * Entry: no parameters.
+              * Exit:  (A) = Byte.
+    
+              OUTHL
+              * Print left hex digit.
+              * Entry: (A) = Byte containing digit.
+              * Exit:  (A) = Byte containing shifted digit.
+    
+              OUTHR
+              * Output right hex digit.
+              * Entry: (A) = Byte containing digit.
+              * Exit:  (A) = Ascii coded digit.
+    
+              INHEX
+              * Input a valid hex character (If not hex then backspace).
+              * Entry: no parameters.
+              * Exit:  (A) = Valid hex char.
+    
+              OUT2H
+              OUT2HA
+              OUT4HS
+              OUT2HS
+              * Hex print routines.
+              * Entry: (X) = Pointer to a one or two byte hex number.
+              * Exit:  (A) = Destroyed.
+    
+              OUTS
+              * Output a space.
+              * Entry: no parameters.
+              * Exit   (A) = Destroyed.
+    
+              RANDOM
+              * Random number generator.
+              * Entry: no parameters.
+              * Exit:  (A) = Random number from 0 to 255.
+    
+    
+    
+                                           PAGE 6.3
+    
+              Microbox ][ User Notes
+                                                    Section 6   Programming guide
+    
+    
+              GETTIM
+              * Get time string.
+              * Entry : (X) points to ten byte data area.
+              * Exit : Date and time placed in data area.
+    
+              GETRTC
+              * Get a byte from the RTC.
+              * Entry : (B) = RTC address.
+              * Exit : (A) = Data.
+    
+              PUTTIM
+              * Put time string.
+              * Entry : (X) = Pointer to ten byte data area.
+    
+              PUTRTC
+              * Send a byte to the RTC.
+              * Entry : (B) = RTC address  (A) = Data
+    
+              BLEEP
+              * Beep for 100ms.
+    
+              6.3 Graphics routines
+    
+              GCOM
+              * Send GDC command.
+              * Entry: (A) = GDC command
+              * Exit: No change.
+    
+              GPRM
+              * Send GDC parameter.
+              * Entry: (A) = GDC parameter
+              * Exit: No change.
+    
+              GPRMI
+              * Get a parameter from GDC.
+              * Entry: No parameters.
+              * Exit: (A) = Parameter byte
+    
+              MASK
+              * Set mask.
+              * Entry: (X) = Mask value
+              * Exit: No change.
+    
+              SETPEN
+              * Define line profile and 'pen' type.
+              * Entry: (A) = Pen type  (0=replace 1=complement 2=reset 3=set)
+              *        (X) = Line profile
+              * Exit: No change.
+    
+              SETPAT
+              * Set up graphics pattern in parameter ram.
+              * Entry: (X) = Pointer to eight byte pattern
+              * Exit: No change.
+    
+              FIGSF
+              * Start figure drawing using parameter set in ram.
+              * Entry: (B) = Number of parameter bytes.
+    
+    
+    
+                                           PAGE 6.4
+    
+              Microbox ][ User Notes
+                                                    Section 6   Programming guide
+    
+              * Exit: No change.
+    
+              FIGSG
+              * Start graphics drawing using parameter set in ram. 
+              * Entry: (B) = Number of parameter bytes.
+              * Exit: No change
+    
+              SETPAR
+              * Set up display partitions in GDC.
+              * Entry: (X) = Start address of partition 1
+              *        (D) = Start address of partition 2
+              *        (Y) = Number of lines in partition 1
+              *        (U) = Number of lines in partition 2
+              * Exit: No change.
+    
+              SYNC
+              * Wait until vertical blanking period.
+              * Entry: No parameters.
+              * Exit: No change.
+    
+              SETCRG
+              * Set graphics cursor.
+              * Entry: (X) = x coord (0<=x<=767)
+              *        (Y) = y coord (0<=y<=575)
+              * Exit: No change.
+    
+              GETCRG
+              * Read graphics cursor.
+              * Entry: No parameters.
+              * Exit: (X) = x coord of cursor
+              *       (Y) = y coord of cursor
+    
+              OFF
+              * Switch off display.
+              * Entry: No parameters.
+              * Exit: No change.
+    
+              ON
+              * Switch on display.
+              * Entry: No parameters.
+              * Exit: No change.
+    
+              GRAPH
+              * Set display to graphics.
+              * Entry: No parameters.
+              * Exit: No change.
+    
+              MODE
+              * Set GDC mode.
+              * Entry: (A) = New mode byte
+              *        (B) = Read flag
+              * Exit: If (B) <> 0 then (A) = New mode byte
+              *       If  (B) = 0 then (A) = OLD mode byte
+    
+              ZOOM
+              * Set graphics zoom.
+              * Entry: (A) = New zoom byte
+              *        (B) = Read flag
+    
+    
+    
+                                           PAGE 6.5
+    
+              Microbox ][ User Notes
+                                                    Section 6   Programming guide
+    
+              * Exit: If (B) <> 0 then (A) = New zoom byte
+              *       If  (B) = 0 then (A) = OLD zoom byte
+    
+              FILL
+              * Area fill.
+              * Entry: (A) = Initial drawing direction
+              *        (X) = Number of pixels in the initial direction
+              *        (Y) = Number of pixels in the perpendicular direction
+              * Exit: No change.
+    
+              CLEARG
+              * Clear graphics screen.
+              * Entry: No parameters.
+              * Exit: No change.
+    
+              CLEARX
+              * Clear gdc ram from current cursor.
+              * Entry: (A) = Drawing mode (0=replace 1=complement 2=reset 3=set)
+              *        (X) = Number of words to be cleared
+              * Exit: No change
+    
+              GDCINIT
+              * Init display.
+              * Entry: No parameters.
+              * Exit: No change.
+    
+              POINT
+              * Plot a point at the current  cursor postion.
+              * Entry: No parameters.
+              * Exit: No change.
+    
+              LINE
+              * Plot a line from the current cursor postion.
+              * Entry: (X) = x coord
+              *        (Y) = * Entry: coord
+              * Exit: No change.
+    
+              RECT
+              * Plot a rectangle.
+              * Entry: (A) = Intial drawing direction
+              *        (X) = Length of side in the initial direction
+              *        (Y) = Length of side in th perpendicular direction
+              * Exit: No change.
+    
+              CIRCLE
+              * Plot a circle at the current cursor location.
+              * Entry: (A) = radius of circle  (0<A<127)
+              * Exit: No change.
+    
+              SETCRT
+              * Set text cursor.
+              * Entry: (X) = Cursor word address
+              * Exit: No change.
+    
+              GETCRT
+              * Get text cursor.
+              * Entry: No parameters.
+              * Exit: (X) = Cursor word address
+    
+    
+    
+                                           PAGE 6.6
+    
+              Microbox ][ User Notes
+                                                    Section 6   Programming guide
+    
+    
+              TEXT
+              * Set display to text.
+              * Entry: No parameters.
+              * Exit: No change.
+    
+              CLEART
+              * Clear text screen.
+              * Entry: No parameters.
+              * Exit: No change.
+    
+              GDCOUT
+              * Put ascii character to screen.
+              * Entry: (A) = Character (control codes are given in appendix 6)
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+                                           PAGE 6.7
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+                                           PAGE A1.0
+    
+              Microbox ][ User Notes
+                                                          Appendix 1   Parts list
+    
+    
+    
+             -------------------------------------------------------------------
+             | IC  |  FUNCTION    |  TYPE  | QNT | PINS | +5V | 0V | SUPPLIER  |
+             -------------------------------------------------------------------
+             |IC1  |   PROCESSOR  | 68B09E |  1  |  40  |  7  | 1  |     A     |
+             |IC2  |   SAM        | 74LS783|  1  |  40  |  20 | 1  |     B     |   
+             |IC3  |   EPROM      | 2764   |  1  |  28  |  28 | 14 |     A     |   
+             |IC4  |   BUFFER     | 81LS95 |  1  |  20  |  20 | 10 |     A     |   
+             |IC5-12   RAM        | 4164   |  8  |  16  |  8  | 16 |     A     |   
+             |IC13 |   BUFFER     | 74LS245|  1  |  20  |  20 | 10 |     A     |   
+             |IC14 |   DECODE     | 74LS00 |  1  |  14  |  14 | 7  |     A     |   
+             |IC15 |   DECODE     | 7404   |  1  |  14  |  14 | 7  |     A     |   
+             |IC16 |   DECODE     | 74LS139|  1  |  16  |  16 | 8  |     A     |   
+             |IC17 |   DECODE     | 74LS138|  1  |  16  |  16 | 8  |     A     |   
+             |IC18 |   BUFFER     | 74LS244|  1  |  20  |  20 | 10 |     A     |   
+             |IC19 |   PIA        | 6821   |  1  |  40  |  20 | 1  |     A     |   
+             |IC20 |   ACIAC      | WD2123 |  1  |  40  |  30 | 10 |     C     |   
+             |IC21 |   DECODE     | 74LS02 |  1  |  14  |  14 | 7  |     A     |   
+             |IC22 |   RS232-XMIT | 1488   |  1  |  14  |  -- | 7  |     A     |   
+             |IC23 |   RS232-RCVE | 1489   |  1  |  14  |  14 | 7  |     A     |   
+             |IC24 |   FDC        | WD1770 |  1  |  28  |  15 | 14 |     C     |   
+             |IC25 |   BUFFER     | 7407   |  1  |  14  |  14 | 7  |     A     |   
+             |IC26 |   BUFFER     | 7406   |  1  |  14  |  14 | 7  |     A     |   
+             |IC27 |   RTC        | 146818 |  1  |  24  |  24 | 12 |     D     |   
+             |IC28 |   PIA        | 8255   |  1  |  40  |  26 | 7  |     A     |   
+             |IC29 |   COUNTER    | 74LS393|  1  |  44  |  44 | 7  |     A     |   
+             |IC30-33  EPROM      | 27128  |  4  |  28  |  28 | 14 |     A     |   
+             |IC34 |   GDC        | NEC7220|  1  |  40  |  40 | 20 |     D     |   
+             |IC35 |   LATCH      | 74LS175|  1  |  16  |  16 | 8  |     A     |   
+             |IC36 |   BUFFER     | 74LS04 |  1  |  14  |  14 | 7  |     A     |   
+             |IC37 |   TIMING     | 74LS194|  1  |  16  |  16 | 8  |     A     |   
+             |IC38 |   TIMING     | 74LS00 |  1  |  14  |  14 | 7  |     A     |   
+             |IC39 |   TIMING     | 74LS74 |  1  |  14  |  14 | 7  |     A     |   
+             |IC40 |   COUNTER    | 74LS163|  1  |  16  |  16 | 8  |     A     |   
+             |IC41 |   TIMING     | 74LS21 |  1  |  14  |  14 | 7  |     A     |   
+             |IC42 |   TIMING     | 74LS74 |  1  |  14  |  14 | 7  |     A     |   
+             |IC43,44  MULTIPLEX  | 74LS257|  2  |  16  |  16 | 8  |     A     |   
+             |IC45,46  BUFFER     | 74LS244|  2  |  20  |  20 | 10 |     A     |   
+             |IC47-62  RAM        | 4164   |  16 |  16  |  8  | 16 |     A     |   
+             |IC63-64  SHIFT REG  | 74LS299|  2  |  20  |  20 | 10 |     A     |   
+             |IC100|   DECODE     | 74LS85 |  1  |  16  |  16 | 8  |     A     |   
+             |IC102|   LATCH      | 74LS273|  1  |  20  |  20 | 10 |     A     |   
+             |IC103,104 BUFFER    | 74LS245|  2  |  20  |  20 | 10 |     A     |   
+             -------------------------------------------------------------------
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+                                           PAGE A1.1
+    
+              Microbox ][ User Notes
+                                                          Appendix 1   Parts list
+    
+              --------------------------------  --------------------------------
+              |  ID  |    TYPE    | SUPPLIER |  |  ID  |    TYPE    | SUPPLIER |
+              --------------------------------  --------------------------------
+              |  Q1  |   BC108    |    A     |  |  C1  |  56p POLY  |    A     |
+              |  Q2  |   BC109    |    A     |  |  C2  |  47u 6vTANT|    A     |
+              |  Q3,4|  2N2369A   |    A     |  |  C3  |  .1u 6vTANT|    A     |
+              |      |            |          |  |  C4  |  .1u CER   |    A     |
+              | ZD1  |6V8 TRANSORB|    R     |  |  C5  |  10n POLY  |    A     |
+              |      | RS 283-255 |          |  | C6-8 |  27p CER   |    A     |
+              | D1-5 |  5x1N4148  |    A     |  |  C9  |  5n0 POLY  |    A     |
+              | D6,7 |  2xOA91    |    A     |  |C10-13| 4x.1u CER  |    A     |
+              |      |            |          |  |C14-29|16x.1u CER  |    A     |
+              |  X1  | 16MHZ XTAL |    A     |  |C30-34| 5x.1u CER  |    A     |
+              |  X2  |32768HZ XTAL|    A     |  |  TC1 | 15p TRIM   |    A     |
+              |  X4  |1.843MHZ XTAL    A     |  |      |            |          |
+              |      |            |          |  |  S1  | SOUNDER 5v |    R     |
+              |  R1  |   10R      |    A     |  |      | RS 249-794 |          |
+              | R2-15| 14x22R     |    A     |  |  SW1 | 4 WAY DIL  |    R     |
+              |  R16 |   75R      |    A     |  |      | RS 337-548 |          |
+              |  R17 |   150R     |    A     |  |  SW2 | SPPB RESET |    R     |
+              |R18-23|  6x330R    |    A     |  |      | RS 337-598 |          |
+              |R24-40| 17x1K0     |    A     |  |  B1  | NICAD 3v6  |    R     |
+              |  R41 |   1K2      |    A     |  |      | RS 591-477 |          |
+              |R42,43| 2x1K5      |    A     |  |      |            |          |
+              |  R44 |   2K0      |    A     |  |  P1  | 40 WAY IDC |    A     |
+              |R45,46| 2x2K2      |    A     |  |  P2  |  BNC PLUG  |    R     |
+              |R47-51| 5x10K      |    A     |  |      | RS 455-680 |          |
+              |  R52 |   100K     |    A     |  | P3,4 |2x20 WAY IDC|    A     |
+              |  R53 |   150K     |    A     |  | P5,6 |2x25 WAY 'D'|    R     |
+              |R54,55| 2x1M0      |    A     |  |      | RS 467-891 |          |
+              |  R56 |   5M6      |    A     |  |  P7  | POWER CONN |    R     |
+              |  R57 |1K RES PACK |    R     |  |      | RS 423-762 |          |
+              |      | RS 140-158 |          |  |  P8  | 34 WAY IDC |    A     |
+              |  R58 |10K RES PACK|    R     |  |  P9  | PCB PLUG   |    R     |
+              |      | RS 140-186 |          |  |      | RS 468-096 |          |
+              |      |            |          |  |  P10 | PCB SOCKET |    R     |
+              |  S   |  6x 40 way |          |  |      | RS 467-649 |          |
+              |  O   |  6x 28 way |          |  |P11,12| PCB PLUG   |    R     |
+              |  C   |     24 way |          |  |      | RS 467-560 |          |
+              |  K   |  10x20 way |          |  |      |            |          |
+              |  E   |  32x16 way |          |  |      |            |          |
+              |  T   |  13x14 way |          |  |      |            |          |
+              |  S   |            |          |  |      |            |          |
+              ------------------------------------------------------------------
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+                                           PAGE A1.2
+    
+              Microbox ][ User Notes
+                                                          Appendix 1   Parts list
+    
+                                           Suppliers
+                                           ---------
+    
+                  Most  of  the  components  are  common and easy to get hold of. 
+              However, some suppliers are listed here for convenience.
+    
+                                  (A)
+                                  HEMMINGS ELECTRONICS LTD
+                                  16 BRAND STREET
+                                  HITCHIN
+                                  HERTS   SG5 1JE
+                                  PHONE 0462 33031
+    
+                                  (B) 
+                                  LOCK DISTRIBUTION
+                                  NEVILLE STREET
+                                  OLDHAM
+                                  PHONE 061 652 0431
+    
+                                  (C)
+                                  PRONTO ELECTRONICS SYSTEMS LTD
+                                  466-478 CRANBROOK ROAD
+                                  GANTS HILL
+                                  ILFORD
+                                  ESSEX  IG2 6LE
+                                  PHONE 01 554 6222
+    
+                                  (D)
+                                  SEMI COMPONENTS LTD
+                                  VINE HOUSE
+                                  104 ASHLEY ROAD
+                                  WALTON ON THAMES
+                                  SURREY KT12 1HP
+                                  PHONE 0932 241866
+    
+                                  (R)
+                                  RS COMPONENTS LTD
+                                  PO BOX 427
+                                  13-17 EPWORTH STREET
+                                  LONDON EC2P 2HA
+                                  PHONE 01 253 3040
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+                                           PAGE A1.3
+    
+              Microbox ][ User Notes
+                                                          Appendix 1   Parts list
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+                                           PAGE A1.4
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+                                           PAGE A4.0
+    
+              Microbox ][ User Notes
+                                                  Appendix 4   Connector diagrams
+    
+              Note: A '*' denotes an active low signal.
+    
+                            ---------------------------------------
+                            |           Expansion buss            |
+                            ---------------------------------------
+                            |PIN NUMBER |  TOP ROW   | BOTTOM ROW |
+                            ---------------------------------------
+                            |    1      |    +5v     |    +5v     |
+                            |    2      |    GND     |    GND     |
+                            |    3      |    BA0     |    IC19 P6 |
+                            |    4      |    *BRST   |    BA1     |
+                            |    5      |    BD1     |    BD0     |
+                            |    6      |    BD3     |    BD2     |
+                            |    7      |    BD5     |    BD4     |
+                            |    8      |    BD7     |    BD6     |
+                            |    9      |    BA2     |    BR/*W   |
+                            |    10     |    BA4     |    BA3     |
+                            |    11     |    16MHZ   |    BE      |
+                            |    13     |    *WDS    |    Q       |
+                            |    14     |    RTC     |    LPEN    |
+                            |    15     |    *I/O1   |    *RDS    |
+                            |    16     |    *NMI    |    RST     |
+                            |    17     |    *FIRQ   |    *IRQ    |
+                            |    18     |    *TTLVID |    VSYNC   |
+                            |    19     |    GND     |    GND     |
+                            |    20     |    -12v    |    +12v    |
+                            ---------------------------------------
+    
+    
+    
+    
+                            ---------------------------------------
+                            |              Printer                |
+                            ---------------------------------------
+                            |PIN NUMBER |  TOP ROW   | BOTTOM ROW |
+                            ---------------------------------------
+                            |    1      |    D0      |    BUSY    |
+                            |    2      |    D1      |    GND     |
+                            |    3      |    D2      |    GND     |
+                            |    4      |    D3      |    GND     |
+                            |    5      |    D4      |    GND     |
+                            |    6      |    D5      |    GND     |
+                            |    7      |    D6      |    GND     |
+                            |    8      |    D7      |    GND     |
+                            |    9      |    ACK     |    GND     |
+                            |    10     |    STROBE  |    +5v     |
+                            ---------------------------------------
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+                                           PAGE A4.1
+    
+              Microbox ][ User Notes
+                                                  Appendix 4   Connector diagrams
+    
+                            ---------------------------------------
+                            |             Keyboard                |
+                            ---------------------------------------
+                            |PIN NUMBER |  TOP ROW   | BOTTOM ROW |
+                            ---------------------------------------
+                            |    1      |    D6      |    +5v     |
+                            |    2      |    STROBE  |    GND     |
+                            |    3      |    D4      |    GND     |
+                            |    4      |    D5      |    GND     |
+                            |    5      |    D2      |    GND     |
+                            |    6      |    D3      |    GND     |
+                            |    7      |    D0      |    GND     |
+                            |    8      |    D1      |    GND     |
+                            |    9      |    --      |    GND     |
+                            |    10     |    *RST    |    GND     |
+                            ---------------------------------------
+    
+    
+                                  --------------------------
+                                  |        Promboard       |
+                                  --------------------------
+                                  |PIN NUMBER |   SIGNAL   |
+                                  --------------------------
+                                  |    1      |    PA4     |
+                                  |    2      |    PA3     |
+                                  |    3      |    PA5     |
+                                  |    4      |    PA2     |
+                                  |    5      |    PA6     |
+                                  |    6      |    PA1     |
+                                  |    7      |    PA7     |
+                                  |    8      |    PA0     |
+                                  |    9      |    GND     |
+                                  |    10     |    PC7     |
+                                  |    11     |    PC6     |
+                                  |    12     |    PC5     |
+                                  |    13     |    PC4     |
+                                  |    14     |    PC0     |
+                                  |    15     |    +5v     |
+                                  |    16     |    PC1     |
+                                  |    17     |    PB7     |
+                                  |    18     |    PC2     |
+                                  |    19     |    PB6     |
+                                  |    20     |    PC3     |
+                                  |    21     |    PB5     |
+                                  |    22     |    PB0     |
+                                  |    23     |    PB4     |
+                                  |    24     |    PB1     |
+                                  |    25     |    PB3     |
+                                  |    26     |    PB2     |
+                                   -------------------------
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+                                           PAGE A4.2
+    
+              Microbox ][ User Notes
+                                                  Appendix 4   Connector diagrams
+    
+                                  --------------------------
+                                  |        RS 232          |
+                                  --------------------------
+                                  |PIN NUMBER |   SIGNAL   |
+                                  --------------------------
+                                  |    1      |    GND     |
+                                  |    2      |    XMIT    |
+                                  |    3      |    RCVE    |
+                                  |    4      |    *RTS    |
+                                  |    5      |    *CTS    |
+                                  |    7      |    GND     |
+                                  |    11     |    +5v     |
+                                  |    25     |    -12v    |
+                                  --------------------------
+    
+    
+                                  --------------------------
+                                  |  Option output (6847)  |
+                                  --------------------------
+                                  |PIN NUMBER |   SIGNAL   |
+                                  --------------------------
+                                  |    1      |    BD0     |
+                                  |    2      |    BD1     |
+                                  |    3      |    BD2     |
+                                  |    4      |    BD3     |
+                                  |    5      |    BD4     |
+                                  |    6      |    BD5     |
+                                  |    7      |    BD6     |
+                                  |    8      |    BD7     |
+                                  |    9      |    *WDSGDC |
+                                  |    10     |    +5v     |
+                                  |    11     |    GND     |
+                                  |    12     |    GND     |
+                                  |    13     |    A7      |
+                                  |    14     |    A0      |
+                                  |    15     |    A6      |
+                                  |    16     |    A1      |
+                                  |    17     |    A5      |
+                                  |    18     |    A2      |
+                                  |    19     |    A4      |
+                                  |    20     |    A3      |
+                                  |    21     |    VCLK    |
+                                  |    22     |    DA0     |
+                                  |    23     |    *HS     |
+                                  |    24     |    *CAS    |
+                                  --------------------------
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+                                           PAGE A4.3
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+                                           PAGE A6.0
+    
+              Microbox ][ User Notes
+                                              Appendix 6   Terminal control codes
+    
+    
+    
+              -------------------------------------------------------------------
+              | DECIMAL | HEX | ASCII |                FUNCTION                 |
+              -------------------------------------------------------------------
+              |    0    |  00 |   @   |      NULL                               |
+              |    1    |  01 |   A   |      -                                  |
+              |    2    |  02 |   B   |      -                                  |
+              |    3    |  03 |   C   |      -                                  |
+              |    4    |  04 |   D   |      EOT                                |
+              |    5    |  05 |   E   |      -                                  |
+              |    6    |  06 |   F   |      -                                  |
+              |    7    |  07 |   G   |      BELL                               |
+              |    8    |  08 |   H   |      BACKSPACE                          |
+              |    9    |  09 |   I   |      CURSOR RIGHT                       |
+              |    10   |  0A |   J   |      LINE FEED (CURSOR DOWN)            |
+              |    11   |  0B |   K   |      CURSOR UP                          |
+              |    12   |  0C |   L   |      CLEAR SCREEN                       |
+              |    13   |  0D |   M   |      RETURN                             |
+              |    14   |  0E |   N   |      MOVE CURSOR   (SEE NOTE)           |
+              |    15   |  0F |   O   |      HOME                               |
+              |    16   |  10 |   P   |      SCREEN ON                          |
+              |    17   |  11 |   Q   |      SCREEN OFF                         |
+              |    18   |  12 |   R   |      CURSOR ON                          |
+              |    19   |  13 |   S   |      CURSOR OFF                         |
+              |    20   |  14 |   T   |      SOLID CURSOR                       |
+              |    21   |  15 |   U   |      BOX CURSOR                         |
+              |    22   |  16 |   V   |      ITALIC ON                          |
+              |    23   |  17 |   W   |      ITALIC OFF                         |
+              |    24   |  18 |   X   |      -                                  |
+              |    25   |  19 |   Y   |      -                                  |
+              |    26   |  1A |   Z   |      ERASE LINE                         |
+              |    27   |  1B |   -   |      ESCAPE                             |
+              |    28   |  1C |   -   |      -                                  |
+              |    29   |  1D |   -   |      -                                  |
+              |    30   |  1E |   -   |      -                                  |
+              |    31   |  1F |   -   |      -                                  |
+              -------------------------------------------------------------------
+    
+              NOTE:  Move  cursor  has two parameters. The control code should be 
+              followed  by  two  bytes, row and column. The home position is 0,0. 
+              The  value $20 should be added to each value. ie to move the cursor 
+              to row 4 col 7, send the byte sequence  $0E,$24,$27 .
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+                                           PAGE A6.1
+    
+              Microbox ][ User Notes
+                                              Appendix 6   Terminal control codes
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+                                           PAGE A6.2
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+                                           PAGE A7.0
+    
+              Microbox ][ User Notes
+                                          Appendix 7  Flexlink and Monlink source
+    
+                       *
+                       *********************************************
+                       * This file contains the subroutine and     *
+                       * storage location equates for FLEX. To     *
+                       * use this file insert the following lines  *
+                       * of code in your program :-                *
+                       *          OPT NOL                          *
+                       *          LIB FLEXLINK                     *
+                       *          OPT LIS                          *
+                       * For details of the routines and           *
+                       * parameters see the FLEX programmers guide *
+                       *********************************************
+                       *
+                       * Storage locations.
+                 C080  LINBUF  EQU    $C080     Line buffer start.
+                 CC00  TTYBS   EQU    $CC00     TTYSET backspace character.
+                 CC0B  SYSDRV  EQU    $CC0B     System drive number.
+                 CC0C  WRKDRV  EQU    $CC0C     Working drive number.
+                 CC0E  MONTH   EQU    $CC0E     FLEX system date.
+                 CC0F  DAY     EQU    $CC0F
+                 CC10  YEAR    EQU    $CC10
+                 CC2B  MEMEND  EQU    $CC2B     Memory end pointer.
+                       *
+                       * User callable routines.
+                 CD00  FCOLD   EQU    $CD00     Cold start.
+                 CD03  FWARM   EQU    $CD03     Warm start.
+                 CD06  RENTER  EQU    $CD06     Main loop entry point.
+                 CD48  DOCMND  EQU    $CD48     Call dos as a subroutine.
+                 CD4E  STAT    EQU    $CD4E     Check terminal status.
+                 CD09  FINCH   EQU    $CD09     Input character.
+                 CD0C  INCH2   EQU    $CD0C     Input character switched.
+                 CD0F  FOUTCH  EQU    $CD0F     Output character.
+                 CD12  OUTCH2  EQU    $CD12     Output character switched.
+                 CD15  GETCHR  EQU    $CD15     Get a char (main routine).
+                 CD18  PUTCHR  EQU    $CD18     Put a char (main routine).
+                 CD1B  INBUFF  EQU    $CD1B     Input into line buffer.
+                 CD1E  FPSTRNG EQU    $CD1E     Print a char string.
+                 CD21  CLASS   EQU    $CD21     Classify a char.
+                 CD24  FPCRLF  EQU    $CD24     Print a crlf.
+                 CD27  NXTCH   EQU    $CD27     Get next buffer char.
+                 CD2A  RSTIO   EQU    $CD2A     Restore i/o vectors.
+                 CD2D  GETFIL  EQU    $CD2D     Get file spec.
+                 CD30  LOAD    EQU    $CD30     File loader.
+                 CD33  SETEXT  EQU    $CD33     Set file extension.
+                 CD39  OUTDEC  EQU    $CD39     Output decimal number.
+                 CD3C  OUTHEX  EQU    $CD3C     Output hexadecimal number.
+                 CD45  OUTADR  EQU    $CD45     Output hex address.
+                 CD3F  RPTERR  EQU    $CD3F     Report error.
+                 CD42  GETHEX  EQU    $CD42     Get hexadecimal number.
+                 CD48  INDEC   EQU    $CD48     Input decimal number.
+                       *
+                       * Monitor definitions and equates.
+                 E000  PROM    EQU    $E000     Eprom start address.
+                 DE00  RAM     EQU    $DE00     Scratch ram + stack space.
+                 FF00  IO      EQU    $FF00     I/O base address.
+                 DE6F  SSTACK  EQU    (RAM+127-16) Top of system stack.
+                 DF80  SCRAT   EQU    (RAM+384) Start of scratch space.
+                       *
+    
+    
+    
+                                           PAGE A7.1
+    
+              Microbox ][ User Notes
+                                          Appendix 7  Flexlink and Monlink source
+    
+                       * User callable subroutines. Use indirect JSR's to call.
+                 F000  RESET   EQU    $F000     Cold start.
+                 F002  CONTRL  EQU    $F002     Warm start. 
+                 F004  INCH1   EQU    $F004     Input char without an echo .
+                 F006  INCH    EQU    $F006     Input char .
+                 F008  STATUS  EQU    $F008     Check for char.
+                 F00A  OUTCH   EQU    $F00A     Output char.
+                 F00C  PDATA1  EQU    $F00C     Print string terminated by 
+              hex(04).
+                 F00E  PCRLF   EQU    $F00E     Print a cr followed by a lf.
+                 F010  PSTRNG  EQU    $F010     PCRLF followed by PDATA1.
+                 F012  INIT    EQU    $F012     Init active device.
+                 F014  DELAY   EQU    $F014     Delay for (XREG) m/S.
+                 F016  BADDR   EQU    $F016     Get a four digit hex address into 
+              X.
+                 F018  BYTE    EQU    $F018     Get a two hex digit number into 
+              A.
+                 F01A  INHEX   EQU    $F01A     Get a one digit hex char into A.
+                 F01C  OUT2H   EQU    $F01C     Output two hex chars pointed to 
+              by X.
+                 F01E  OUT2HS  EQU    $F01E     OUT2H plus a space.
+                 F020  OUT4HS  EQU    $F020     Output four hex chars etc.
+                 F022  OUTHR   EQU    $F022     Output right hex digit in A.
+                 F024  OUTHL   EQU    $F024     Output left hex digit in A.
+                 F026  OUTS    EQU    $F026     Output a space.
+                 F028  RANDOM  EQU    $F028     Returns a random number in the 
+              range 0-255.
+                 F02A  PRINTA  EQU    $F02A     Print the contents of A.
+                 F02C  PRINTX  EQU    $F02C     Print the contents of X.
+                 F02E  READ    EQU    $F02E     Read sector.
+                 F030  WRITE   EQU    $F030     Write sector.
+                 F032  VERIFY  EQU    $F032     Verify sector.
+                 F034  RST     EQU    $F034     Restore to track 00.
+                 F036  DRV     EQU    $F036     Select drive.
+                 F038  CHKRDY  EQU    $F038     Check for drive ready.
+                 F03A  QUICK   EQU    $F03A     Quick check for drive ready.
+                 F03C  DINIT   EQU    $F03C     Drive cold start.
+                 F03E  WARM    EQU    $F03E     Drive warm start.
+                 F040  SEEK    EQU    $F040     Seek to track.
+                 F042  GETTIM  EQU    $F042     Get time string from RTC.
+                 F044  PUTTIM  EQU    $F044     Put time string to RTC.
+                 F046  GETRTC  EQU    $F046     Get a byte from the RTC.
+                 F048  PUTRTC  EQU    $F048     Put a byte to the RTC.
+                 F04A  BEEP    EQU    $F04A     Sound a 1ms tone.
+                 F04C  GCOM    EQU    $F04C     Send command to GDC.
+                 F04E  GPRM    EQU    $F04E     Send parameter to GDC.
+                 F050  GPRMI   EQU    $F050     Get parameter from GDC.
+                 F052  MASK    EQU    $F052     Load mask register.
+                 F054  SETPEN  EQU    $F054     Define drawing mode.
+                 F056  SETPAT  EQU    $F056     Define graphics pattern.
+                 F058  FIGSF   EQU    $F058     Start figure drawing.
+                 F05A  FIGSG   EQU    $F05A     Start graphics drawing.
+                 F05C  SETPAR  EQU    $F05C     Define display partitions.
+                 F05E  SETCRG  EQU    $F05E     Set graphics cursor.
+                 F060  GETCRG  EQU    $F060     Get graphics cursor.
+                 F062  SETCRT  EQU    $F062     Set text cursor.
+                 F064  GETCRT  EQU    $F064     Get text cursor.
+                 F066  OFF     EQU    $F066     Turn display off.
+    
+    
+    
+                                           PAGE A7.2
+    
+              Microbox ][ User Notes
+                                          Appendix 7  Flexlink and Monlink source
+    
+                 F068  ON      EQU    $F068     Turn display on.
+                 F06A  GRAPH   EQU    $F06A     Set display to graphics.
+                 F06C  TEXT    EQU    $F06C     Set display to text
+                 F06E  MODE    EQU    $F06E     Set GDC mode.
+                 F070  ZOOM    EQU    $F070     Set zoom factors.
+                 F072  FILL    EQU    $F072     Area fill routine.
+                 F074  CLEARX  EQU    $F074     Clear X words of display memory.
+                 F076  CLEARG  EQU    $F076     Clear graphics display.
+                 F078  CLEART  EQU    $F078     Clear text display.
+                 F07A  GDCINIT EQU    $F07A     Initialise GDC.
+                 F07C  GDCOUT  EQU    $F07C     Output a character.
+                 F07E  INKEY   EQU    $F07E     Get a character from the 
+              keyboard.
+                 F080  POINT   EQU    $F080     Plot a point.
+                 F082  LINE    EQU    $F082     Plot a line.
+                 F084  RECT    EQU    $F084     Plot a rectangle.
+                 F086  CIRCLE  EQU    $F086     Plot a circle.
+                 F088  ARC     EQU    $F088     Plot an arc
+                 F08A  CLINK   EQU    $F08A     Link text parameters.
+                 F08C  SYNC    EQU    $F08C     Sync to vertical blanking.
+                       *
+                DE80           ORG    (RAM+128)
+                DE80   BUFFER  RMB    256       Floppy interface sector buffer.
+                DF80   STACK   RMB    2         User system stack.
+                DF82   NMIV    RMB    2         NMI interrupt vector.
+                DF84   IRQV    RMB    2         IRQ interrupt vector.
+                DF86   FIRQV   RMB    2         FIRQ interrupt vector.
+                DF88   SWI2V   RMB    2         SWI2 interrupt vector.
+                DF8A   SWI3V   RMB    2         SWI3 interrupt vector.
+                DF8C   IPORT   RMB    1         Active input port.
+                DF8D   OPORT   RMB    1         Active output port.
+                DF8E   DRIVE   RMB    1         Format drive value.
+                DF8F   TRACK   RMB    1         Format track value.
+                DF90   SECTOR  RMB    1         Format sector value.
+                DF91   TEMP    RMB    1
+                DF92   XTEMP   RMBEMP   RMB    2
+                DF96   TTO     RMB    2
+                DF98   RNDM    RMB    4         Random number storage.
+                DF9C   WARMS   RMB    1         Warm start flag.
+                DF9D   DDSTAB  RMB    4         Disc driver type table.
+                DFA1   REAVEC  RMB    2         Disc driver jump table.
+                DFA3   WRIVEC  RMB    2
+                DFA5   VERVEC  RMB    2
+                DFA7   RSTVEC  RMB    2
+                DFA9   DRVVEC  RMB    2
+                DFAB   CHKVEC  RMB    2
+                DFAD   QUIVEC  RMB    2
+                DFAF   INIVEC  RMB    2
+                DFB1   WARVEC  RMB    2
+                DFB3   SEEVEC  RMB    2
+                DFB5   RTCFAIL RMB    1         RTC fail flag.
+                DFB6   CURDRV  RMB    1         Active floppy drive.
+                DFB7   XCOORD  RMB    2         Cursor X value.
+                DFB9   YCOORD  RMB    2         Cursor Y Value.
+                DFBB   PART1   RMB    4         Display partition one.
+                DFBF   PART2   RMB    4         Display partition two.
+                DFC3   GPARAM  RMB    8         Parameter ram contents.
+    
+    
+    
+                                           PAGE A7.3
+    
+              Microbox ][ User Notes
+                                          Appendix 7  Flexlink and Monlink source
+    
+                DFCB   GMODE   RMB    1         GDC mode register contents.
+                DFCC   GZOOM   RMB    1         Display + write zoom values.
+                DFCD   GFIGS   RMB    1         Figs 1st parameter value.
+                DFCE   DC      RMB    2
+                DFD0   D       RMB    2
+                DFD2   D2      RMB    2
+                DFD4   D1      RMB    2
+                DFD6   DM      RMB    2
+                DFD8   CONST   RMB    1
+                DFD9   ROW     RMB    1
+                DFDA   COL     RMB    1
+                DFDB   MAXCOL  RMB    1
+                DFDC   MAXROW  RMB    1
+                DFDD   CCOL    RMB    1
+                DFDE   CROW    RMB    1
+                DFDF   BCOL    RMB    1
+                DFE0   BROW    RMB    1
+                DFE1   ATTRI   RMB    1
+                DFE2   CSPACE  RMB    1
+                DFE3   CHARTAB RMB    2
+                DFE5   CURSOR  RMB    2         Text cursor position.
+                DFE7   OFFSET  RMB    2
+                DFE9   CZOOM   RMB    1
+                DFEA   CTYPE   RMB    1
+                DFEB   ESCFLG  RMB    1
+                DFEC   TS1     RMB    2
+                DFEE   TS2     RMB    2
+                DFF0   TL1     RMB    2
+                DFF2   TL2     RMB    2
+                       
+                       *
+                       * Pia control equates.
+                 0000  clrCE0  equ    $00
+                 0001  setCE0  equ    $01
+                 0002  clrCE1  equ    $02
+                 0003  setCE1  equ    $03
+                 0004  clrCE2  equ    $04
+                 0005  setCE2  equ    $05
+                 0006  clrCE3  equ    $06
+                 0007  setCE3  equ    $07
+                 0008  clrCLK  equ    $08
+                 0009  setCLK  equ    $09
+                 000A  clrCLR  equ    $0a
+                 000B  setCLR  equ    $0b
+                 000C  clrOE   equ    $0c
+                 000D  setOE   equ    $0d
+                 000E  clrPGM  equ    $0e
+                 000F  setPGM  equ    $0f
+                       * Floppy disc control equates.
+                 0000  RSCMD   EQU    $00
+                 0010  SECMD   EQU    $10
+                 0084  RECMD   EQU    $84
+                 00A4  WRCMD   EQU    $A4
+                       *
+                 0058  RSMASK  EQU    $58
+                 0010  SEMASK  EQU    $10
+                 001C  REMASK  EQU    $1C
+                 005C  WRMASK  EQU    $5C
+    
+    
+    
+                                           PAGE A7.4
+    
+              Microbox ][ User Notes
+                                          Appendix 7  Flexlink and Monlink source
+    
+                 0018  VEMASK  EQU    $18
+                       *
+                 0002  DRQ     EQU    $2
+                 0001  BUSY    EQU    $1
+                       *
+                       * Hardware device equates.
+                 FF00  KEYREG  EQU    $FF00     Keyboard register.
+                 FF01  PIACA   EQU    $FF01     Pia side a control register.
+                 FF02  SYSREG  EQU    $FF02     System control register.
+                 FF03  PIACB   EQU    $FF03     Pia side b control register.
+                       *
+                 FF08  ACIAD1  EQU    $FF08     Acia port 0 data register.
+                 FF09  ACIAC1  EQU    $FF09     Acia port 0 control register.
+                 FF04  ACIAD2  EQU    $FF04     Acia port 1 data register.
+                 FF05  ACIAC2  EQU    $FF05     Acia port 1 control register.
+                 FF0C  BAUD1   EQU    $FF0C     Acia port 0 baud rate register.
+                 FF0D  BAUD2   EQU    $FF0D     Acia port 1 baud rate register.
+                       *
+                 FF10  COMREG  EQU    $FF10     Fdc command register.
+                 FF11  TRKREG  EQU    $FF11     Fdc track register.
+                 FF12  SECREG  EQU    $FF12     Fdc sector register.
+                 FF13  DATREG  EQU    $FF13     Fdc data register.
+                       *
+                 FF14  GDCPRM  EQU    $FF14     Gdc command register.
+                 FF15  GDCCOM  EQU    $FF15     Gdc parameter register.
+                       *
+                 FF18  RTCADD  EQU    $FF18     Rtc address register.
+                 FF19  RTCDAT  EQU    $FF19     Rtc data register.
+                       *
+                 FF1C  PORTA   EQU    $FF1C     Pia2 porta.
+                 FF1D  PORTB   EQU    $FF1D     Pia2 portb.
+                 FF1E  PORTC   EQU    $FF1E     Pia2 portc.
+                 FF1F  BITCON  EQU    $FF1F     Pia2 control register.
+                       *
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+                                           PAGE A7.5
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+                                           PAGE A8.0
+    
+              Microbox ][ User Notes
+                                               Appendix 8   Graphics display code
+    
+    
+                  The graphics display code provides a simple way to generate 
+              pictures  using the internal graphics drivers. Here is an example 
+              display list:-
+                         OPT NOL
+                         LIB GRAPHICS.MAC
+                         OPT LIS
+                        *
+                         CLEAR_SCREEN
+                         SET_PEN_TYPE 0,$FFFF
+                         MOVE_CURSOR 100,100
+                         PLOT_LINE 200,200
+                         PLOT_TEXT 'HI THERE!'
+                         END_DRAW
+                        *
+                         END
+                  This list should be asssembled with ASMB in the normal manner, 
+              placed into memory using GET, and the PLAY should be used to draw 
+              the picture. It works by generating three byte 'opcodes' for the 
+              PLAY program using the macro set GRAPHICS.MAC. The avalible 
+              commands are :-
+    
+              NULL
+              Do nothing.
+    
+              CLEAR_SCREEN
+              Clear the graphics screen.
+    
+              MOVE_CURSOR x-coord,y-coord
+              Moves the cursor to the given coords.
+    
+              PLOT_POINT x-coord,y-coord
+              Plots a point at the given coords.
+    
+              PLOT_LINE x-coord,y-coord
+              Plots a line from the present cursor position to the given coords.
+    
+              PLOT_RECTANGE sidex,sidey
+              Plots a rectangle (bottom rh corner is present coords), with given 
+              sides.
+    
+              PLOT_CIRCLE radius
+              Plots a circle (center is present coords) with given radius. 
+              (0<radius<127)
+    
+              PLOT_TEXT 'text string'
+              Plots the text string from the given coords.
+    
+              SET_PEN_TYPE pen_type,profile
+              Sets the pen type and drawing profile.
+    
+              SET_TEXT_ZOOM zoom_factor
+              Sets the text size (0<zoom_factor<15)
+    
+              END_DRAW
+              Ends the drawing process.
+    
+    
+    
+    
+    
+                                           PAGE A8.1
+    
+              Microbox ][ User Notes
+                                               Appendix 8   Graphics display code
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+                                           PAGE A8.2
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+                                           PAGE A9.0
+    
+              Microbox ][ User Notes
+                                               Appendix 9   Default character set
+    
+              Note: The characters are defined in a 5x8 matrix, and are stored 
+              sideways to save memory.
+                                   *
+                0000 6E                    FCB    110       max col
+                0001 18                    FCB    24        max row
+                0002 05                    FCB    5         char col
+                0003 08                    FCB    8         char row
+                0004 07                    FCB    7         box col
+                0005 0C                    FCB    12        box row
+                0006 04                    FCB    4         initial attributes
+                0007 05                    FCB    5         char spacing
+                                   *
+                0008 00            DEFCHAR FCB    %00000000 Char = ' '
+                0009 00                    FCB    %00000000
+                000A 00                    FCB    %00000000
+                000B 00                    FCB    %00000000
+                000C 00                    FCB    %00000000
+                                   *
+                000D 00                    FCB    %00000000 Char = '!'
+                000E 00                    FCB    %00000000
+                000F FA                    FCB    %11111010
+                0010 00                    FCB    %00000000
+                0011 00                    FCB    %00000000
+                                   *
+                0012 00                    FCB    %00000000 Char = '"'
+                0013 E0                    FCB    %11100000
+                0014 00                    FCB    %00000000
+                0015 E0                    FCB    %11100000
+                0016 00                    FCB    %00000000
+                                   *
+                0017 50                    FCB    %01010000 Char = '#'
+                0018 F8                    FCB    %11111000
+                0019 50                    FCB    %01010000
+                001A F8                    FCB    %11111000
+                001B 50                    FCB    %01010000
+                                   *
+                001C 48                    FCB    %01001000 Char = '$'
+                001D 54                    FCB    %01010100
+                001E FE                    FCB    %11111110
+                001F 54                    FCB    %01010100
+                0020 24                    FCB    %00100100
+                                   *
+                0021 46                    FCB    %01000110 Char = '%'
+                0022 26                    FCB    %00100110
+                0023 10                    FCB    %00010000
+                0024 68                    FCB    %01101000
+                0025 64                    FCB    %01100100
+                                   *
+                0026 0A                    FCB    %00001010 Char = '&'
+                0027 44                    FCB    %01000100
+                0028 AA                    FCB    %10101010
+                0029 92                    FCB    %10010010
+                002A 6C                    FCB    %01101100
+    
+    
+    
+    
+    
+    
+    
+    
+                                           PAGE A9.1
+    
+              Microbox ][ User Notes
+                                               Appendix 9   Default character set
+    
+                                   *
+                002B 00                    FCB    %00000000 Char = '''
+                002C E0                    FCB    %11100000
+                002D D0                    FCB    %11010000
+                002E 00                    FCB    %00000000
+                002F 00                    FCB    %00000000
+                                   *
+                0030 00                    FCB    %00000000 Char = '('
+                0031 82                    FCB    %10000010
+                0032 44                    FCB    %01000100
+                0033 38                    FCB    %00111000
+                0034 00                    FCB    %00000000
+                                   *
+                0035 00                    FCB    %00000000 Char = ')'
+                0036 38                    FCB    %00111000
+                0037 44                    FCB    %01000100
+                0038 82                    FCB    %10000010
+                0039 00                    FCB    %00000000
+                                   *
+                003A 54                    FCB    %01010100 Char = '*'
+                003B 38                    FCB    %00111000
+                003C FE                    FCB    %11111110
+                003D 38                    FCB    %00111000
+                003E 54                    FCB    %01010100
+                                   *
+                003F 10                    FCB    %00010000 Char = '+'
+                0040 10                    FCB    %00010000
+                0041 7C                    FCB    %01111100
+                0042 10                    FCB    %00010000
+                0043 10                    FCB    %00010000
+                                   *
+                0044 00                    FCB    %00000000 Char = ','
+                0045 0E                    FCB    %00001110
+                0046 0D                    FCB    %00001101
+                0047 00                    FCB    %00000000
+                0048 00                    FCB    %00000000
+                                   *
+                0049 10                    FCB    %00010000 Char = '-'
+                004A 10                    FCB    %00010000
+                004B 10                    FCB    %00010000
+                004C 10                    FCB    %00010000
+                004D 10                    FCB    %00010000
+                                   *
+                004E 00                    FCB    %00000000 Char = '.'
+                004F 00                    FCB    %00000000
+                0050 06                    FCB    %00000110
+                0051 06                    FCB    %00000110
+                0052 00                    FCB    %00000000
+                                   *
+                0053 40                    FCB    %01000000 Char = '/'
+                0054 20                    FCB    %00100000
+                0055 10                    FCB    %00010000
+                0056 08                    FCB    %00001000
+                0057 04                    FCB    %00000100
+    
+    
+    
+    
+    
+    
+    
+                                           PAGE A9.2
+    
+              Microbox ][ User Notes
+                                               Appendix 9   Default character set
+    
+                                   *
+                0058 00                    FCB    %00000000 Char = '0'
+                0059 7C                    FCB    %01111100
+                005A 82                    FCB    %10000010
+                005B 82                    FCB    %10000010
+                005C 7C                    FCB    %01111100
+                                   *
+                005D 00                    FCB    %00000000 Char = '1'
+                005E 00                    FCB    %00000000
+                005F FE                    FCB    %11111110
+                0060 40                    FCB    %01000000
+                0061 00                    FCB    %00000000
+                                   *
+                0062 62                    FCB    %01100010 Char = '2'
+                0063 92                    FCB    %10010010
+                0064 92                    FCB    %10010010
+                0065 8A                    FCB    %10001010
+                0066 46                    FCB    %01000110
+                                   *
+                0067 CC                    FCB    %11001100 Char = '3'
+                0068 B2                    FCB    %10110010
+                0069 92                    FCB    %10010010
+                006A 82                    FCB    %10000010
+                006B 82                    FCB    %10000010
+                                   *
+                006C 10                    FCB    %00010000 Char = '4'
+                006D FE                    FCB    %11111110
+                006E 10                    FCB    %00010000
+                006F 10                    FCB    %00010000
+                0070 F0                    FCB    %11110000
+                                   *
+                0071 9C                    FCB    %10011100 Char = '5'
+                0072 A2                    FCB    %10100010
+                0073 A2                    FCB    %10100010
+                0074 A2                    FCB    %10100010
+                0075 E2                    FCB    %11100010
+                                   *
+                0076 0C                    FCB    %00001100 Char = '6'
+                0077 92                    FCB    %10010010
+                0078 92                    FCB    %10010010
+                0079 52                    FCB    %01010010
+                007A 3C                    FCB    %00111100
+                                   *
+                007B C0                    FCB    %11000000 Char = '7'
+                007C A0                    FCB    %10100000
+                007D 90                    FCB    %10010000
+                007E 88                    FCB    %10001000
+                007F 86                    FCB    %10000110
+                                   *
+                0080 6C                    FCB    %01101100 Char = '8'
+                0081 92                    FCB    %10010010
+                0082 92                    FCB    %10010010
+                0083 92                    FCB    %10010010
+                0084 6C                    FCB    %01101100
+    
+    
+    
+    
+    
+    
+    
+                                           PAGE A9.3
+    
+              Microbox ][ User Notes
+                                               Appendix 9   Default character set
+    
+                                   *
+                0085 78                    FCB    %01111000 Char = '9'
+                0086 94                    FCB    %10010100
+                0087 92                    FCB    %10010010
+                0088 92                    FCB    %10010010
+                0089 60                    FCB    %01100000
+                                   *
+                008A 00                    FCB    %00000000 Char = ':'
+                008B 00                    FCB    %00000000
+                008C 6C                    FCB    %01101100
+                008D 6C                    FCB    %01101100
+                008E 00                    FCB    %00000000
+                                   *
+                008F 00                    FCB    %00000000 Char = ';'
+                0090 00                    FCB    %00000000
+                0091 6E                    FCB    %01101110
+                0092 6D                    FCB    %01101101
+                0093 00                    FCB    %00000000
+                                   *
+                0094 00                    FCB    %00000000 Char = '<'
+                0095 82                    FCB    %10000010
+                0096 44                    FCB    %01000100
+                0097 28                    FCB    %00101000
+                0098 10                    FCB    %00010000
+                                   *
+                0099 28                    FCB    %00101000 Char = '='
+                009A 28                    FCB    %00101000
+                009B 28                    FCB    %00101000
+                009C 28                    FCB    %00101000
+                009D 28                    FCB    %00101000
+                                   *
+                009E 10                    FCB    %00010000 Char = '>'
+                009F 28                    FCB    %00101000
+                00A0 44                    FCB    %01000100
+                00A1 82                    FCB    %10000010
+                00A2 00                    FCB    %00000000
+                                   *
+                00A3 60                    FCB    %01100000 Char = '?'
+                00A4 90                    FCB    %10010000
+                00A5 8A                    FCB    %10001010
+                00A6 80                    FCB    %10000000
+                00A7 40                    FCB    %01000000
+                                   *
+                00A8 7A                    FCB    %01111010 Char = '@'
+                00A9 AA                    FCB    %10101010
+                00AA BA                    FCB    %10111010
+                00AB 82                    FCB    %10000010
+                00AC 7C                    FCB    %01111100
+                                   *
+                00AD 7E                    FCB    %01111110 Char = 'A'
+                00AE 90                    FCB    %10010000
+                00AF 90                    FCB    %10010000
+                00B0 90                    FCB    %10010000
+                00B1 7E                    FCB    %01111110
+    
+    
+    
+    
+    
+    
+    
+                                           PAGE A9.4
+    
+              Microbox ][ User Notes
+                                               Appendix 9   Default character set
+    
+                                   *
+                00B2 6C                    FCB    %01101100 Char = 'B'
+                00B3 92                    FCB    %10010010
+                00B4 92                    FCB    %10010010
+                00B5 92                    FCB    %10010010
+                00B6 FE                    FCB    %11111110
+                                   *
+                00B7 44                    FCB    %01000100 Char = 'C'
+                00B8 82                    FCB    %10000010
+                00B9 82                    FCB    %10000010
+                00BA 82                    FCB    %10000010
+                00BB 7C                    FCB    %01111100
+                                   *
+                00BC 7C                    FCB    %01111100 Char = 'D'
+                00BD 82                    FCB    %10000010
+                00BE 82                    FCB    %10000010
+                00BF 82                    FCB    %10000010
+                00C0 FE                    FCB    %11111110
+                                   *
+                00C1 82                    FCB    %10000010 Char = 'E'
+                00C2 92                    FCB    %10010010
+                00C3 92                    FCB    %10010010
+                00C4 92                    FCB    %10010010
+                00C5 FE                    FCB    %11111110
+                                   *
+                00C6 80                    FCB    %10000000 Char = 'F'
+                00C7 90                    FCB    %10010000
+                00C8 90                    FCB    %10010000
+                00C9 90                    FCB    %10010000
+                00CA FE                    FCB    %11111110
+                                   *
+                00CB 5E                    FCB    %01011110 Char = 'G'
+                00CC 92                    FCB    %10010010
+                00CD 92                    FCB    %10010010
+                00CE 82                    FCB    %10000010
+                00CF 7C                    FCB    %01111100
+                                   *
+                00D0 FE                    FCB    %11111110 Char = 'H'
+                00D1 10                    FCB    %00010000
+                00D2 10                    FCB    %00010000
+                00D3 10                    FCB    %00010000
+                00D4 FE                    FCB    %11111110
+                                   *
+                00D5 00                    FCB    %00000000 Char = 'I'
+                00D6 82                    FCB    %10000010
+                00D7 FE                    FCB    %11111110
+                00D8 82                    FCB    %10000010
+                00D9 00                    FCB    %00000000
+                                   *
+                00DA FC                    FCB    %11111100 Char = 'J'
+                00DB 02                    FCB    %00000010
+                00DC 02                    FCB    %00000010
+                00DD 02                    FCB    %00000010
+                00DE 04                    FCB    %00000100
+    
+    
+    
+    
+    
+    
+    
+                                           PAGE A9.5
+    
+              Microbox ][ User Notes
+                                               Appendix 9   Default character set
+    
+                                   *
+                00DF 82                    FCB    %10000010 Char = 'K'
+                00E0 44                    FCB    %01000100
+                00E1 28                    FCB    %00101000
+                00E2 10                    FCB    %00010000
+                00E3 FE                    FCB    %11111110
+                                   *
+                00E4 02                    FCB    %00000010 Char = 'L'
+                00E5 02                    FCB    %00000010
+                00E6 02                    FCB    %00000010
+                00E7 02                    FCB    %00000010
+                00E8 FE                    FCB    %11111110
+                                   *
+                00E9 FE                    FCB    %11111110 Char = 'M'
+                00EA 40                    FCB    %01000000
+                00EB 20                    FCB    %00100000
+                00EC 40                    FCB    %01000000
+                00ED FE                    FCB    %11111110
+                                   *
+                00EE FE                    FCB    %11111110 Char = 'N'
+                00EF 10                    FCB    %00010000
+                00F0 20                    FCB    %00100000
+                00F1 40                    FCB    %01000000
+                00F2 FE                    FCB    %11111110
+                                   *
+                00F3 7C                    FCB    %01111100 Char = 'O'
+                00F4 82                    FCB    %10000010
+                00F5 82                    FCB    %10000010
+                00F6 82                    FCB    %10000010
+                00F7 7C                    FCB    %01111100
+                                   *
+                00F8 60                    FCB    %01100000 Char = 'P'
+                00F9 90                    FCB    %10010000
+                00FA 90                    FCB    %10010000
+                00FB 90                    FCB    %10010000
+                00FC FE                    FCB    %11111110
+                                   *
+                00FD 7A                    FCB    %01111010 Char = 'Q'
+                00FE 84                    FCB    %10000100
+                00FF 8A                    FCB    %10001010
+                0100 82                    FCB    %10000010
+                0101 7C                    FCB    %01111100
+                                   *
+                0102 62                    FCB    %01100010 Char = 'R'
+                0103 94                    FCB    %10010100
+                0104 98                    FCB    %10011000
+                0105 90                    FCB    %10010000
+                0106 FE                    FCB    %11111110
+                                   *
+                0107 4C                    FCB    %01001100 Char = 'S'
+                0108 92                    FCB    %10010010
+                0109 92                    FCB    %10010010
+                010A 92                    FCB    %10010010
+                010B 64                    FCB    %01100100
+    
+    
+    
+    
+    
+    
+    
+                                           PAGE A9.6
+    
+              Microbox ][ User Notes
+                                               Appendix 9   Default character set
+    
+                                   *
+                010C 80                    FCB    %10000000 Char = 'T'
+                010D 80                    FCB    %10000000
+                010E FE                    FCB    %11111110
+                010F 80                    FCB    %10000000
+                0110 80                    FCB    %10000000
+                                   *
+                0111 FC                    FCB    %11111100 Char = 'U'
+                0112 02                    FCB    %00000010
+                0113 02                    FCB    %00000010
+                0114 02                    FCB    %00000010
+                0115 FC                    FCB    %11111100
+                                   *
+                0116 F8                    FCB    %11111000 Char = 'V'
+                0117 04                    FCB    %00000100
+                0118 02                    FCB    %00000010
+                0119 04                    FCB    %00000100
+                011A F8                    FCB    %11111000
+                                   *
+                011B FE                    FCB    %11111110 Char = 'W'
+                011C 04                    FCB    %00000100
+                011D 18                    FCB    %00011000
+                011E 04                    FCB    %00000100
+                011F FE                    FCB    %11111110
+                                   *
+                0120 C6                    FCB    %11000110 Char = 'X'
+                0121 28                    FCB    %00101000
+                0122 10                    FCB    %00010000
+                0123 28                    FCB    %00101000
+                0124 C6                    FCB    %11000110
+                                   *
+                0125 E0                    FCB    %11100000 Char = 'Y'
+                0126 10                    FCB    %00010000
+                0127 0E                    FCB    %00001110
+                0128 10                    FCB    %00010000
+                0129 E0                    FCB    %11100000
+                                   *
+                012A C2                    FCB    %11000010 Char = 'Z'
+                012B A2                    FCB    %10100010
+                012C 92                    FCB    %10010010
+                012D 8A                    FCB    %10001010
+                012E 86                    FCB    %10000110
+                                   *
+                012F 00                    FCB    %00000000 Char = '['
+                0130 82                    FCB    %10000010
+                0131 82                    FCB    %10000010
+                0132 FE                    FCB    %11111110
+                0133 00                    FCB    %00000000
+                                   *
+                0134 04                    FCB    %00000100 Char = '\'
+                0135 08                    FCB    %00001000
+                0136 10                    FCB    %00010000
+                0137 20                    FCB    %00100000
+                0138 40                    FCB    %01000000
+    
+    
+    
+    
+    
+    
+    
+                                           PAGE A9.7
+    
+              Microbox ][ User Notes
+                                               Appendix 9   Default character set
+    
+                                   *
+                0139 00                    FCB    %00000000 Char = ']'
+                013A FE                    FCB    %11111110
+                013B 82                    FCB    %10000010
+                013C 82                    FCB    %10000010
+                013D 00                    FCB    %00000000
+                                   *
+                013E 20                    FCB    %00100000 Char = '^'
+                013F 40                    FCB    %01000000
+                0140 FE                    FCB    %11111110
+                0141 40                    FCB    %01000000
+                0142 20                    FCB    %00100000
+                                   *
+                0143 01                    FCB    %00000001 Char = '_'
+                0144 01                    FCB    %00000001
+                0145 01                    FCB    %00000001
+                0146 01                    FCB    %00000001
+                0147 01                    FCB    %00000001
+                                   *
+                0148 00                    FCB    %00000000 Char = '`'
+                0149 00                    FCB    %00000000
+                014A D0                    FCB    %11010000
+                014B E0                    FCB    %11100000
+                014C 00                    FCB    %00000000
+                                   *
+                014D 02                    FCB    %00000010 Char = 'a'
+                014E 1E                    FCB    %00011110
+                014F 2A                    FCB    %00101010
+                0150 2A                    FCB    %00101010
+                0151 0E                    FCB    %00001110
+                                   *
+                0152 3C                    FCB    %00111100 Char = 'b'
+                0153 22                    FCB    %00100010
+                0154 22                    FCB    %00100010
+                0155 FE                    FCB    %11111110
+                0156 02                    FCB    %00000010
+                                   *
+                0157 12                    FCB    %00010010 Char = 'c'
+                0158 22                    FCB    %00100010
+                0159 22                    FCB    %00100010
+                015A 1C                    FCB    %00011100
+                015B 00                    FCB    %00000000
+                                   *
+                015C 02                    FCB    %00000010 Char = 'd'
+                015D FE                    FCB    %11111110
+                015E 22                    FCB    %00100010
+                015F 22                    FCB    %00100010
+                0160 1C                    FCB    %00011100
+                                   *
+                0161 12                    FCB    %00010010 Char = 'e'
+                0162 2A                    FCB    %00101010
+                0163 2A                    FCB    %00101010
+                0164 1C                    FCB    %00011100
+                0165 00                    FCB    %00000000
+    
+    
+    
+    
+    
+    
+    
+                                           PAGE A9.8
+    
+              Microbox ][ User Notes
+                                               Appendix 9   Default character set
+    
+                                   *
+                0166 40                    FCB    %01000000 Char = 'f'
+                0167 50                    FCB    %01010000
+                0168 3E                    FCB    %00111110
+                0169 10                    FCB    %00010000
+                016A 00                    FCB    %00000000
+                                   *
+                016B 3E                    FCB    %00111110 Char = 'g'
+                016C 25                    FCB    %00100101
+                016D 25                    FCB    %00100101
+                016E 19                    FCB    %00011001
+                016F 00                    FCB    %00000000
+                                   *
+                0170 1E                    FCB    %00011110 Char = 'h'
+                0171 20                    FCB    %00100000
+                0172 20                    FCB    %00100000
+                0173 FE                    FCB    %11111110
+                0174 00                    FCB    %00000000
+                                   *
+                0175 00                    FCB    %00000000 Char = 'i'
+                0176 00                    FCB    %00000000
+                0177 5E                    FCB    %01011110
+                0178 00                    FCB    %00000000
+                0179 00                    FCB    %00000000
+                                   *
+                017A 00                    FCB    %00000000 Char = 'j'
+                017B 2E                    FCB    %00101110
+                017C 01                    FCB    %00000001
+                017D 02                    FCB    %00000010
+                017E 00                    FCB    %00000000
+                                   *
+                017F 22                    FCB    %00100010 Char = 'k'
+                0180 14                    FCB    %00010100
+                0181 08                    FCB    %00001000
+                0182 7E                    FCB    %01111110
+                0183 00                    FCB    %00000000
+                                   *
+                0184 00                    FCB    %00000000 Char = 'l'
+                0185 02                    FCB    %00000010
+                0186 7E                    FCB    %01111110
+                0187 40                    FCB    %01000000
+                0188 00                    FCB    %00000000
+                                   *
+                0189 1E                    FCB    %00011110 Char = 'm'
+                018A 20                    FCB    %00100000
+                018B 3E                    FCB    %00111110
+                018C 20                    FCB    %00100000
+                018D 3E                    FCB    %00111110
+                                   *
+                018E 1E                    FCB    %00011110 Char = 'n'
+                018F 20                    FCB    %00100000
+                0190 20                    FCB    %00100000
+                0191 3E                    FCB    %00111110
+                0192 00                    FCB    %00000000
+    
+    
+    
+    
+    
+    
+    
+                                           PAGE A9.9
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+                                           PAGE A9.0
+    
+              Microbox ][ User Notes
+                                               Appendix 9   Default character set
+    
+    
+                                   *
+                0193 1C                    FCB    %00011100 Char = 'o'
+                0194 22                    FCB    %00100010
+                0195 22                    FCB    %00100010
+                0196 1C                    FCB    %00011100
+                0197 00                    FCB    %00000000
+                                   *
+                0198 18                    FCB    %00011000 Char = 'p'
+                0199 24                    FCB    %00100100
+                019A 24                    FCB    %00100100
+                019B 3F                    FCB    %00111111
+                019C 00                    FCB    %00000000
+                                   *
+                019D 01                    FCB    %00000001 Char = 'q'
+                019E 3F                    FCB    %00111111
+                019F 24                    FCB    %00100100
+                01A0 24                    FCB    %00100100
+                01A1 18                    FCB    %00011000
+                                   *
+                01A2 20                    FCB    %00100000 Char = 'r'
+                01A3 20                    FCB    %00100000
+                01A4 10                    FCB    %00010000
+                01A5 3E                    FCB    %00111110
+                01A6 00                    FCB    %00000000
+                                   *
+                01A7 24                    FCB    %00100100 Char = 's'
+                01A8 2A                    FCB    %00101010
+                01A9 2A                    FCB    %00101010
+                01AA 12                    FCB    %00010010
+                01AB 00                    FCB    %00000000
+                                   *
+                01AC 04                    FCB    %00000100 Char = 't'
+                01AD 22                    FCB    %00100010
+                01AE 7C                    FCB    %01111100
+                01AF 20                    FCB    %00100000
+                01B0 00                    FCB    %00000000
+                                   *
+                01B1 02                    FCB    %00000010 Char = 'u'
+                01B2 3E                    FCB    %00111110
+                01B3 02                    FCB    %00000010
+                01B4 02                    FCB    %00000010
+                01B5 3C                    FCB    %00111100
+                                   *
+                01B6 30                    FCB    %00110000 Char = 'v'
+                01B7 0C                    FCB    %00001100
+                01B8 02                    FCB    %00000010
+                01B9 0C                    FCB    %00001100
+                01BA 30                    FCB    %00110000
+                                   *
+                01BB 3C                    FCB    %00111100 Char = 'w'
+                01BC 02                    FCB    %00000010
+                01BD 0C                    FCB    %00001100
+                01BE 02                    FCB    %00000010
+                01BF 3C                    FCB    %00111100
+    
+    
+    
+    
+    
+    
+                                           PAGE A9.1
+    
+              Microbox ][ User Notes
+                                               Appendix 9   Default character set
+    
+                                   *
+                01C0 22                    FCB    %00100010 Char = 'x'
+                01C1 12                    FCB    %00010010
+                01C2 1C                    FCB    %00011100
+                01C3 24                    FCB    %00100100
+                01C4 22                    FCB    %00100010
+                                   *
+                01C5 3F                    FCB    %00111111 Char = 'y'
+                01C6 05                    FCB    %00000101
+                01C7 04                    FCB    %00000100
+                01C8 38                    FCB    %00111000
+                01C9 00                    FCB    %00000000
+                                   *
+                01CA 20                    FCB    %00100000 Char = ' '
+                01CB 32                    FCB    %00110010
+                01CC 2A                    FCB    %00101010
+                01CD 26                    FCB    %00100110
+                01CE 02                    FCB    %00000010
+                                   *
+                01CF 82                    FCB    %10000010 Char = '{'
+                01D0 82                    FCB    %10000010
+                01D1 6C                    FCB    %01101100
+                01D2 10                    FCB    %00010000
+                01D3 00                    FCB    %00000000
+                                   *
+                01D4 00                    FCB    %00000000 Char = '|'
+                01D5 00                    FCB    %00000000
+                01D6 EE                    FCB    %11101110
+                01D7 00                    FCB    %00000000
+                01D8 00                    FCB    %00000000
+                                   *
+                01D9 10                    FCB    %00010000 Char = '}'
+                01DA 6C                    FCB    %01101100
+                01DB 82                    FCB    %10000010
+                01DC 82                    FCB    %10000010
+                01DD 00                    FCB    %00000000
+                                   *
+                01DE 1C                    FCB    %00011100 Char = '~'
+                01DF 10                    FCB    %00010000
+                01E0 10                    FCB    %00010000
+                01E1 10                    FCB    %00010000
+                01E2 10                    FCB    %00010000
+                                   *
+                01E3 AA                    FCB    %10101010 Char = ' '
+                01E4 55                    FCB    %01010101
+                01E5 AA                    FCB    %10101010
+                01E6 55                    FCB    %01010101
+                01E7 AA                    FCB    %10101010
+                                   *
+                01E8 FF                    FCB    %11111111 Cursor type 1
+                01E9 FF                    FCB    %11111111
+                01EA FF                    FCB    %11111111
+                01EB FF                    FCB    %11111111
+                01EC FF                    FCB    %11111111
+    
+    
+    
+    
+    
+    
+    
+                                           PAGE A9.2
+    
+              Microbox ][ User Notes
+                                               Appendix 9   Default character set
+    
+                                   *
+                01ED C3                    FCB    %11000011 Cursor type 2
+                01EE 81                    FCB    %10000001
+                01EF 00                    FCB    %00000000
+                01F0 81                    FCB    %10000001
+                01F1 C3                    FCB    %11000011
+                                   *
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+                                           PAGE A9.3
+    
+              Microbox ][ User Notes
+                                               Appendix 9   Default character set
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+                                           PAGE A9.4
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+                                          PAGE A10.0
+    
+              Microbox ][ User Notes
+                                                     Appendix 10   Disc directory
+    
+    
+    
+    
+    
+    
+              DIRECTORY OF DRIVE NUMBER 1
+              DISK: MICROBOX  #2    CREATED: 24-DEC-83
+    
+              FILE#   NAME   TYPE  R  BEGIN   END   SIZE    DATE     PRT
+    
+    
+                  1  ALLOCATE.CMD     01-01  01-01     1  24-DEC-83     
+                  2  NEWDISK .CMD     01-02  01-06     5  24-DEC-83     
+                  3  RAMDISK .CMD     01-07  01-09     3  24-DEC-83     
+                  4  SCOPY   .CMD     01-0A  02-02     3  24-DEC-83     
+                  5  SDC     .CMD     02-03  02-05     3  24-DEC-83     
+                  6  SETTIME .CMD     02-06  02-07     2  24-DEC-83     
+                  7  TIME    .CMD     02-08  02-0A     3  24-DEC-83     
+                  8  TEXT    .CMD     03-01  03-01     1  24-DEC-83     
+                  9  GRAPH   .CMD     03-02  03-02     1  24-DEC-83     
+                 10  CLEARG  .CMD     03-03  03-03     1  24-DEC-83     
+                 11  PROMPROG.CMD     03-04  03-06     3  24-DEC-83     
+                 12  PROMREAD.CMD     03-07  03-07     1  24-DEC-83     
+                 13  RECORD  .CMD     03-08  03-08     1  24-DEC-83     
+                 14  INTERP  .CMD     03-09  04-02     4  24-DEC-83     
+                 15  PLAY    .CMD     04-03  04-06     4  24-DEC-83     
+                 16  PROMCOPY.CMD     04-07  04-07     1  24-DEC-83     
+                 17  TERMINAL.CMD     04-08  05-01     4  24-DEC-83     
+                 18  FLEXLINK.TXT     05-02  05-08     7  24-DEC-83     
+                 19  BB      .TXT     05-09  06-01     3  24-DEC-83     
+                 20  PROMCOPY.TXT     06-02  06-03     2  24-DEC-83     
+                 21  MONLINK .TXT     06-04  08-06    23  24-DEC-83     
+                 22  PRINTSYS.TXT     08-07  08-07     1  24-DEC-83     
+                 23  CHARS   .TXT     08-08  0C-03    36  24-DEC-83     
+                 24  STYIO1  .TXT     0C-04  0C-07     4  24-DEC-83     
+                 25  STY-MB2 .TXT     0C-08  0D-06     9  24-DEC-83     
+                 26  TTYFIX  .BIN     0D-07  0D-07     1  24-DEC-83     
+                 27  ASNFIX  .BIN     0D-08  0D-08     1  24-DEC-83     
+                 28  GRAPHICS.MAC     0E-05  0E-07     3   2-JAN-84     
+                 29  DENSE   .CMD     0D-0A  0E-04     5   2-JAN-84     
+    
+                  FILES=29, SECTORS=136, LARGEST=36, FREE=254
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+                                          PAGE A10.1
+    
+ 

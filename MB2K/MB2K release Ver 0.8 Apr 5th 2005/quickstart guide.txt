@@ -1,0 +1,24 @@
+MB2K Quick start instructions
+-----------------------------
+
+This software only works with a Xilinx Spartan-3 starter kit Board which can be obtained directly from Xilinx. <http://www.xilinx.com/products/spartan3/s3boards.htm>
+
+Assuming that you have one of these, then :-
+
+1) Install the Xilinx "WebPACK" software - http://www.xilinx.com/webpack/index.htm#webinstall
+
+2) Copy the "MB2K Xilinx code" folder to a suitable place. note: some of the Xilinx utilities do not like spaces in path names, so choose something simple such as c:\xilinx\projects\
+
+3) Connect a PS-2 keyboard, display and the supplied programming cable to the starter kit.
+
+4) Open the MB2K.npl file in the MB2K Xilinx code folder, this should start the project navigator.
+
+5) Build the project by selecting the top level module mb2k.sch in the module view, then double clicking on the "generate programming file" icon in the process view window.
+
+6) When this finishes, merge the PROMdisk into the config file and program the config PROM on the board by opening a command window in the MB2K Xilinx code folder and running the "build" batch file.
+
+7) Check that all the switches are 'off' on the kit and press the config button. The LEDs should light briefly, then the cold start message and prompt should appear on the display. Try out some monitor commands from the user notes. (it's normal for the 7-seg LEDs to be on)
+
+8) If all is OK, switch on the autoboot switch (SW3) and press the config button again. This time, the system should load the PROMdisk, format the RAMdisk and boot Flex.
+
+9) The user notes document the monitor commands, extra Flex utilities and the configurable parts of the hardware and software.

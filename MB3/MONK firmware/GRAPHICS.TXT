@@ -1,0 +1,454 @@
+*******************************
+* Microbox III graphics code  *
+*******************************
+* Ver 0.2 Apr 86
+*
+* Hardware equates.
+rms equ $ffe00 rms base address
+int_stat equ 2 rms intterupt status register
+clut equ 64 rms clut base address
+*
+* Graphics equates.
+t_base equ $70000
+t_size equ $04b00 240 lines * 640 pels
+g_base equ $74c00
+g_size equ $09600 480 lines * 640 pels
+*
+*
+* Low level routines.
+* 'Fix' for RMS bugs.
+bload    move.b  0(a0),d0
+         asl.l   #8,d0
+         move.b  1(a0),d0
+         asl.l   #8,d0
+         move.b  2(a0),d0
+         asl.l   #8,d0
+         move.b  3(a0),d0
+         rts
+bstore   move.b  d0,3(a0)
+         lsr.l   #8,d0
+         move.b  d0,2(a0)
+         lsr.l   #8,d0
+         move.b  d0,1(a0)
+         lsr.l   #8,d0
+         move.b  d0,0(a0)
+         rts
+*
+* SYNC   Wait for v blanking.
+sync     btst.b  #1,rms+int_stat
+         bne.s   sync
+sync1    btst.b  #1,rms+int_stat
+         beq.s   sync1
+         rts
+*
+* MOVE_B  Move (d0) byte from (a0) to (a1).
+move_b   subq #1,d0
+mbl      move.b  (a0)+,(a1)+
+         dbf     d0,mbl
+         rts
+*
+* LOAD_LUT   Load luts from (a0).  (32 words).
+load_lut movem.l d0/a1,-(sp)
+         lea.l   rms+clut,a1
+         move.l  #64,d0
+         bsr.s   sync
+         bsr.s   move_b
+         movem.l (sp)+,d0/a1
+         rts
+*
+* DVS   Define virtual screen (a0) pointer to table.
+dvs      movem.l a1/d0,-(sp)
+         lea.l   rms+$28,a1
+         move.l  #20,d0
+         bsr.s   move_b
+         movem.l (sp)+,a1/d0
+         rts
+*
+* TEXT   Display text screen.
+g_text     move.l  a0,-(sp)
+         lea.l   rms,a0
+         move.b  #$80,$01(a0)
+         move.b  #$20,$03(a0)
+         move.b  #$2f,$25(a0)
+         lea.l   txttab,a0
+         bsr.s   dvs
+         lea.l   mono_lut,a0
+         bsr.s   load_lut
+         move.l  (sp)+,a0
+         rts
+*
+* LO_GRAPH  Display lo-res graphics screen.
+lo_graph  move.l  a0,-(sp)
+         lea.l   rms,a0
+         move.b  #$82,$01(a0)
+         move.b  #$2f,$03(a0)
+         move.b  #$2b,$25(a0)
+         lea.l   lotab,a0
+         bsr.s   dvs
+         lea.l   col_lut,a0
+         bsr     load_lut
+         move.l  (sp)+,a0
+         rts
+*
+* HI_GRAPH   Display hi-res graphics screen.
+hi_graph move.l  a0,-(sp)
+         lea.l   rms,a0
+         move.b  #$80,$01(a0)
+         move.b  #$21,$03(a0)
+         move.b  #$ef,$25(a0)
+         lea.l   hitab,a0
+         bsr     dvs
+         lea.l   mono_lut,a0
+         bsr     load_lut
+         move.l  (sp)+,a0
+         rts
+*
+* CLEARG   Clear graphics area.
+clearg   movem.l d0-d1/a0,-(sp)
+         lea.l   g_base,a0
+         moveq   #0,d0
+         move.l  #(g_size/4-1),d1
+clrgl    move.l  d0,(a0)+
+         dbf     d1,clrgl
+         move.l  d0,d4
+         move.l  d0,d5
+         move.l  d0,d6
+         move.l  d0,d7
+         sub.l   a4,a4
+         lea.l   g_base,a5
+         movem.l (sp)+,d0-d1/a0
+         rts
+*
+* MOVE(X,Y)  Move cursor and set up pointers.
+g_move move.l d0,d6 xpos = x
+ move.l d1,d7 ypos = y
+ move.w #479,d1
+ sub d7,d1 d1 = ymax - y
+*
+ move.b d0,d5
+ not.b d5 bit order is reversed
+ and.w #7,d5 d5 = x - 8(x/8)
+*
+ asl #4,d1 d1 = y*16
+ move.l d1,d0
+ asl #2,d0 d0 = y*64
+ add.l d0,d1 d1 = y*80
+*
+ move.l d6,d0
+ asr #3,d0 d0 = x/8
+ add.l d0,d1 d1 = 80*y + x/8 (offset)
+ lea.l (a5,d1.l),a4 a4 = base + offset
+ rts
+*
+* POINT(X,Y)  Move cursor and plot point.
+g_point move.l d0,d6 xpos = x
+ move.l d1,d7 ypos = y
+ move.w #479,d1
+ sub d7,d1 ypos = ymax - y
+*
+ move.b d0,d5
+ not.b d5 reverse bit addresing
+ and.w #7,d5 d5 = x - 8(x/8)
+*
+ asl #4,d1 d1 = y*16
+ move.l d1,d0
+ asl #2,d0 d0 = y*64
+ add.l d0,d1 d1 = y*80
+*
+ move.l d6,d0
+ asr #3,d0 d0 = x/8
+ add.l d0,d1 d1 = 80*y + x/8 (offset)
+ lea.l (a5,d1.l),a4 a4 = base + offset
+*
+ bset.b d5,(a4) set the pel.
+ rts
+*
+* LINE(X,Y)   Plot a line to x,y.
+line movem.l d0-d3/a0-a1,-(sp)
+* Plot first pixel with set up pointers
+ bset.b d5,(a4) set the pel.
+*
+* Calculate parameters and direction jump
+ lea.l lintab(pc),a0 jump table base
+ sub d6,d0 Dx = x - xpos
+ bgt line1 if Dx > 0
+ lea.l 16+lintab(pc),a0 move pointer by 4
+ neg d0 abs(Dx)
+*
+line1 sub d7,d1 Dy = y - ypos
+ bgt line2 if Dy > 0
+ addq #8,a0 move pointer by 4
+ neg d1 abs(Dy)
+*
+line2 cmp d0,d1 if Dx < Dy
+ bgt line3
+ addq #4,a0 move pointer by 1
+ exg.l d0,d1 d0 = deltad   d1 = deltai
+*
+line3 asl #1,d0 d0 = 2*deltad
+ move.l d1,d2
+ asl #1,d2
+ move.l d0,d3
+ sub d2,d3 d3 = 2*(deltad - deltai)
+ move.l d0,d2
+ sub d1,d2 d2 = 2*deltad - deltai
+*
+ subq #2,d1 adjust for 1st pixel and dbf
+ bge line4
+ moveq #0,d1 fix if -ve
+*
+* Jump to direction routine.
+line4 move.l (a0),a0
+ move.l #80,a1 define line length constant
+ jsr (a0) Geronimo!
+* Tidy up and return
+ movem.l (sp)+,d0-d3/a0-a1
+*
+* Reset co-ords and return.
+ move.l d0,d6 xpos = x
+ move.l d1,d7 ypos = y
+ move.w #479,d1
+ sub d7,d1 d1 = ymax - y
+*
+ move.b d0,d5
+ not.b d5 bit order is reversed
+ and.w #7,d5 d5 = x - 8(x/8)
+*
+ asl #4,d1 d1 = y*16
+ move.l d1,d0
+ asl #2,d0 d0 = y*64
+ add.l d0,d1 d1 = y*80
+*
+ move.l d6,d0
+ asr #3,d0 d0 = x/8
+ add.l d0,d1 d1 = 80*y + x/8 (offset)
+ lea.l (a5,d1.l),a4 a4 = base + offset
+*
+ rts
+*
+lintab dc.l l0,l1,l3,l2,l7,l6,l4,l5
+*
+l0 tst.w d2
+ bpl b0
+ sub.l a1,a4
+ add d0,d2
+ bset.b d5,(a4)
+ dbf d1,l0
+ rts
+*
+b0 subq #1,d5
+ bpl x0
+ addq #1,a4
+x0 and.w #7,d5
+ sub.l a1,a4
+ add d3,d2
+ bset.b d5,(a4)
+ dbf d1,l0
+ rts
+*
+*
+l1 tst.w d2
+ bpl.s b1
+ subq #1,d5
+ bpl x1
+ addq #1,a4
+x1 and.w #7,d5
+ add d0,d2
+ bset.b d5,(a4)
+ dbf d1,l1
+ rts
+*
+b1 subq #1,d5
+ bpl x11
+ addq #1,a4
+x11 and.w #7,d5
+ sub.l a1,a4
+ add d3,d2
+ bset.b d5,(a4)
+ dbf d1,l1
+ rts
+*
+*
+l2 tst.w d2
+ bpl.s b2
+ subq #1,d5
+ bpl x2
+ addq #1,a4
+x2 and.w #7,d5
+ add d0,d2
+ bset.b d5,(a4)
+ dbf d1,l2
+ rts
+*
+b2 subq #1,d5
+ bpl x22
+ addq #1,a4
+x22 and.w #7,d5
+ add.l a1,a4
+ add d3,d2
+ bset.b d5,(a4)
+ dbf d1,l2
+ rts
+*
+*
+l3 tst.w d2
+ bpl.s b3
+ add.l a1,a4
+ add d0,d2
+ bset.b d5,(a4)
+ dbf d1,l3
+ rts
+*
+b3 subq #1,d5
+ bpl x33
+ addq #1,a4
+x33 and.w #7,d5
+ add.l a1,a4
+ add d3,d2
+ bset.b d5,(a4)
+ dbf d1,l3
+ rts
+*
+*
+l4 tst.w d2
+ bpl.s b4
+ add.l a1,a4
+ add d0,d2
+ bset.b d5,(a4)
+ dbf d1,l4
+ rts
+*
+b4 addq #1,d5
+ and.w #7,d5
+ bne y4
+ subq #1,a4
+y4 add.l a1,a4
+ add d3,d2
+ bset.b d5,(a4)
+ dbf d1,l4
+ rts
+*
+l5 tst.w d2
+ bpl.s b5
+ addq #1,d5
+ and.w #7,d5
+ bne y5
+ subq #1,a4
+y5 add d0,d2
+ bset.b d5,(a4)
+ dbf d1,l5
+ rts
+*
+b5 addq #1,d5
+ and.w #7,d5
+ bne y55
+ subq #1,a4
+y55 add.l a1,a4
+ add d3,d2
+ bset.b d5,(a4)
+ dbf d1,l5
+ rts
+*
+l6 tst.w d2
+ bpl.s b6
+ addq #1,d5
+ and.w #7,d5
+ bne y6
+ subq #1,a4
+y6 add d0,d2
+ bset.b d5,(a4)
+ dbf d1,l6
+ rts
+*
+b6 addq #1,d5
+ and.w #7,d5
+ bne y66
+ subq #1,a4
+y66 sub.l a1,a4
+ add d3,d2
+ bset.b d5,(a4)
+ dbf d1,l6
+ rts
+*
+l7 tst.w d2
+ bpl.s b7
+ sub.l a1,a4
+ add d0,d2
+ bset.b d5,(a4)
+ dbf d1,l7
+ rts
+*
+b7 addq #1,d5
+ and.w #7,d5
+ bne y7
+ subq #1,a4
+y7 sub.l a1,a4
+ add d3,d2
+ bset.b d5,(a4)
+ dbf d1,l7
+ rts
+*
+*
+* RECT(XSIDE,YSIDE)  Plot a rectangle with sides xside and yside.
+rect move.w d0,sidex
+ move.w d1,sidey
+ add.w d6,d0
+ move.w d7,d1
+ bsr line
+ add.w sidey,d1
+ bsr line
+ sub.w sidex,d0
+ bsr line
+ sub.w sidey,d1
+ bsr line
+ move.w sidex,d0
+ move.w sidey,d1
+ rts
+*
+loadcmr rts
+hi_g1 rts
+hi_g2 rts
+boader rts
+setpen rts
+query rts
+circle rts
+patdef rts
+fill rts
+flood rts
+scroll rts
+pan rts
+locate rts
+mouse rts
+wordblt rts
+bitblt rts
+*
+* Graphics constants.
+ .data
+mono_lut dc.w $0000,$ffff,$ffff,$ffff
+         dc.w $ffff,$ffff,$ffff,$ffff
+         dc.w $ffff,$ffff,$ffff,$ffff
+         dc.w $ffff,$ffff,$ffff,$ffff
+*
+grey_lut dc.w $0000,$0111,$0222,$0333
+         dc.w $0444,$0555,$0666,$0777
+         dc.w $0888,$0999,$0aaa,$0bbb
+         dc.w $0ccc,$0ddd,$0eee,$0fff
+*
+col_lut  dc.w $0000,$0f00,$00f0,$0ff0
+         dc.w $000f,$0f0f,$00ff,$0fff
+         dc.w $ffff,$ffff,$ffff,$ffff
+         dc.w $ffff,$ffff,$ffff,$ffff
+*
+*             base   vert  hori  size   width
+*             addr   off   off
+txttab   dc.l t_base,$0000,$0000,t_size,$50
+hitab    dc.l g_base,$0000,$0000,g_size,$50
+lotab    dc.l g_base,$0000,$0000,g_size,$80
+*
+* Scratch storage
+ .bss
+xtemp ds.w 1
+ytemp ds.w 1
+sidex ds.w 1
+sidey ds.w 1
+

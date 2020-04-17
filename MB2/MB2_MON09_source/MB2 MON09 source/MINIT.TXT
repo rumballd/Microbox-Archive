@@ -1,0 +1,146 @@
+KEYREG EQU $FF00
+PIACA EQU $FF01
+SYSREG EQU $FF02
+PIACB EQU $FF03
+*
+ACIAD1 EQU $FF08
+ACIAC1 EQU $FF09
+ACIAD2 EQU $FF04
+ACIAC2 EQU $FF05
+BAUD1 EQU $FF0C
+BAUD2 EQU $FF0D
+*
+GDCPRM EQU $FF14
+GDCCOM EQU $FF15
+*
+RTCADD EQU $FF18
+RTCDAT EQU $FF19
+*
+PORTA EQU $FF1C
+PORTB EQU $FF1D
+PORTC EQU $FF1E
+BITCON EQU $FF1F
+*
+HDR FCC $0A,$0D,'+++ Mon09 Ver 4.5  +++',4
+PROMPT FCC $0A,$0D,'=>',4
+NOTTHS FCC 7,' Unknown command! ',4
+UNMESS FCC 7,7,7,7,7,7,7,7,7,7,'UNEXPECTED INTERUPT!!!!!!!!!!',4
+FAILMS FCC 7,7,7,'Power failure in RTC, reloading defaults',4
+*
+RTCTAB FCB %00001111 no 2Mhz, no 256k, 128k Promdisk, 30ms step rate.
+ FCB $EE 9600 baud serial clock.
+ FCB 0,1,$FF,$FF Two floppies, no ramdisk, no promdisk.
+ FCB 8,0,$3A,$18,$50,0,0,$08,0,0,$1B TTYSET parameters.
+ FCB 0,1 ASN parameters.
+ FCB $1F,$2E,$65,$0C,$05,$0F,$20,$7D
+ FCB 0,0,0,0,0,0,0
+ FCB 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+*
+MINIT STX RNDM seed random number generator.
+* Check that RTC data is ok.
+ LDB #$0D
+ JSR GETRTC
+ ANDA #$80
+ STA RTCFAIL
+* Get iport and oport.
+ LDA SYSREG
+ COMA
+ RPT 4
+ LSRA
+ TFR A,B
+ ANDB #$01
+ STB IPORT
+ TFR A,B
+ LSRB
+ ANDB #$01
+ STB OPORT
+* Set up rtc defaults if
+* there has been a power failure.
+ TST RTCFAIL
+ BNE SUD
+ LDX #RTCTAB
+ LDB #$0E
+RTCLOOP LDA ,X+
+ JSR PUTRTC
+ INCB
+ CMPB #$40
+ BNE RTCLOOP
+*
+* Set up drive step rate, processor speed,
+* ramdisk and promdisk sizes.
+SUD LDB #$0E
+ JSR GETRTC
+ TFR A,B
+*
+ ANDA #$80
+ STA PSPEED
+*
+ TFR B,A
+ ANDA #$40
+ STA RSIZE
+*
+ TFR B,A
+ ANDA #$30
+ ASLA
+ ASLA
+ ANDA #$C0
+ STA PSIZE
+*
+ TFR B,A
+ ANDA #$0C
+ LSRA
+ LSRA
+ STA STEP0
+*
+ TFR B,A
+ ANDA #$03
+ STA STEP1
+*
+* Reset fdc.
+ CLRA
+ ADDA STEP0
+ STA COMREG
+*
+ TST PSPEED
+ BEQ SUACIA
+ STA $FFD9 Speed up processor.
+*
+* Set up acia's.
+SUACIA LDA #$CE
+ STA ACIAC1
+ STA ACIAC2
+ LDA #$27
+ STA ACIAC1
+ STA ACIAC2
+ LDB #$0F
+ JSR GETRTC
+ STA BAUD1
+ LSRA
+ LSRA
+ LSRA
+ LSRA
+ STA BAUD2
+*
+* Set up gdc.
+SUGDC JSR GDCINIT
+* Set up pia2 to hi z.
+SUPIA2 LDA #$9B
+ STA BITCON
+* Set up initial drive type table.
+ LDB #$10
+ LDX #DDSTAB
+F1A JSR GETRTC
+ STA ,X+
+ INCB
+ CMPB #$14
+ BNE F1A
+*
+ TST RTCFAIL
+ BNE CONT
+ LDX #FAILMS
+ JSR PSTRNG
+CONT LDA SYSREG
+ COMA
+ LBMI BO
+ JMP MINITR
+                                                                                                                    

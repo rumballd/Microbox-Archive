@@ -1,0 +1,1486 @@
+Microbox 2000 User Notes
+------------------------
+
+D.A.Rumball 
+Version 0.8 31st March 2005
+
+
+
+
+
+CONTENTS
+--------
+Introduction.........................Section 1
+Hardware.............................Section 2
+Customisation........................Section 3
+Monitor commands.....................Section 4
+Flex utilities.......................Section 5
+Programming guide....................Section 6
+    
+Terminal emulator control codes.....Appendix 1
+Flexlink & Monlink source...........Appendix 2
+   
+ 
+
+
+
+
+Acknowledgements
+---------------
+
+	I'd like to acknowledge the great contributions from John Kent, for his 6809 core without which this project would not have happened and Bjarne Backstrom, Ron Anderson, Joel Setton, RonAnderson, Mickey Ferguson and Michael Evenson for the NetPC/FlexNet protocols and utilities used in the MB2K, and of course the Flex User's Group for it's library of goodies.
+
+
+"If I have seen further, it is by standing on the shoulders of giants." Issac Newton
+
+"We in computer software insist on stepping on the toes of those who came before us instead of climbing on their shoulders". 
+Dan Ingalls 
+ 
+
+
+
+Section 1  Introduction.
+---------  ------------
+
+	Many many moons ago (1983!), I designed a single board computer called the Microbox 2 which was based around the 6809 and Flex. It had a number of advanced (for the time) features such as integrated EPROMdisk and RAMdisk, hi-res hardware accelerated graphics with a bitmapped text display that could use different languages and character sets (even Arabic), and a battery backed RTC and PRAM. As it had Flex compatible drivers in EPROM, could boot from any configured or un-configured copy of Flex. It sold quite well, (I believe a few hundred were shipped worldwide), and launched my design career.
+
+	Recently, I had a Xilinx Spartan FPGA starter kit given to me for Christmas because I wanted to improve my somewhat rusty VHDL skills, and whilst looking around for an interesting project for it, came across John Kent's System09.
+
+ http://members.optushome.com.au/jekent/Spartan3/index.html
+
+       It struck me that it might be fun to take his VHDL 6809 module, wrap it with some code of my own and re-create the old MB2 design completely in the FPGA. A few weekends of happy hacking later, the Microbox 2000 was born.
+
+	I have tried to keep to the spirit of the MB2 design rather than an exact copy with the new system, but have taken care to keep monitor jump tables and other link points the same as the old system and so the MB2K runs the majority of software written for the MB2. The biggest difference is that the MB2K runs 30 times faster, which makes the real time moon landing game particularly difficult!
+
+       This user guide is organised into three parts, a hardware guide including instructions for configuring the system, a description of the monitor commands and user callable subroutines, and the extra FLEX utilities.
+    
+
+To Do List
+----------
+
+	The MB2K design is not yet complete, because of a lack of space, I have had to leave out the hardware graphics subsystem and one of the serial ports. At the moment, the 6809 core is HUGE, representing >75% of the on chip resources. I hope to reduce the size of that in the near future to make room for the missing features. I also have to finish the drivers and Flex utilities for the MMC card.
+
+Microbox 2000 features
+----------------------
+
+* 30MHz equiv 6809 processor
+
+* Text display 80x24 with user definable character sets
+
+* Hardware accelerated graphics (768x576x1bit)
+
+* Two serial ports (6850 like)
+
+* PS-2 keyboard interface mapped for the CEDRIC editor
+
+* IIC buss for external peripherals
+
+* 1MB of external RAM split between
+	768KB for the RAMdisk
+	128KB for the PROMdisk
+	64KB for the graphics
+	64KB for the processor (48KB RAM free for Flex)
+
+* Optional plug in card with MMC card socket, beeper, and battery backed RTC and PRAM. The RTC stores hardware and software parameters such as drive mapping, ASN, TTYSET, serial baud rates etc
+
+* 8KB/6KB internal ROM with MON09 containing drivers, common subroutines and simple debugging commands
+
+* Four native mass storage types (drivers in ROM)
+
+	PROMdisk    - 128KB, loaded from the same Xilinx config PROM
+                    As the FPGA
+	RAMdisk     - approx 720KB, formatted as an 80 track, DS/DD
+                    floppy
+	FLASHdisk   - Support for an external MMC card formatted as a
+                    FAT16 volume containing .DSK files
+	Remote disk - up to four virtual drives in a host PC using the
+                    FlexNet protocol
+
+* Flex is pre-loaded via the FPGA config PROM for instantaneous booting
+
+* Flex utilities for the RTC, PRAM, and FlexNet drivers
+	
+
+
+
+
+
+    
+
+Section 2    Hardware notes.
+---------    ---------------
+    
+	The MB2K has been developed and tested on a Xilinx Spartan-3 starter kit Board which can be obtained directly from Xilinx.
+ 
+http://www.xilinx.com/products/spartan3/s3boards.htm
+
+ The design is targeted specifically for the Spartan family of FPGAs as it uses many of the Spartan specific features, but it should be possible to port the design to other Spartan based boards without too much trouble. Put down that soldering Iron, all hardware is software now!
+
+
+2.1  Module overview
+--------------------
+
+	Please refer to the top level diagram in the docs\hardware folder of this package. Note that although the top level is a schematic, the remainder of the design is written in VHDL. My preference is to always use a schematic as the top level of my designs as it provides a simple way to view the overall structure and dataflow.
+
+
+2.1.1 6809 processor
+--------------------
+
+	The processor module is a direct lift from John Kent's 'System 6809' design http://members.optushome.com.au/jekent/Spartan3/index.html
+and has not been modified at all. However, I plan to re-code this in the near future to reduce the size of the synthesised module somewhat from it's present use of <75% of the chip FPGA resources and thus allow for an extra ACIA and the hardware graphics accelerator to be added to the design. I believe that a micro coded approach using the block RAM as a microcode store will allow a smaller implementation (that may be faster too?).
+
+
+2.1.2 MON09 ROM
+---------------
+
+	The monitor ROM is formed on chip from three 2KBx8 block RAMs with some decode and data mux logic. The code contains an INIT section for each RAM which defines the 'ROM' contents at startup as loaded from the config ROM. This area of memory is actually writable allowing breakpoints to be set in the 'ROM' code. At preset, the ROM is only 6KB, but the last 2K is reserved for future expansion.
+
+	MON09 has three sections each (in this) version taking up roughly a third of the ROM space.
+
+	The first section from $E800 to $EFFF is the driver section containing the Flex compatible console drivers (serial ports, keyboard and built in display), Flex compatible mass storage drivers, and IIC buss drivers. MON09 supports four types of mass storage deice. The first two of these (PROMdisk and RAMdisk) use the external RAM on the starter kit to emulate a floppy disk of 128KB (write protected) for the PROMdisk and 768KB for the RAMdisk. The third driver supports a serial interface to a Multimedia Card. This drivers and associated system utilities support mounting .dsk files on a DOS FAT16 formatted card as Flex volumes. The final driver supports the NetPC protocol, allowing a PC attached to the MB2K to act as multiple virtual drives.
+
+	The second section from $F000 to approx $F500 has the system init code, command loop and common subroutines. The subroutines may be called from other programs by means of indirect JSRs via a table located at $F000. This table retains the same structure as MON09 for the Microbox 2 for backwards compatibility and is included in the monlink.txt header file. The subroutines are described in section 6, and the header files are listed as appendix 2 and can be found on the utilities dsk in this package.
+
+	The last section of MON09 contains the low level debugging commands which are described in section 4.
+
+
+2.1.3 Decode and processor data-in mux
+--------------------------------------
+
+	This block generates the module decodes from the processor address qualified by valid memory address (VMA). The memory map is detailed in section 2.2. As the Spartan FPGA series does not support 3-state busses, the read data busses from all of the peripheral modules are muxed into the processor read data buss as well in this module.
+
+
+2.1.4 Scratch RAM
+-----------------
+
+	The scratch RAM is formed on chip from four 2KBx8 block RAMs with some decode and data mux logic. The code contains an INIT section for each RAM which together form an image of Flex ver 3.01. This image is overlaid with console and disk driver tables and thus 'configured' for the MB2K during the boot process. The scratch RAM also contains the disk buffer, user stack and monitor variables. Note that since this is an internal block, it is possible to boot Flex without any external RAM, though this would not be a very useful thing to do!
+
+
+2.1.5 External RAM
+------------------
+
+	This module contains an interface to the external 1MB SRAM on the starter kit, and just consists of simple decode, control strobe logic and data mux. When the map registers are non zero, then A(0:7) is mapped from the processor, and the other address bits from the map registers.
+
+
+2.1.6 System registers
+----------------------
+
+	This module contains the system register and the map registers.
+
+       The system register is four bits wide and has bits for the beeper, and IIC bus out on write, and the IIC buss in on read. The top four bits ob read reflect the state of the low four switches on the starter kit and allow for the selection of input and output ports for the monitor, write protect on the PROMdisk and auto boot to Flex on reset. 
+       
+       The map registers allow the processor to see the external 1MB ram in a window 256 bytes wide by supplying the upper address bits to the external memory interface module. Normally, these registers contain $0 0000 allowing the processor to see it's entire 48KB, when the drivers are accessing the PROMdisk or RAMdisk, these registers contain the upper address bits of the block, which the processor sees at addresses $0000 - $00FF.
+       
+       
+2.1.7 Internal display (VDU)
+----------------------------
+
+	The display in the current version is a placeholder for a Microbox 2 compatible graphics Display Controller (GDC). The current display is John Kent's VDU module from his 'System 09' design. This has been modified slightly to use a 24 line display for compatibility with applications such as Stylograph. The driver in MON09 emulates the control codes from the Microbox 2, these control codes are listed in appendix 1 of this document.
+
+
+2.1.8 ACIA (serial ports)
+------------------------
+
+	The ACIA modules are based on an Xilinx project for a simple UART. 
+The ACIAs have 16 byte FIFOs for transmit and receive buffers and a simple code shim to emulate the MC6850 status bits for transmit and receive data. The UARTS do not have the hardware control register of the 6850 however, and are locked to a format of 8bits + one stop bit + no parity and can not be reset via software. In practise, this does not prove a limitation.
+
+	Each ACIA has it's own baud rate generator controlled by a 16 bit register which is used as a divisor for the system clock. The ACIA is a fully synchronous design which forces limitations on the choice of system clock as the 16x baud rate clock MUST be synchronous to sysclk. Happily, a sysclk of 25Mhz gives fairly nice divisors for common baud rates (see table below).
+
+Baudrate		16x baud clock	divisor (25Mhz)
+--------          --------------    ---------------
+    300		    4,800		5,208
+  1,200		   19,200		1,302
+  2,400		   38,400		  651
+  4,800		   76,800		  326
+  9,600		  153,600		  163
+ 19,200 	  307,200		   81
+ 38,400		  614,400		   41
+ 57,600           921,600                  27
+ 
+
+	
+2.1.9 PS/2 Keyboard
+-------------------
+
+	This is the PS/2 keyboard module from John Kent's 'system 09' design. I have corrected the errors in the scan-code to ASCII look up table and added definitions to map keyboard function keys and keypad keys to the control codes for the 'CEDRIC' text editor.
+
+
+2.1.10 Config PROM reader
+-------------------------
+
+	This module is an implementation of the configuration PROM reader described in Xilinx application note 964, a copy of which can be found in the docs/hardware folder of this package. The FPGA on the starter kit board uses only 1Mb of the 2Mb FLASH config PROM on the card. This reader allows a 128KB block of user defined code to be read from the config PROM by the processor. In the MB2K design, this 128KB is used for a PROMdisk image which can be loaded into the PROMdisk space either by a MON09 command, or automatically during the Flex boot. On resetting the PROM reader, it scans up through the config PROM looking for a match for a particular sync pattern. When this pattern is found, the PROM reader converts the following bit stream into bytes which can be read by the processor and stored in the external RAM. 
+
+
+2.1.11 Clocks
+-------------
+
+	This module just generates the 25Mhz system clock and 25MHz display pixel clock from the starter kit's on board 50MHz oscillator.
+
+
+
+2.1.12 Misc logic
+-----------------
+
+	A small number of I/O buffers are called out explicitly on the top level design. These define the 'open drain' driver s for the IIC buss and a 'probe' pad which can be connected to any net for testing and debugging.
+
+
+
+2.2 Memory map
+--------------
+
+-- external RAM address map
+       -- processor address space $0 0000 - $0 FFFF
+       -- graphics address space  $1 0000 - $1 FFFF
+       -- PROMdisk address space  $2 0000 - $3 FFFF
+       -- RAMdisk address space   $4 0000 - $F FFFF
+       
+       
+        
+-- processor address map
+	-- external RAM $0000 - $BFFF
+	-- internal RAM $C000 - $DFFF
+      	-- MON09 scratch RAM/disk buffer/stack $DE00 - $DFFF
+			-- stack space $DE00 - DE7F
+			-- disk buffer $DE80 - DF7F
+                  -- MON09 scratch RAM $DF80 - $DFFF
+		-- ROM/IO space/reset vectors $E000 - $FFFF
+			-- reserved	 $E000 - $E6FF
+			-- IO space  $E780 - $E7FF
+				-- eight I/O space slots (16 bytes each)
+					-- system register       $E780
+					-- keyboard registers    $E790
+					-- ACIA1 registers       $E7A0
+					-- external ROM          $E7B0
+                              -- map registers         $E7C0
+					-- display registers     $E7D0
+					-- ACIA2 registers       $E7A0
+					-- PROM reader registers $E7F0
+			-- ROM       $E800 - FFFF
+
+
+
+2.3 Register definitions
+------------------------
+
+System register - $E780
+-----------------------
+
+	Write
+		Bit 7 - don't care
+		Bit 6 - don't care
+		Bit 5 - don't care
+		Bit 4 - don't care
+		Bit 3 - BELL
+		Bit 2 - SPARE
+		Bit 1 - IIC SCL
+		Bit 0 - IIC SDA
+
+	Read
+		Bit 7 - SWITCH 3
+		Bit 6 - SWITCH 2
+		Bit 5 - SWITCH 1
+		Bit 4 - SWITCH 0
+		Bit 3 - BELL
+		Bit 2 - SPARE
+		Bit 1 - IIC SCL
+		Bit 0 - IIC SDA
+
+
+Note: The switches correspond to the slider switches on the starter kit board and have the following functions:-
+
+	Switch  0   Sets  the  initial input port to be used after reset. 
+	            	on  = PORT 1 (serial port 0)
+                    	off = PORT 0 (keyboard)
+        
+	Switch  1   Sets the initial output port to be used after reset. 
+		    		on  = PORT 1 (serial port 0)
+                    	off = PORT 0 (GDC screen)
+
+      Switch  2   Sets the PROMdisk write protect.
+                    	on  = allow writes to the PROMdisk
+                    	off = forbid writes to the PROMdisk
+
+	Switch  3   Sets the auto boot function.
+                    	on  = Auto boot FLEX on reset
+                    	off = Monitor program on reset
+
+
+
+Keyboard 
+--------
+
+       status register- $E790
+       ----------------------
+
+	Read only
+		Bit 7 - don't care
+		Bit 6 - don't care
+		Bit 5 - don't care
+		Bit 4 - don't care
+		Bit 3 - don't care
+		Bit 2 - don't care
+		Bit 1 - don't care
+		Bit 0 - CHARACTER READY
+       
+       
+       data register- $E791
+       --------------------
+
+	Read only
+		Bit 7:0 - ASCII VALUE of key pressed
+ 
+
+
+
+ACIA 
+----
+
+       status register- $E7A0/$E7E0
+       ----------------------------
+
+	Read only
+		Bit 7 - don't care
+		Bit 6 - don't care
+		Bit 5 - don't care
+		Bit 4 - don't care
+		Bit 3 - don't care
+		Bit 2 - don't care
+		Bit 1 - TRANSMIT FIFO NOT FULL
+		Bit 0 - RECEIVE FIFO NOT EMPTY
+       
+       data register- $E7A1/$E7E1
+       --------------------------
+
+	read/write 
+		Bit 7:0 - 8BIT DATA VALUE
+ 
+
+
+External MMC card interface - to be defined 
+---------------------------
+
+
+
+
+
+
+Map registers 
+-------------
+
+       Map register high - $E7C0
+       -------------------------
+
+	write only
+		Bit 7:4 - don't care
+		Bit 3:0 - MAP ADDRESS HIGH 4BITS 
+       
+       
+       Map register low - $E7C1
+       ------------------------
+
+	write only
+		Bit 7:0 - MAP ADDRESS HIGH 8BITS
+		 
+
+
+  
+VDU registers 
+-------------
+
+       data register - $E7D0
+       ---------------------
+
+	write only
+		Bit 7:0 - ASCII CHARACTER TO DISPLAY
+
+
+       attribute register - $E7D1
+       --------------------------
+
+	write only
+		Bit 7 - graphics
+		Bit 6 - background blue
+		Bit 5 - background green
+		Bit 4 - background red
+		Bit 3 - blink
+		Bit 2 - foreground blue
+		Bit 1 - foreground green
+		Bit 0 - foreground red
+
+
+       cursor column register - $E7D2
+       ------------------------------
+
+	write only
+		Bit 7:0 - column to write character
+
+
+       cursor row register - $E7D3
+       ---------------------------
+
+	write only
+		Bit 7:0 - row to write character
+
+PROM reader registers 
+---------------------
+
+      data register - $E7F0
+       ---------------------
+
+	write only
+		Bit 7:0 - 8BIT DATA VALUE
+
+
+       status register - $E7F1
+       -----------------------
+
+	write only
+		Bit 7 - don't care
+		Bit 6 - don't care
+		Bit 5 - don't care
+		Bit 4 - don't care
+		Bit 3 - don't care
+		Bit 2 - don't care
+		Bit 1 - DATA READY
+		Bit 0 - SYNC WORD FOUND
+
+
+       reset register - $E7F0
+       ---------------------
+
+	write only
+		Bit 7:0 - don't care (the write access resets the reader)
+
+
+
+
+
+
+
+
+2.4 Building the Design
+-----------------------
+
+1) Install the Xilinx "WebPACK" software - http://www.xilinx.com/webpack/index.htm#webinstall
+
+2) Copy the "MB2K Xilinx code" folder to a suitable place. note: some of the Xilinx utilities do not like spaces in path names, so choose something simple such as c:\xilinx\projects\
+
+3) Connect a PS-2 keyboard, display and the supplied programming cable to the starter kit.
+
+4) Open the MB2K.npl file in the MB2K Xilinx code folder, this should start the project navigator.
+
+5) Build the project by selecting the top level module mb2k.sch in the module view, then double clicking on the "generate programming file" icon in the process view window.
+
+6) When this finishes, merge the PROMdisk into the config file and program the config PROM on the board by opening a command window in the MB2K Xilinx code folder and running the "build" batch file.
+
+7) Check that all the switches are 'off' on the kit and press the config button. The LEDs should light briefly, then the cold start message and prompt should appear on the display. Try out some monitor commands from the user notes. (it's normal for the 7-seg LEDs to be on)
+
+8) If all is OK, switch on the autoboot switch (SW3) and press the config button again. This time, the system should load the PROMdisk, format the RAMdisk and boot Flex.
+
+9) The user notes document the monitor commands, extra Flex utilities and the configurable parts of the hardware and software.
+
+
+
+2.5 Optional Expansion Board
+----------------------------
+
+	The expansion board holds optional items of hardware that are used by the design but not present on the starter kit board such as the RTC/PRAM and battery, MMC card socket, audio buzzer and second serial port socket. MON09 checks for the presence of the RTC during the init stage and will set a flag if no RTC is found. This flag is used by various routines and utilities so that reasonable default values are used in place of the stored values from the RTC/PRAM. The circuit diagram of this expansion board is not given here as the board is so simple. The DS1307 RTC data sheet in the docs/hardware folder has an example application schematic to which should be added two series resistors (270R) in the IIC clock and data lines. The RTC SDA line should be connected to the A2 connector pin 10 (FPGA pin C7) and the SCL line to A2(12) (FPGA pin C8). The buzzer, which should be a 3V low power unit, should be connected to A2(4). Photographs of the front and back of this board are in the docs/hardware folder
+
+2.6 IMPORTANT NOTE ABOUT FPGA TIMING
+------------------------------------
+
+	The system clock for this design is set to 25MHz. This results in quite tight timing in some of the critical nets. I have examined the timing of these nets, and all seems to be OK, but there is little margin for process spreads or temperature. Later versions of the design will include explicit constraints to assure correct operation, but for now, if you experience 'strange' crashes etc, try dropping the system clock to 12.5MHz to see if this fixes the problem. If you do this, note that you will have to modify the DELCON constant in MON09 and change the baud rate table associated with the SB (set baud rate) command.
+
+
+
+
+3 Customisation
+-----------------
+
+	There are a number of pieces of the MB2K design that can be customised by the user. Mostly with the exception of the PROMdisk, this involves changing the definition of data placed in ROM blocks inside the FPGA via init statements in the code. Each customerisable piece has an associated folder in this package that contains the source files and tools to convert the source into a form that can be cut and pasted into the VHDL modules. The assembler AS09 is used to assemble the source code. AS09 has a number of quirks and differences to the common TSC assembler, and so a manual for AS09 is included in the docs folder.
+
+       The PROMdisk folder contains dsk files and tools to convert these to a hex format file which is then merged with the FPGA definition file before programming the starter kit board config PROM.
+
+
+3.1 MON09
+---------
+
+	The source code and listing for version 5 of MON09 are included in this package together with tools to assemble and reformat the object code as a VHDL module. If you make any changes to the code, open a command window in the MON09 directory and run the 'build' batch file. This will assemble the file using as09, convert the 'S' format output to ASCII hex and wrap VHDL code fragments around the hex to produce a valid VHDL file which can then be simply cut and pasted into the editor window in the Xilinx IDE. The VHDL fragments are in the files 'part1' through 'part4', so don't delete or modify those files.
+
+
+3.2 Display character set
+-------------------------
+
+	The display character set is defined in the file 'chars.txt' in the display character set folder. The character set is defined via FCB statements in a text file where each character is defined in a 7x11 matrix thus ;-
+
+*
+ FCB %00011100 Character = 'A'
+ FCB %00100010
+ FCB %01000001
+ FCB %01000001
+ FCB %01000001
+ FCB %01111111
+ FCB %01000001
+ FCB %01000001
+ FCB %01000001
+ FCB %00000000
+ FCB %00000000
+
+       After modifications have been made to this file, open a command window in the folder and run the 'build' batch file. The will assemble the file, and convert the S format output into a block ram definition. This entire definition should then be copied from the .br file and pasted over the old definition in the file 'ram_2k-rtl' in the VDU module. 
+
+	
+
+3.3 Keyboard scan code mapping
+------------------------------
+
+	The keyboard scan code to ASCII mapping is defined in the 'keys.txt' file in the PS/2 keyboard mapping folder. The file has four sections that correspond to the possible values of the shift and shift lock keys, and the mapping is defined as a set of FCB statements thus;-
+
+*
+ FCB $00	Scancode = $10		
+ FCB $00	Scancode = $11		
+ FCB $00	Scancode = $12		
+ FCB $00	Scancode = $13		
+ FCB $00	Scancode = $14		
+ FCB 'q'	Scancode = $15		q
+ FCB '1'	Scancode = $16		1
+ FCB $00	Scancode = $17		
+ FCB $00	Scancode = $18		
+ FCB $00	Scancode = $19		
+ FCB 'z'	Scancode = $1A		z
+ FCB 's'	Scancode = $1B		s
+ FCB 'a'	Scancode = $1C		a
+ FCB 'w'	Scancode = $1D		w
+ FCB '2'	Scancode = $1E		2
+ FCB $00	Scancode = $1F		
+
+       After modifications have been made to this file, open a command window in the folder and run the 'build' batch file. The will assemble the file, and convert the S format output into a block ram definition. This entire definition should then be copied from the .br file and pasted over the old definition in the file 'key_b4-rtl' in the keyboard module. 
+
+ 	
+3.4 Internal Flex image
+-----------------------
+
+	The 8KB scratch RAM contains a pre loaded image of Flex 3.01. If you should wish to use a different version, replace the flex301.cor file with the different version and run the batch file. The resultant .br file will have four block RAM definition sections that should be pasted into the corresponding sections in the 'scratch_ram-behavoural' module.
+
+
+3.5 PROMdisk
+------------
+
+	MB2K is supplied with a default 500 sector (approx 128K) PROMdisk containing a mix of general Flex utilities and debugging tools, utilities specific to the MB2K design (described in section 5), the CEDRIC (e.cmd) and Stylograph text editors and the compiler for the excellent PL9 high-ish level programming language. A copy of the default MB2K PROMdisk is supplied in the PROMdisk folder together with an empty PROMdisk sized dsk file and tools to convert the dsk files. After modifying the contents of a dsk file, run the build batch command and drop the resulting hex file into the MB2K Xilinx folder used for building the design. This file will then be merged into the config PROM file next time the PROM is programmed (using the build batch file in the Xilinx folder).
+    
+
+Section 4   MON09 commands
+---------   --------------
+	
+	There are fewer commands in the MB2K version of MON09 compared to earlier versions. This is because the majority of debugging can now be done directly at the OS level since Flex is 'built in' to the basic system and so there is no need for much in the way of monitor level commands and the space freed up has been used for additional drivers instead. Some basic commands have been left in however, and these are documented below.
+
+	There are twenty two monitor commands, each represented by a two letter name. Typing the two letters will invoke that command, which will then prompt for any necessary parameters. There are four types of parameter:-
+               
+Four digit hex number................XXXX
+Two digit hex number...................YY
+One digit hex number....................Z
+Text string or character................T
+              
+All commands can be uppercase or lowercase. 
+
+       The first two commands are concerned with examining and modifying memory. They have a common control format, so that a CR will examine the next location or page, a '-' will examine the previous location or page, and any other character will exit the command.
+    
+
+Command: DU   Dump memory
+Format:  Hex and ASCII dump of memory from XXXX
+Action:  Displays a 256 byte block of memory as two digit hex 
+         values and ASCII. Any non-printable character will represented
+         by a '.'
+    
+Command: ME   Memory Examine and alter
+Format:  Memory examine and alter from XXXX
+Action:  Displays an address and the contents of that address. The 
+         contents may be changed by typing a space followed by the new
+         two digit value. A verify is performed on the location changed.
+    
+Command: PM   Poke Memory
+Format:  Poke memory location at XXXX value YY
+Action:  Deposits the data into the location without verifying or 
+         reading the next address. Used for testing memory mapped
+         peripheral devices where a read would corrupt data.
+    
+Command: FM   Fill Memory with constant
+Format:  Fill memory with constant from XXXX to XXXX value YY
+Action:  Fills the indicated memory range with the data.
+    
+
+       
+The next six commands are concerned with running programs directly from within MON09. A breakpoint can be set with the BP command which when reached will return control to MON09 with an automatic display of registers. The register values may be modified using the ME command. (The register values are stored in the 10 bytes below the location pointed to by the stack pointer S.)
+    
+Command: DR   Display Registers
+Format:  Display registers
+Action:  Displays the current program register set.
+    
+Command: BR   Set breakpoint
+Format:  Set Breakpoint at XXXX
+Action:  Replaces the byte pointed to by a SWI ($3F). The breakpoint is
+         cleared when hit and the saved byte returned.
+
+Command: RP   Run Program
+Format:  Run program from XXXX
+Action:  Loads the processor registers, then jumps to program starting 
+         at address given.
+    
+Command: CP   Continue Program
+Format:  Continue program after SWI....
+Action:  Continues execution of a program from a breakpoint instruction.
+    
+Command: JU   Jump to program
+Format:  Jump to program at XXXX
+Action:  Execute a program starting at the given address without 
+         loading the registers first.
+    
+Command: JF   Jump to Flex warm start
+Format:  Jump to flex warm start.....
+Action:  Jumps to address $CD03
+    
+                 
+
+       The monitor input/output may come independently from one of three sources :-
+                 
+PORT NUMBER       INPUT             OUTPUT
+0          Keyboard          Internal display
+1          serial port 0     Serial port 0
+2          serial port 1     Serial port 1
+              
+The initial ports are set on reset by the configuration switches.
+    
+Command: SI   Set Input port
+Format:  Set input port to Z
+Action:  Sets the active input port
+    
+Command: SO   Set output port
+Format:  Set output port to Z
+Action:  Sets the active output port.
+    
+
+Command: SB   Set Baud rate
+Format:  Set baud rate for serial port Z rate = YY
+Action:  Sets the baud rate for the indicated port, note that the baud
+         rates are stored in the RTC PRAM (if present), so will not 
+         need reseting after power down.
+    
+
+
+There are six commands for disk control and testing. Note that any errors reported will be a copy of the emulated disc controller status register.
+    
+Command: RF   RAMdisk format to FLEX standard
+Format:  Formatting RAMdisk...
+Action:  Formats the RAMdisk to 80 tracks/36 sectors per track FLEX
+         standard (2844 sectors free). The creation date is set from
+         the RTC if present.
+    
+Command: RS   Read Sector
+Format:  Read sector on drive Z track YY sector YY to XXXX
+Action:  Reads a 256 byte sector from the logical drive to
+         memory.
+    
+Command: WS   Write sector
+Format:  Write sector to drive Z track YY sector YY from XXXX
+Action:  Writes a sector from memory to the drive.
+    
+Command: BO   Boot FLEX
+Format:  Booting internal FLEX....
+Action:  Boot FLEX from the FPGA's internal pre-loaded scratch RAM
+         then append the console and disk jump tables, disable the
+         date prompt, and set the TTYSET and ASN parameters from 
+         the RTC/PRAM if present before jumping to the FLEX cold
+         start point. 
+    
+Command: LP   Load PROMdisk from FPGA config PROM
+Format:  Load PROMdisk from config PROM.
+Action:  Loads the PROMdisk from the FPGA config PROM using the 
+         PROM reader.
+
+Command: LS   Load PROMdisk from serial port
+Format:  Load PROMdisk, waiting for download....
+Action:  Loads the PROMdisk from serial port 0 (ACIA1). The PROMdisk
+         should be sent as a 128KB hex file delimited by spaces. The
+         display cursor will move to show the download progress.
+
+
+
+The last three commands are concerned with testing memory and the real time clock.
+    
+Command: TM   Test Memory
+Format:  Test memory from XXXX to XXXX
+Action:  Tests memory in the range given. Any data in the memory 
+         will be overwritten.
+    
+              
+
+ Command: DC   Display RTC contents
+              Format: Display clock contents
+              Action: Displays the RTC ram in the following way:-
+
+13:10:06 31/3/05				 Time and date
+00 00 00 00 00 00 00                             reserved system bytes
+AA                                               RTC valid byte
+77                                               ACIA baud clocks
+00 01 FF 03                                      logical drive mapping
+08 00 3A 24 80 00 00 08 00 00 1B                 TTYSET parameters.
+00 01                                            ASN parameters.
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00     reserved system bytes
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  user application bytes
+
+
+Command: MC   Modify RTC
+Format:  RTC examine and alter from YY
+Action:  Examine and modify RTC ram contents in the same way as ME.
+    
+    
+
+Section 5  MB2K Flex utilities
+------------------------------
+    
+	The section describes the Flex utilities written to support specific features of the MB2K. The utilities are pre installed on the PROMdisk and also on a dsk in the 'MB2K utilities folder.
+    
+
+
+TIME.CMD
+              This program gives the date/time from the RTC if installed. It also updates the FLEX date registers, and so should be included in your startup.txt file to give Flex the correct date on boot. 
+            
+    
+SETTIME.CMD
+              This program sets the RTC time and date and is Y2K compliant. 
+    
+
+ALLOCATE.CMD
+              In the MB2K there is no fixed relationship between the 
+logical drive numbers of FLEX and the physical drives. The allocate 
+command sets up this mapping. Just typing allocate without any  parameters  will give the current mapping. Typing allocate followed 
+by a space and then four characters from the list:-
+
+0.....Drive type 0 is the PROMdisk
+1.....Drive type 1 is the RAMdisk
+2.....Drive type 2 is the MMC card
+3.....Drive type 3 is the remote FlexNet drive(s)
+              
+If a logical drive is not to be allocated then a '.' should be used. ie
+              
+'ALLOCATE 0123' would assign FLEX drive zero to the PROMdisk, drive 1 to the RAMdisk, the MMC card to drive two and a remote FlexNet volume to drive three.
+              
+'ALLOCATE 20.3' would assign the MMC card to drive zero, the PROMdisk to drive 1. nothing  to drive two, and and a remote FlexNet volume to drive three.
+
+Multiple FlexNet drives may be allocated, so 'ALLOCATE 3333' would assign all four Flex drives to FlexNet. If the RTC/PRAM is not present then the default allocation is (01..).
+    
+
+
+ TTYSET.CMD and ASN.CMD
+					These are copies of the standard Flex utilities which have been modified to save the current values to the RTC. In this way the TTYSET and ASN parameters will be set automatically when booting FLEX
+    
+
+FLEXLINK.TXT & MONLINK.TXT
+              			These files contain all  of the FLEX and MON09 equates RMB's and jump table entries for use in your own programs. To use them in a program use the LIB psuedo op:-
+
+
+               OPT NOL               SWITCH OFF LISTING 
+               LIB FLEXLINK          LINK IN FLEXLINK AND MONLINK
+               OPT LIS               SWITCH ON LISTING
+              *
+               ORG $C100             ORIGIN IS FLEX TPA
+              *
+              START JSR [CLEARG]     JUST CLEAR THE GRAPHICS SCREEN
+               JMP FWARM             AND RETURN TO FLEX
+              *
+               END START             TRANSFER ADDRESS IS START
+
+              
+Note that the monitor subroutine call is done by an indirect JSR. The source of FLEXLINK and MONLINK is presented in appendix 2.
+    
+
+
+       The remaining utilities on the dsk are all modified versions of the utilities supplied as part of Michael Evenson's FlexNet package. All of the utilities have been re-named to RXXX for consistency even though they support multiple mounted drives. Because the MB2K design has FlexNet compatible drivers in ROM, the utilities do not need to check and link to drivers installed by the FNETDRV command, (which is no longer needed), instead the RMOUNT command has the network checks that were previously part of FNETDRV. The following descriptions are from the FlexNet manua with additions for the MB2K .
+
+
+RCD Remote Change Directory
+
+        This command will change the current directory, which is the default directory which the other utilities will use. For example, if no file path is provided in the RCREATE command, the new file will be created in the current directory. If RCD is typed without parameters, the the current file path will be shown.
+
+        Syntax: RCD <filepath>
+
+        Example: RCD C:\folder3
+
+
+
+
+RCREATE Remote Create
+
+        The RCREATE command will prompt the user for the location, name, and other parameters to create a new DSK file.  After all parameters are entered, the user will be asked for a confirmation (yes/no) and if the answer is positive the file will be created. No parameters are required in the command line.
+
+        Example:
+        +++RCREATE
+        File path ? C:\folder3
+        File name ? newname
+        Disk number (in decimal) ? 123
+        Number of tracks (in decimal) ? 35
+        Sectors per track (in decimal) ? 10
+        OK to proceed ? Y
+
+        File successfully created
+        +++
+
+
+ NOTES:
+ 
+- The file path is the directory where the new file will be created. If none is specified, the file will be created in the current
+        directory.
+    
+- The file name ("newname") will be used for both the  name of the DSK file, as known by MS-DOS, and for the volume name which is stored in the SIR (track 0, sector 3) of the DSK file.
+        
+- The disk number, 123 in this example, is stored as the volume number in the SIR.
+        
+- If non-numeric values are entered for the disk number, the number of tracks or the number of sectors per track, the question will be repeated.
+        
+- RCREATE does not check for the "validity" of the track/sector format entered by the user. The file will be created, as long as the values given are numeric.
+        
+- In the above example, the disk image will be created with 35 tracks (including track 0) of 10 sectors, for a total of 340 data sectors.
+        
+- Note that RCREATing a disk does not automatically RMOUNT it or change the current directory. You must use RCD to change directories if needed, and RMOUNT to mount the new disk.
+
+
+RDELETE Remote Delete
+
+       RDELETE will prompt the user for the file path and the name of the file to be deleted. If no file path is given, the current directory will be assumed. RDELETE also adds a .DSK extension to the filename. RDELETE will then display the full path and name of the file, and will prompt the user for a response (Yes/No) before deleting the file. If the file cannot be found, an error message will be displayed.
+
+        Syntax: RDELETE <filename> [cr]
+
+
+
+RDIR    Remote Directory
+
+       RDIR performs a DIR command under DOS, and returns an exact copy of the listing generated on the MS-DOS screen:
+      
+- The current directory is used
+- Only files with the extension .DSK will be listed.
+- Command line parameters are allowed, and are passed to the DOS  command.
+        
+- RDIR displays 20 lines at a time, then prompts the user before displaying the next 20 lines. Typing a space will display the next lines, typing [esc] will stop the listing and return to the Flex prompt.
+
+        Examples
+        +++RDIR [cr]       Lists all DSK files in the current directory
+
+        +++RDIR A2* [cr]   Lists all DSK files which start with A2.
+
+
+
+RESYNC Re-SYNChronize
+
+       If something should happen and you restart the PC, it will be looking for the Sync information from the FLEX system. RESYNC will re-establish the communication link  and you can proceed. The command is simply RESYNC. If all is working properly you should not have to do anything at the PC end of the link.
+
+        Syntax: RESYNC [cr]
+
+
+
+RLIST   Remote List
+
+       RLIST displays a list of all the directories which are contained in the current directory. It is provided as an aid to the user when "navigating" in the MS-DOS directory tree structure.  No parameters are needed. RLIST displays the listing in the same fashion as RDIR, i.e. 20 lines at a time, then prompting the user for more.
+
+        Syntax: RLIST [cr]
+
+
+RMOUNT  Remote Mount
+
+       RMOUNT will "mount" a DSK file to the given drive number, in other words it selects a DSK file, opens it and sets it as the drive. After a file has been RMOUNTed, it can be read or written to by Flex as it were a standard floppy drive.  RMOUNT assumes that the dsk file is in the current Windows directory otherwise, the user may give the complete path and file name to RMOUNT a file which is in another directory. RMOUNT does not require a file extension to be typed; however, if one is entered, it must be .DSK (lowercase letters OK) or an error message will be generated. RMOUNT will check that the PC has FlexNet running and will connect if needed.
+
+NOTE: There is  no need to "unmount" a file before RMOUNTing another one. However, a file which is "mounted" is  open under MS-DOS, and may be corrupted if  the PC is powered  down while the file is open.
+
+
+        Examples:
+        +++RMOUNT <drive> <filename.dsk> [cr]
+        +++RMOUNT <drive> <filename> [cr]      
+
+Mount a file which is in the current directory. NETPC will automatically add the .DSK extension to the file name.
+
+        +++RMOUNT <drive> c:\folder\filename [cr]
+                                
+Mount a file which is in any directory. In this case the file will be   mounted  without changing the current directory.
+
+
+
+
+REXIT   Remote Exit
+
+        This command will close all files open on the PC and exit to Windows.
+
+
+
+
+
+Section 6  Programming guide
+----------------------------
+    
+6.1 Introduction
+               The subroutines in MON09 may be called from other programs by means of indirect JSRs via a table located at $F000. This table retains the same structure as MON09 for the Microbox 2 for backwards compatibility and is included in the monlink.txt header file. The header files are listed as appendix 2 and can be found on the utilities dsk in this package.
+
+       To use these routines in your program, insert a LIB flexlink directive at the beginning, and the use an indirect jump to subroutine whenever a routine is used. ie
+               
+               opt nol
+               lib flexlink
+               opt lis
+                 .
+                 .
+               ldx #100
+               ldy #354
+               jsr [LINE]
+                 .
+                 .
+    
+
+6.2 monitor routines
+    
+              STATUS
+              * Status routine.
+              * Entry: no parameters.
+              * Exit:  (Z)=0 if character ready.
+    
+              INCH1
+              * Input character with no echo and input.
+              * Entry: no parameters.
+              * Exit:  (A) = character.
+    
+              INCH
+              * Input character with echo INCH
+              * Entry: no parameters
+              * Exit: (A) = character.
+    
+              OUTCH
+              * Output char.
+              * Entry: (A) = character.
+              * Exit:  no change.
+    
+    
+              READ
+              * Read sector routine.
+              * Entry: (X) = address where sector is to be placed.
+              *        (A) = Track number.
+              *        (B) = Sector number.
+              * Exit:  (B) = Error code  (z)=1 if no error.
+    
+              WRITE
+              * Write track routine.
+              * Entry:  (X) = Address of area of memory from which the
+                        data will be taken.
+              *        (A) = Track number.
+              *        (B) = Sector number.
+              * Exit:  (B) = Error condition, (Z)=1 no an error.
+    
+              VERIFY
+              * Verify sector routine.
+              * Entry: no parameters.
+              * Exit:  (B) = Error condition (Z)=1 if no error.
+    
+              RST
+              * Restore drive to track 00.
+              * Entry: (X) = FCB address (3,X contains drive number).
+              * Exit:  (B) = Error condition, (Z)=1 if no error.
+    
+              DRV
+              * Select current drive.
+              * Entry: (X) = FCB address (3,X contains drive number).
+              * Exit:  (B) = Error condition, (Z)=0 and (c)=1 if error.
+              *        (B) = $0F if non existent drive.
+    
+              CHKRDY
+              * Check for drive ready.
+              * Entry: (X) = FCB address (3,X contains drive number)>
+              *  Exit: (B) =  Error condition, (Z)=0 AND (C)=1 if
+                              drive is not ready.
+    
+              QUICK
+              * Quick drive ready check.
+              * Entry: (X) = FCB address (3,X contains drive number).
+              * Exit:  (B) = Error condition, (Z)=0 AND (c)=1 if drive
+                             not ready.
+    
+              DINIT
+              * Init (cold start).
+              * Entry: no parameters.
+              * Exit: no change.
+    
+              WARM
+              * Warm start.
+              * Entry: no parameters.
+              * Exit: no change.
+    
+              SEEK
+              * Seek track.
+              * Entry: (A) = Track number.
+              *        (B) = Sector number.
+              * Exit:  (B) = Error condition, (Z)=1 if no error.
+    
+              PCRLF
+              * Print a CR followed by a LF.
+              * Entry: no parameters.
+              * Exit: (A) destroyed.
+    
+              PDATA1
+              * Print character string .
+              * Entry: (X) = Pointer to character string.
+              * Exit:  (X) = Pointer to end of string token Hex(04).
+              *        (A)   Destroyed.
+    
+              PSTRNG
+              * Print character string preceded by a CR,LF.
+              * Entry: (X) = Pointer to character string.
+              * Exit:  (X) = Pointer to end of string token Hex(04).
+              *        (A) = Destroyed.
+    
+              PRINTA
+              * Print the A reg.
+              * Entry: (A) = Data to be printed.
+    
+              PRINTX
+              * Print the X reg.
+              * Entry: (X) = Data to be printed.
+    
+              DELAY
+              * Delay routine.
+              * Entry: (X) = Delay time in milli seconds.
+              * Exit:  no change.
+    
+              BADDR
+              * Build a four hex digit address.
+              * Entry: no parameters.
+              * Exit:  (X) = Address.
+              *        (A) = Destroyed.
+              *        (B) = Destroyed.
+    
+              BYTE
+              * Get a two digit hex byte.
+              * Entry: no parameters.
+              * Exit:  (A) = Byte.
+    
+              OUTHL
+              * Print left hex digit.
+              * Entry: (A) = Byte containing digit.
+              * Exit:  (A) = Byte containing shifted digit.
+    
+              OUTHR
+              * Output right hex digit.
+              * Entry: (A) = Byte containing digit.
+              * Exit:  (A) = ASCII coded digit.
+    
+              INHEX
+              * Input a valid hex character (If not hex then backspace).
+              * Entry: no parameters.
+              * Exit:  (A) = Valid hex char.
+    
+ 
+
+              OUT2H
+              OUT2HA
+              OUT4HS
+              OUT2HS
+              * Hex print routines.
+              * Entry: (X) = Pointer to a one or two byte hex number.
+              * Exit:  (A) = Destroyed.
+    
+              OUTS
+              * Output a space.
+              * Entry: no parameters.
+              * Exit   (A) = Destroyed.
+    
+              RANDOM
+              * Random number generator.
+              * Entry: no parameters.
+              * Exit:  (A) = Random number from 0 to 255.
+    
+              GETRTC
+              * Get a byte from the RTC.
+              * Entry : (B) = RTC address.
+              * Exit : (A) = Data.
+    
+              PUTRTC
+              * Send a byte to the RTC.
+              * Entry : (B) = RTC address  (A) = Data
+    
+              BLEEP
+* Beep for 100ms.
+
+              TOUPPER
+         * convert to upper case chars in the range a-z
+              * Entry: (A) = ASCII char to be converted.
+              * Exit:  (A) = converted char if in range, else no
+                             change.
+		  
+              BCD2BIN
+              * convert BCD coded value to binary
+              * Entry: (A) = value to be converted.
+              * Exit:  (A) = converted value.
+
+              BIN2BCD
+              * convert binary value to BCD
+              * Entry: (A) = value to be converted.
+              * Exit:  (A) = converted value.
+
+
+
+Appendix 1
+----------
+
+-------------------------------------------------------------------
+| DECIMAL | HEX | ASCII |                FUNCTION                 |
+-------------------------------------------------------------------
+|    0    |  00 |   @   |      NULL                               |
+|    1    |  01 |   A   |      -                                  |
+|    2    |  02 |   B   |      -                                  |
+|    3    |  03 |   C   |      -                                  |
+|    4    |  04 |   D   |      EOT                                |
+|    5    |  05 |   E   |      -                                  |
+|    6    |  06 |   F   |      -                                  |
+|    7    |  07 |   G   |      BELL                               |
+|    8    |  08 |   H   |      BACKSPACE       (CURSOR LEFT)      |
+|    9    |  09 |   I   |      CURSOR RIGHT                       |
+|    10   |  0A |   J   |      LINE FEED       (CURSOR DOWN)      |
+|    11   |  0B |   K   |      CURSOR UP                          |
+|    12   |  0C |   L   |      CLEAR SCREEN                       |
+|    13   |  0D |   M   |      RETURN                             |
+|    14   |  0E |   N   |      MOVE CURSOR     (SEE NOTE)         |
+|    15   |  0F |   O   |      HOME                               |
+|    16   |  10 |   P   |      -                                  |
+|    17   |  11 |   Q   |      -                                  |
+|    18   |  12 |   R   |      -                                  |
+|    19   |  13 |   S   |      -                                  |
+|    20   |  14 |   T   |      -                                  |
+|    21   |  15 |   U   |      -                                  |
+|    22   |  16 |   V   |      INVERT ON                          |
+|    23   |  17 |   W   |      INVERT OFF                         |
+|    24   |  18 |   X   |      -                                  |
+|    25   |  19 |   Y   |      ERASE TO END OF LINE               |
+|    26   |  1A |   Z   |      ERASE LINE                         |
+|    27   |  1B |   -   |      ESCAPE                             |
+|    28   |  1C |   -   |      -                                  |
+|    29   |  1D |   -   |      -                                  |
+|    30   |  1E |   -   |      -                                  |
+|    31   |  1F |   -   |      -                                  |
+-------------------------------------------------------------------
+    
+NOTE:  Move  cursor  has two parameters. The control code should be 
+followed  by  two  bytes, row and column. The home position is 0,0. 
+The  value $20 should be added to each value. ie to move the cursor 
+to row 4 col 7, send the byte sequence  $0E,$24,$27 .
+    
+
+
+
+Appendix 2   Flexlink and Monlink source
+----------------------------------------
+
+
+*
+*********************************************
+* This file contains the subroutine and     *
+* storage location equates for FLEX. To     *
+* use this file insert the following lines  *
+* of code in your program :-                *
+*  OPT NOL                                  *
+*  LIB FLEXLINK                             *
+*  OPT LIS                                  *
+* For details of the routines and           *
+* parameters see the FLEX programmers guide *
+*********************************************
+*
+* Storage locations.
+LINBUF        EQU $C080         Line buffer start.
+TTYBS         EQU $CC00         TTYSET backspace character.
+SYSDRV        EQU $CC0B         System drive number.
+WRKDRV        EQU $CC0C         Working drive number.
+FMONTH        EQU $CC0E         FLEX system date.
+FDAY          EQU $CC0F
+FYEAR         EQU $CC10
+MEMEND        EQU $CC2B         Memory end pointer.
+TTYLBP                                     EQU $CC14                                       line buffer pointer location
+TTYEOL        EQU $CC02                                       end of line character location
+CR            EQU $0D
+LF            EQU $0A
+ACK           EQU $06
+NACK          EQU $15
+ESC           EQU $1B
+BS            EQU $08
+*
+* User callable routines.
+FCOLD         EQU $CD00         Cold start.
+FWARM         EQU $CD03         Warm start.
+RENTER        EQU $CD06         Main loop entry point.
+DOCMND        EQU $CD4B         Call dos as a subroutine.
+STAT          EQU $CD4E         Check terminal status.
+FINCH         EQU $CD09         Input character.
+INCH2         EQU $CD0C         Input character switched.
+FOUTCH        EQU $CD0F         Output character.
+OUTCH2        EQU $CD12         Output character switched.
+GETCHR        EQU $CD15         Get a char (main routine).
+PUTCHR        EQU $CD18         Put a char (main routine).
+INBUFF        EQU $CD1B         Input into line buffer.
+FPSTRNG       EQU $CD1E         Print a char string.
+CLASS         EQU $CD21         Classify a char.
+FPCRLF        EQU $CD24         Print a crlf.
+NXTCH         EQU $CD27         Get next buffer char.
+RSTIO         EQU $CD2A         Restore i/o vectors.
+GETFIL        EQU $CD2D         Get file spec.
+LOAD          EQU $CD30         File loader.
+SETEXT        EQU $CD33         Set file extension.
+OUTDEC        EQU $CD39         Output decimal number.
+OUTHEX        EQU $CD3C         Output hexadecimal number.
+OUTADR        EQU $CD45         Output hex address.
+RPTERR        EQU $CD3F         Report error.
+GETHEX        EQU $CD42         Get hexadecimal number.
+INDEC         EQU $CD48         Input decimal number.
+*
+ LIB MONLINK
+*
+
+
+*
+* Version 0.5 24-3-2005
+*
+*********************************************
+* This file contains the subroutine and     *
+* storage location equates for Mon09. To    *
+* use this file insert the following lines  *
+* of code in your program :-                *
+*  OPT NOL                                  *
+*  LIB FLEXLINK                             *
+*  OPT LIS                                  *
+* For details of the routines and           *
+* parameters see the FLEX programmers guide *
+*********************************************
+*
+********************************************
+* Table of jump addresses for subroutines. *
+* To use these subroutines use the         *
+* indirect jump to subroutine thus:-       *
+*        DELAY EQU $F014                   *
+*        JSR [DELAY]                       *
+********************************************
+RESET   EQU  $F000      Cold start.
+CONTRL  EQU  $F002      Warm start. 
+*
+INCH1   EQU  $F004      Input char without an echo .
+INCH    EQU  $F006      Input char .
+STATUS  EQU  $F008      Check for char.
+OUTCH   EQU  $F00A      Output char.
+*
+PDATA1  EQU  $F00C      Print string terminated by hex(04).
+PCRLF   EQU  $F00E      Print a cr followed by a lf.
+PSTRNG  EQU  $F010      PCRLF followed by PDATA1.
+*
+INIT    EQU  $F012      Init active device.
+*
+DELAY   EQU  $F014      Delay for (XREG) m/S.
+*
+BADDR   EQU  $F016      Get a four digit hex address into X.
+BYTE    EQU  $F018      Get a two hex digit number into A.
+INHEX   EQU  $F01A      Get a one digit hex char into A.
+OUT2H   EQU  $F01C      Output two hex chars pointed to by X.
+OUT2HS  EQU  $F01E      OUT2H plus a space.
+OUT4HS  EQU  $F020      Output four hex chars etc.
+OUTHR   EQU  $F022      Output right hex digit in A.
+OUTHL   EQU  $F024      Output left hex digit in A.
+OUTS    EQU  $F026      Output a space.
+*
+RANDOM  EQU  $F028      Returns a random number in the range 0-255.
+*
+PRINTA  EQU  $F02A      Print the contents of A.
+PRINTX  EQU  $F02C      Print the contents of X.
+*
+READ    EQU  $F02E      Read sector.
+WRITE   EQU  $F030      Write sector.
+VERIFY  EQU  $F032      Verify sector.
+RST     EQU  $F034      Restore to track 00.
+DRV     EQU  $F036      Select drive.
+CHKRDY  EQU  $F038      Check for drive ready.
+QUICK   EQU  $F03A      Quick check for drive ready.
+DINIT   EQU  $F03C      Drive cold start.
+WARM    EQU  $F03E      Drive warm start.
+SEEK    EQU  $F040      Seek to track.
+*
+GETTIM  EQU  $F042      Get time string from RTC.
+PUTTIM  EQU  $F044      Put time string to RTC.
+GETRTC  EQU  $F046      Get a byte from the RTC.
+PUTRTC  EQU  $F048      Put a byte to the RTC.
+*
+BEEP    EQU  $F04A      Sound a 100ms tone.
+*
+GCOM    EQU  $F04C      Send command to GDC.
+GPRM    EQU  $F04E      Send parameter to GDC.
+GPRMI   EQU  $F050      Get parameter from GDC.
+MASK    EQU  $F052      Load mask register.
+SETPEN  EQU  $F054      Define drawing mode.
+SETPAT  EQU  $F056      Define graphics pattern.
+FIGSF   EQU  $F058      Start figure drawing.
+FIGSG   EQU  $F05A      Start graphics drawing.
+SETPAR  EQU  $F05C      Define display partitions.
+SETCRG  EQU  $F05E      Set graphics cursor.
+GETCRG  EQU  $F060      Get graphics cursor.
+SETCRT  EQU  $F062      Set text cursor.
+GETCRT  EQU  $F064      Get text cursor.
+OFF     EQU  $F066      Turn display off.
+ON      EQU  $F068      Turn display on.
+GRAPH   EQU  $F06A      Set display to graphics.
+TEXT    EQU  $F06C      Set display to text
+MODE    EQU  $F06E      Set GDC mode.
+ZOOM    EQU  $F070      Set zoom factors.
+FILL    EQU  $F072      Area fill routine.
+CLEARX  EQU  $F074      Clear X words of display memory.
+CLEARG  EQU  $F076      Clear graphics display.
+CLEART  EQU  $F078      Clear text display.
+GDCINIT EQU  $F07A      Initialise GDC.
+GDCOUT  EQU  $F07C      Output a character.
+*
+INKEY   EQU  $F07E      Get a character from the keyboard.
+*
+POINT   EQU  $F080      Plot a point.
+LINE    EQU  $F082      Plot a line.
+RECT    EQU  $F084      Plot a rectangle.
+CIRCLE  EQU  $F086      Plot a circle.
+ARC     EQU  $F088      Plot an arc
+CLINK   EQU  $F08A      Link text parameters.
+SYNC    EQU  $F08C      Sync to vertical blanking.
+*
+* the following routines were not in the MB2 ROM.
+TOUPPER EQU  $F08E      Convert to upper case
+BCD2BIN EQU  $F090      BCD to binary conversion
+BIN2BCD EQU  $F092      binary to BCD conversion
+*
+I2CSTART EQU  $F094     set I2C start condition
+I2CSTOP                                EQU  $F096     set I2C stop condition
+I2CWBYTE EQU  $F098     write byte over the I2C buss
+I2CRBYTE EQU  $F09A     read byte over the I2C buss
+I2CACK                                EQU  $F09C     set I2C ack condition
+I2CNAK                                EQU  $F09E     set I2C nack condition
+*
+SCHAR    EQU  $F0A0     FlexNet driver send char
+RCHAR    EQU  $F0A2     FlexNet driver recieve char
+*
+**************************
+* Common System Equates  *
+**************************
+*
+PROM    EQU  $E800         Eprom starting address. (total 6K)
+RAM     EQU  $DE00         Scratch ram + stack space.
+IO      EQU  $E780         I/O base adddress
+SCRAT   EQU  RAM+384       Start of scratch space.
+SSTACK  EQU  RAM+127-16    Top of system stack.
+*
+DELCON  EQU  1250          Delay constant (processor clock in MHz * 50)
+*
+SECS    EQU  00            RTC clock register equates
+MINS    EQU  01
+HOURS   EQU  02
+DAYOW   EQU  03            day of week
+DAY     EQU  04
+MONTH   EQU  05
+YEAR    EQU  06
+SQWEREG EQU  07            SQWE register
+*
+* System register
+SYSREG  EQU  IO+$00
+*
+* Keyboard interface registers
+KEYC    EQU  IO+$10
+KEYD    EQU  IO+$11
+*
+* Serial port 1 interface registers
+ACIAC1  EQU  IO+$20        control/status reg
+ACIAD1  EQU  IO+$21        data reg
+BAUD1H  EQU  IO+$22        baud clock reg - high bits
+BAUD1L  EQU  IO+$23        baud clock reg - low bits
+*
+* External ROM disk interface registers
+MMCREG  EQU  IO+$30
+*
+* DMA controller registers
+MAPHI   EQU  IO+$40
+MAPLO   EQU  IO+$41
+*
+* Display registers (including GDC)
+VDUCHR  EQU  IO+$50        char reg
+VDUATT  EQU  IO+$51        attribute reg
+VDUCOL  EQU  IO+$52        col position reg
+VDUROW  EQU  IO+$53        row position reg
+VDUOFF  EQU  IO+$54        row offset reg
+*
+* Serial port 2 interface registers
+ACIAC2  EQU  IO+$60
+ACIAD2  EQU  IO+$61
+BAUD2H  EQU  IO+$62
+BAUD2L  EQU  IO+$63
+*
+* PROM reader registers
+PRDATA  EQU  IO+$70
+PRSTAT  EQU  IO+$71
+PRRST   EQU  IO+$72
+*
+**************************
+* scratch storage space  *
+**************************
+        ORG  RAM+128
+BUFFER  RMB  256           Floppy interface sector buffer.
+*
+        ORG  SCRAT
+STACK   RMB  2             User system stack.
+*
+* Vector table for redirection
+NMIV    RMB  2             NMI interrupt vector.
+IRQV    RMB  2             IRQ interrupt vector.
+FIRQV   RMB  2             FIRQ interrupt vector.
+SWI2V   RMB  2             SWI2 interrupt vector.
+SWI3V   RMB  2             SWI3 interrupt vector.
+*
+IPORT   RMB  1             Active input port.
+OPORT   RMB  1             Active output port.
+*
+DRIVE   RMB  1             Format drive value.
+TRACK   RMB  1             Format track value.
+SECTOR  RMB  1             Format sector value.
+*
+TEMP    RMB  1
+XTEMP   RMB  2
+YTEMP   RMB  2
+TTO     RMB  2
+*
+RNDM    RMB  4             Random number storage.
+*
+WARMS   RMB  1             Warm start flag.
+*
+DDSTAB  RMB  4             Disc driver type table.
+REAVEC  RMB  2             Disc driver jump table.
+WRIVEC  RMB  2
+VERVEC  RMB  2
+RSTVEC  RMB  2
+DRVVEC  RMB  2
+CHKVEC  RMB  2
+QUIVEC  RMB  2
+INIVEC  RMB  2
+WARVEC  RMB  2
+SEEVEC  RMB  2
+*
+RTCFAIL RMB  1             RTC fail flag.
+*
+CONST   RMB  1
+* 
+* Internal display variables
+ROW     RMB  1
+COL     RMB  1
+CCOL    RMB  1
+CROW    RMB  1
+BCOL    RMB  1
+BROW    RMB  1
+ATTRI   RMB  1
+CSPACE  RMB  1
+CHARTAB RMB  2
+CURSOR  RMB  2
+OFFSET  RMB  2
+CZOOM   RMB  1
+CTYPE   RMB  1
+ESCFLG  RMB  1
+FLASH   RMB  2
+CFLAG   RMB  1
+*
+CHKSUM  RMB  2             FlexNet driver checksum
+

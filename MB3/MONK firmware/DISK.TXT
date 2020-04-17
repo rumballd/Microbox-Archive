@@ -1,0 +1,518 @@
+*******************************************
+*  Mass storage drivers for Microbox III. *
+*  -------------------------------------  *
+*  Devices supported :-                   *
+*        0 (A) = Floppy disk 0            *
+*        1 (B) = Floppy disk 1            *
+*        2 (C) = Winchester disk          *
+*        3 (D) = Ramdisk                  *
+*        4 (E) = Epromdisk                *
+*******************************************
+*
+* SELECT      Select a physical drive and swap vectors.
+* Entry :-  a0 points to dcb.
+* Exit :-   (d0) = error code, 0 if ok.
+select   movem.l d1/a0-a2,-(sp)
+         move.b  0(a0),1(a0)  For the moment, logical=physical.
+         cmp.b   #5,1(a0)     Drive in range?
+         bge     sel_err
+         move.b  1(a0),d0    New same as old?
+         cmp.b   olddrv,d0
+         beq.s   sel_end
+*
+         lea.l   j_table+$f6,a1 Move new jump table entries.
+         and.l   #$ff,d0
+         move.l  #24,d1
+         mulu    d1,d0        d0 has table offset.
+         lea.l   drv_tab,a2
+         add.l   d0,a2        a2 points to vectors.
+         moveq.l #5,d0        Four vectors to move.
+sellp    move.l  (a2)+,(a1)+
+         dbf.s   d0,sellp
+*
+         cmp.b   #2,1(a0)     Floppy?
+         bge.s   sel_end
+         move.b  oldfdv,d0    Old floppy same as new?
+         cmp.b   1(a0),d0
+         beq.s   sel_end
+         move.b  1(a0),oldfdv set up old drive number.
+         bsr     flush        flush buffers.
+         btst.b  #0,1(a0)
+         bne.s   fsel1
+         move.b  #$80,acia+clrreg drive = 0
+         bra.s   fsel2
+fsel1    move.b  #$80,acia+setreg drive = 1
+fsel2    move.b  ftrack,d0     Swap track registers.
+         move.b  fdctrk,ftrack
+         move.b  d0,fdctrk
+sel_end  move.b  1(a0),olddrv
+         moveq   #0,d0
+         movem.l (sp)+,d1/a0-a2
+         rts
+sel_err  moveq   #1,d0
+         movem.l (sp)+,d1/a0-a2
+         rts
+*
+* Internal jump points.  (point to jump table entries).
+restore  jmp.l   j_table+$f6
+*
+seek     jmp.l   j_table+$fc
+*
+read     jmp.l   j_table+$102
+*
+write    jmp.l   j_table+$108
+*
+* Table entries for drivers.
+* Drive 0 (floppy disc 0)
+drv_tab  jmp.l   frestore
+         jmp.l   fseek
+         jmp.l   fread
+         jmp.l   fwrite
+*
+* Drive 1 (floppy disc 1)
+         jmp.l   frestore
+         jmp.l   fseek
+         jmp.l   fread
+         jmp.l   fwrite
+* Drive 2 (Hard disk)
+         jmp.l   hrestore
+         jmp.l   hseek
+         jmp.l   hread
+         jmp.l   hwrite
+*
+* Drive 3 (Ramdisk)
+         jmp.l   dummy
+         jmp.l   dummy
+         jmp.l   rread
+         jmp.l   rwrite
+*
+* Drive 4 (Eprom disk)
+         jmp.l   dummy
+         jmp.l   dummy
+         jmp.l   eread
+         jmp.l   ewrite
+*
+*
+* Floppy disc drivers for the Western Digital WD1770/2
+*
+fdccom   equ     fdc
+fdctrk   equ     fdc+2
+fdcsec   equ     fdc+4
+fdcdat   equ     fdc+6
+*
+stp      equ     $03          Drive stepping rate.
+rstcmd   equ     $00+stp      Restore command.
+seekcmd  equ     $10+stp      Seek command.
+readcmd  equ     $90          Read command.
+writecmd equ     $b2          Write command.
+*
+busy     equ     0            Fdc busy.
+drq      equ     1            Data request.
+*
+* Wait until current command is finished.
+fwait    btst.b  #busy,fdccom
+         bne.s   fwait
+         rts
+* Send command in (d0) to fdc.
+fcmd     bsr.s   fwait
+         move.b  d0,fdccom
+         moveq   #1,d0
+         divs.l  d0,d0        40uS delay.
+         divs.l  d0,d0
+         rts
+*
+* Flush write buffers, disable read buffers.
+flush    move.b  #$ff,rtrk
+         move.b  wtrk,d2       Write out write buffer.
+ cmp.b #$ff,d2
+ beq.s fleok
+         move.b  #$ff,wtrk
+         lea.l   wbuff,a2
+         jsr.l   put_trk
+         beq.s   fleok
+         move.l  #$ffff,d0        End not ok.
+ bra.s fle
+fleok moveq.l #0,d0
+fle      rts
+*
+* Restore to track 00.
+frestore moveq   #rstcmd,d0   Issue restore command.
+         bsr.s   fcmd
+         bsr.s   fwait
+         rts
+* Seek to track pointed to by (d2).
+fseek    move.l  d0,-(sp)
+         moveq   #0,d0        Convert track -> cylinder
+         move.b  d2,d0     and select side.
+         btst.b  #0,d0
+         bne.s   fs1
+         move.b  #$20,setreg+acia side=0
+         bra.s   fs2
+fs1      move.b  #$20,clrreg+acia side=1
+fs2      lsr.l   #1,d0
+         cmp.b   fdctrk,d0
+         beq.s   fse
+         move.b  d0,fdcdat Set up new track.
+         moveq   #seekcmd,d0  Issue seek command.
+         bsr     fcmd
+         bsr     fwait
+fse      move.l  (sp)+,d0
+         rts
+* Read a logical sector from track/sector.
+fread    move.b  3(a0),d0     Track already in buffer?
+         cmp.b   rtrk,d0
+         beq.s   rmove        If so, then move data.
+         move.b  3(a0),d2
+         lea.l   rbuff,a2
+         bsr.s   get_trk    read in track to buffer.
+         beq.s   rmove        If no errors, then move data.
+         rts
+* move the data from the track buffer.
+rmove    move.b  3(a0),rtrk   Update rtrk.
+         move.b  5(a0),d0
+         and.l   #$ff,d0
+         asl.l   #7,d0        sector times 128.
+         add.l   #rbuff,d0    add in buffer base.
+         movea.l d0,a3
+qrm1     movea.l 6(a0),a1
+         move.l  #31,d0       128 bytes to move.
+rm1      move.l  (a3)+,(a1)+
+         dbf.s   d0,rm1       Tight move loop for 68010
+         moveq.l #0,d0        No errors!
+         rts
+*
+* GET_TRACK   Read a track into a buffer.
+* Read 2048 bytes from disc to buffer, retry 10 times before
+* giving up.
+* Entry:- (d2) = track to read.  (a2) = base address of buff er.
+* Exit:-  No change.
+get_trk  movem.l d0-d2/a0-a1,-(sp)
+         move.b #10,errcount  Set retry count.
+gt1      bsr     seek         Move to track.
+         move.b  #0,fdcsec    Read from first sector.
+gt11     move.b  #readcmd,d0
+         bsr     fcmd
+         move.l  #2047,d0     2048 bytes to get.
+         movea.l #fdc,a1      Fdc base address.
+fr1      btst.b  #drq,(a1)    Data ready?
+         beq.s   fr2          If not, check for end of data.
+         move.b  6(a1),(a2)+  If so, get data.
+         dbf.s   d0,fr1
+         move.b  #$d0,fdccom  Abort read track.
+         bra.s   fr3
+fr2      btst.b  #busy,(a1)   End of command?
+         bne.s   fr1          If not, check for more data.
+fr3      moveq.l  #1,d0       Wait a bit for status to settle.
+         divs.l  d0,d0
+         divs.l  d0,d0
+         move.b  (a1),d0      Get error status.
+         and.b   #$1c,d0      Mask for read errors.
+ move.b d0,fdcerr
+         beq.s   fre          If ok then return.
+         bsr     restore      If not ok, recalibrate,
+         moveq.l #7,d1        ring bells,
+         bsr     conout       then decrement
+         subi.b  #1,errcount  the error count,
+         bne     gt1          and try again.
+         move.b fdcerr,d0    Ten retries, so give up!
+fre      movem.l (sp)+,d0-d2/a0-a1
+         rts
+*
+* Write a logical sector to track/sector.
+fwrite    move.b  d1,d3        Save parameter.
+         move.b  3(a0),d0     Track already in buffer?
+         cmp.b   wtrk,d0
+         beq.s   wmove        If so, then move data.
+         move.b  wtrk,d2      Write out old track.
+         lea.l   wbuff,a2
+         bsr.s   put_trk
+         beq.s   wt1          If no errors, then get track.
+         rts
+wt1      move.b  3(a0),d2     Get new track for overwriting.
+         lea.l   wbuff,a2
+         bsr     get_trk
+         beq.s   wmove
+         rts
+* move the data to the track buffer.
+wmove    move.b  3(a0),wtrk   Update wtrk.
+         move.b  5(a0),d0
+         and.l   #$ff,d0
+         asl.l   #7,d0        sector times 128.
+         add.l   #wbuff,d0    add in buffer base.
+         movea.l 6(a0),a1
+         movea.l d0,a3
+         move.l  #31,d0       128 bytes to move.
+wm1      move.l  (a1)+,(a3)+
+         dbf.s   d0,wm1       Tight move loop for 68010
+         cmp.b   #1,d3        Is this a directory sector?
+         bne.s   wse          No, normal end.
+         move.b  wtrk,d2      Else do write.
+         lea.l   wbuff,a2
+         bsr.s   put_trk
+         bne.s   wse1         If error, panic.......
+wse      moveq.l #0,d0        No errors!
+wse1     rts
+*
+* PUT_TRACK  Write the write buffer to disk.
+* Write the buffer to disk, retry
+* 10 times before giving up, empty read buffer,
+* ignore if track = $ff (empty buffer).
+* Entry :- (d2) = track  (a2) = buffer base address.
+* Exit  :- No change.
+put_trk cmp.b  #$ff,d2       Empty buffer?
+         bne.s   fwff
+ moveq #0,d0
+         rts                   Yes, so return.
+fwff     movem.l d0-d2/a0-a1,-(sp)
+         move.b  #$ff,rtrk    Empty read buffer.
+         move.b  #10,errcount Set retry count.
+pt1      bsr     seek         Move to track.
+         move.b  #0,fdcsec    Write from 1st sector.
+         move.b  #writecmd,d0 Issue write command.
+         bsr     fcmd
+         movea.l #wbuff,a2    Get pointer to data buffer.
+         movea.l #fdc,a1      Point to fdc.
+         move.l  #2047,d0     Bytes to transfer.
+fw1      btst.b  #drq,(a1)    Data request?
+         beq.s   fw2          If not, check for end of data.
+         move.b  (a2)+,6(a1)  If so, put data.
+         dbf     d0,fw1
+ move.l #500,d0 Wait for last two bytes
+ww dbf d0,ww to get through the fdc.
+         move.b  #$d0,(a1)    Abort write track.
+         bra.s   fw3
+fw2      btst.b  #busy,(a1)   End of command?
+         bne.s   fw1          If not, check for more data.
+fw3      moveq   #1,d0
+         divs.l  d0,d0
+         divs.l  d0,d0
+         move.b  (a1),d0      Get error status, and verify.
+         and.b   #$5c,d0
+ move.b d0,fdcerr
+         beq.s   fwe          If no error on write, return.
+         bsr     restore      If not ok, recalibrate,
+         moveq.l #7,d1        ring bells,
+         bsr     conout       then decrement
+         subi.b  #1,errcount  the error count,
+         bne     pt1          and try again.
+         move.b fdcerr,d0     Ten retries, so give up!
+fwe      movem.l (sp)+,d0-d2/a0-a1
+         rts
+*
+* Rodime RO650 winchester disk drivers.
+*
+* Clear winchester dcb. (a1) points to dcb (12 bytes).
+clrdcp clr.l (a1)
+ clr.l 4(a1)
+ clr.l 8(a1)
+ rts
+*
+* Get wini status after command.
+hstat move.l a0,-(sp)
+ lea.l pia1,a0
+hstat1 btst.b #4,$1a(a0)
+ bne hstat1
+ move.b #$a8,$0c(a0)
+ move.b #$a0,$0c(a0)
+hstat2 btst.b #4,$1a(a0)
+ bne hstat2
+ move.b #$a8,$0c(a0)
+ move.b #$a0,$0c(a0)
+ move.l (sp)+,a0
+ rts
+*
+* command xmit routine. (a1) points to dcp.
+hcomm movem.l d0-d1/a0-a1,-(sp)
+ lea.l pia1,a0
+hc1 btst.b #0,$18(a0)  Wait for not busy.
+ beq.s hc1
+ move.b #$fe,$10(a0) Set up select address.
+ move.b #$ff,$04(a0)
+ move.b #$ef,$18(a0) Assert select.
+hc2 btst.b #0,$18(a0) Wait for busy.
+ bne hc2
+ move.b #$ff,$18(a0) negate select.
+ moveq #5,d1 loop count=6
+hc3 btst.b #4,$1a(a0) wait for request
+ bne hc3
+ not.b (a1) negate for inverted data buss
+ move.b (a1)+,$10(a0) move the data.
+ moveq #1,d0 waste some time.
+ divu d0,d0
+ divu d0,d0
+ move.b #$a8,$0c(a0) pulse the ack line.
+ move.b #$a0,$0c(a0)
+ dbf d1,hc3
+ move.b #$00,$04(a0)
+ movem.l (sp)+,d0-d1/a0-a1
+ rts
+*
+hrestore move.l a1,-(sp)
+ lea.l winidcb,a1
+ bsr clrdcp
+ move.b #$01,(a1)
+ bsr.s hcomm
+ bsr hstat
+ move.l (sp)+,a1
+ rts
+*
+hseek movem.l d0-d1/a1,-(sp)
+ lea.l winidcb,a1
+ bsr clrdcp
+ moveq #0,d0
+ move.b 5(a0),d0
+ asl.l #2,d0
+ move.l #34,d1
+ mulu d1,d0
+ moveq #0,d1
+ move.b 6(a0),d1
+ add.l d1,d0
+ move.l d0,(a1)
+ move.b #$0b,(a1)
+ bsr   hcomm
+ bsr hstat
+ movem.l (sp)+,d0-d1/a1
+ rts
+*
+hread movem.l d0-d1/a0-a1,-(sp)
+ lea.l winidcb,a1
+ bsr clrdcp
+ moveq #0,d0
+ move.b 5(a0),d0
+ asl.l #2,d0
+ move.l #34,d1
+ mulu d1,d0
+ moveq #0,d1
+ move.b 6(a0),d1
+ add.l d1,d0
+ move.l d0,(a1)
+ move.b #$08,(a1)
+ move.b #$01,4(a1)
+ bsr   hcomm
+ move.l (a0),a0
+ lea.l pia1,a1
+ move.l #255,d0
+ move.b #$00,4(a1)
+hrlp1 btst.b #4,$1a(a1)
+ bne hrlp1
+ moveq #1,d1
+ divu d1,d1
+ divu d1,d1
+ divu d1,d1
+ move.b $10(a1),(a0)+
+ move.b #$a8,$0c(a1)
+ move.b #$a0,$0c(a1)
+ dbf d0,hrlp1
+ move.l #255,d0
+hrlp2 btst.b #4,$1a(a1)
+ bne hrlp2
+ move.b #$a8,$0c(a1)
+ move.b #$a0,$0c(a1)
+ dbf d0,hrlp2
+ bsr hstat
+ movem.l (sp)+,d0-d1/a0-a1
+ clr.l d0
+ rts
+*
+hwrite movem.l d0-d1/a0-a1,-(sp)
+ lea.l winidcb,a1
+ bsr clrdcp
+ moveq #0,d0
+ move.b 5(a0),d0
+ asl.l #2,d0
+ move.l #34,d1
+ mulu d1,d0
+ moveq #0,d1
+ move.b 6(a0),d1
+ add.l d1,d0
+ move.l d0,(a1)
+ move.b #$0a,(a1)
+ move.b #$01,4(a1)
+ bsr   hcomm
+ move.l (a0),a0
+ lea.l pia1,a1
+ move.l #255,d0
+ move.b #$ff,4(a1)
+hwlp1 btst.b #4,$1a(a1)
+ bne hwlp1
+ move.b (a0)+,$10(a1)
+ moveq #1,d1
+ divu d1,d1
+ divu d1,d1
+ divu d1,d1
+ move.b #$a8,$0c(a1)
+ move.b #$a0,$0c(a1)
+ dbf d0,hwlp1
+ move.l #255,d0
+hwlp2 btst.b #4,$1a(a1)
+ bne hwlp2
+ move.b #$a8,$0c(a1)
+ move.b #$a0,$0c(a1)
+ dbf d0,hwlp2
+ move.b #$00,4(a1)
+ bsr hstat
+ movem.l (sp)+,d0-d1/a0-a1
+ clr.l d0
+ rts
+*
+* POINT set (a0) to the ramdisk 'sector'.
+rdpnt movem.l d0-d1,-(sp)
+ moveq #0,d0
+ move.b 3(a0),d0
+ asl.l #4,d0 times 16
+ moveq.l #0,d1
+ move.b 5(a0),d1
+ add.l d1,d0
+ asl.l #7,d0 byte boundary
+ add.l #$20000,d0 ramdisk offset
+ movea.l d0,a0
+ movem.l (sp)+,d0-d1
+ rts
+*
+*
+* RAMDISK read.
+rread movem.l a0-a1,-(sp)
+ move.l 6(a0),a1
+ bsr.s rdpnt
+ move.l #31,d0
+rrlp move.l (a0)+,(a1)+
+ dbf.s d0,rrlp
+ moveq #0,d0
+ movem.l (sp)+,a0-a1
+ rts
+*
+* RAMDISK write.
+rwrite movem.l a0-a1,-(sp)
+ move.l 6(a0),a1
+ bsr.s rdpnt
+ move.l #31,d0
+rwlp move.l (a1)+,(a0)+
+ dbf.s d0,rwlp
+ moveq #0,d0
+ movem.l (sp)+,a0-a1
+ rts
+*
+* PROMDISK read.
+eread movem.l a0-a1,-(sp)
+ move.l 6(a0),a1
+ bsr.s rdpnt
+ add.l #$c0000,a0 add in eprom offset.
+ move.l #31,d0
+erlp move.l (a0)+,(a1)+
+ dbf.s d0,erlp
+ moveq #0,d0
+ movem.l (sp)+,a0-a1
+ rts
+*
+* PROMDISK write.  !?!???
+ewrite movem.l a0-a1,-(sp)
+ move.l 6(a0),a1
+ bsr   rdpnt
+ add.l #$c0000,a0 add in eprom offset.
+ move.l #31,d0
+ewlp move.l (a1)+,(a0)+
+ dbf.s d0,ewlp
+ moveq #0,d0
+ movem.l (sp)+,a0-a1
+ rts
+

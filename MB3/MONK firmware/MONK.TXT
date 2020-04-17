@@ -1,0 +1,669 @@
+**************************
+**************************  ****************************
+** MONK   Ver 2.0       **  **    This version for    **
+** D.A.Rumball   Jan 85 **  **        CPM 68k         **
+**************************  ****************************
+**************************
+*
+******************************************
+* This program is the core section of a  *
+* general 68000 system monitor. It can   *
+* be configured to a particular system   *
+* at assembly time by including on the   *
+* source disk libary files containing    *
+* the system specific code for the disk  *
+* and console drivers and extra commands *
+* and subroutines. These files are:-     *
+*  FDB.........Contains the jump table   *
+*              entries for extra subs.   *
+*  COMTAB......Contains the extra jump   *
+*              table entries for commands*
+*  MINIT.......Contains the power on     *
+*              and reset code.           *
+*  CONSOLE.....Contains the console      *
+*              driver code.              *
+*  DISK........Contains the disk driver  *
+*              code.                     *
+*  SUBS........Contains the code for any *
+*              extra system subroutines. *
+*  COMMANDS....Contains the command set. *
+*  BOOT........Contains the boot routine.*
+*  ECOMMS......Contains the extra        *
+*              command set.              *
+******************************************
+*
+*
+*************************
+* Common System Equates *
+*************************
+*
+prom     equ     $000c0000    Prom base address.
+j_table  equ     $0007fe00    Jump table base address.
+rbuff    equ     $0007ec00    Floppy read track buffer.
+wbuff    equ     $0007f400    Floppy write track buffer.
+ram      equ     $0007fc00    Ram base address.
+io       equ     $000ff000    Input/output base address.
+s_stack  equ     $0007e3fe    Initial system stack.
+u_stack  equ     $0007e3fe    Initial user stack.
+*
+**********************************
+* Monitor scratch storage space. *
+**********************************
+         abs     ram
+ud       ds.l    8            Eight data registers.
+ua       ds.l    7            Seven address registers.
+usptr    ds.l    1            Stack pointer.
+usr      ds.w    1            Status register.
+upc      ds.l    1            Program counter.
+*
+brkp     ds.b    30           Five breakpoints, six bytes each.
+bflg     ds.b    1            Breakpoint flag.
+*
+iport    ds.b    1            Active input port.
+oport    ds.b    1            Active output port.
+*
+p_down   ds.b    1            Power down detection byte.
+rand     ds.l    1            Random number storage.
+*
+olddrv    ds.b    1            Active drive number.
+oldfdv   ds.b    1            Inactive floppy track number.
+ftrack ds.b 1
+wtrk ds.b 1
+rtrk ds.b 1
+errcount ds.b 1
+fdcerr ds.b 1
+ ds.b 1
+*
+winidcb  ds.b    12           Hard disk DCB.
+*
+sys_dcb  ds.b    1            System DCB. (logical drive)
+         ds.b    1            Physical drive.
+track    ds.w    1            Track number.
+sector   ds.w    1            Sector number.
+dma      ds.l    1            Data Move Address.
+*
+time_st  equ     hours
+hours    ds.b    1            Real time clock scratch.
+mins     ds.b    1
+secs     ds.b    1
+dsecs    ds.b    1
+year     ds.b    1
+month    ds.b    1
+date     ds.b    1
+day      ds.b    1
+*
+vduparms ds.l    5            Terminal emulator scratch.
+*
+xpos ds.w 1                   Graphics routines scratch.
+ypos ds.w 1
+xtemp ds.w 1
+ytemp ds.w 1
+sidex ds.w 1
+sidey ds.w 1
+temp ds.w 1
+*
+*************************************************
+* Exception jump table & subroutine jump table. *
+*************************************************
+*  Mapped to $0 after reset.
+         code
+         dc.l    s_stack      Monitor stack.
+         dc.l    mcold        Monitor cold start.
+         dc.l    b_excpt      Bus error.
+         dc.l    a_excpt      Address error.
+         dc.l    i_excpt      Illegal instruction.
+         dc.l    d_excpt      Divide by zero.
+         dc.l    c_excpt      CHK exception.
+         dc.l    o_excpt      TRAPV exception.
+         dc.l    p_excpt      Privilege exception.
+         dc.l    t_excpt      Trace exception.
+         dc.l    x_excpt      L1010 emulation (illegal instruction).
+         dc.l    y_excpt      L1111 emulation (illegal instruction).
+         dc.l    $ffffffff
+         dc.l    $ffffffff
+         dc.l    $ffffffff
+         dc.l    s_excpt      Uninitialised interrupt.
+         dc.l    $ffffffff
+         dc.l    $ffffffff
+         dc.l    $ffffffff
+         dc.l    $ffffffff
+         dc.l    $ffffffff
+         dc.l    $ffffffff
+         dc.l    $ffffffff
+         dc.l    $ffffffff
+         dc.l    s_excpt      Spurious interrupt.
+*
+* Autovectored interrupts.
+*
+         dc.l    int          Interrupt level 1
+         dc.l    int          Interrupt level 2
+         dc.l    int          Interrupt level 3
+         dc.l    int          Interrupt level 4
+         dc.l    int          Interrupt level 5
+         dc.l    int          Interrupt level 6
+         dc.l    int7         Interrupt level 7
+*
+* Trap vectors
+*
+         dc.l   trp           Unexpected trap.
+         dc.l   trp
+         dc.l   trp
+         dc.l   trp
+         dc.l   trp
+         dc.l   trp
+         dc.l   trp
+         dc.l   trp
+         dc.l   trp
+         dc.l   trp
+         dc.l   trp
+         dc.l   trp
+         dc.l   trp
+         dc.l   trp
+         dc.l   trp14         Breakpoints.
+         dc.l   trp15         User requests.
+*
+**************************************
+* VMOS low level interface routines. *
+**************************************
+ include ossubs
+*
+* Monitor jump table Copied to j_table on reset.
+* Class 1 routines.
+jmp_tab  jmp.l   mcold        Monitor cold start.
+         jmp.l   mwarm        Monitor warm start.
+         jmp.l   dummy        Spare slot.
+         jmp.l   dummy        Spare slot.
+         jmp.l   dummy        Spare slot.
+         jmp.l   dummy        Spare slot.
+         jmp.l   dummy        Spare slot.
+         jmp.l   dummy        Spare slot.
+* class 2 routines.
+         jmp.l   status       Test for recieved character.
+         jmp.l   inch1        Input character, no echo.
+         jmp.l   inch         Input character with echo.
+         jmp.l   outch        Output character.
+         jmp.l   dummy        Spare slot.
+         jmp.l   dummy        Spare slot.
+         jmp.l   dummy        Spare slot.
+         jmp.l   dummy        Spare slot.
+* Class 3 routines.
+         jmp.l   pdata1       Print a string.
+         jmp.l   pcrlf        Print a new line.
+         jmp.l   pstring      Print crlf + string.
+         jmp.l   outs         Print a space.
+         jmp.l   outns        Print multiple spaces.
+         jmp.l   locase       Convert character to lower ca.
+         jmp.l   dummy        Spare slot.
+         jmp.l   dummy        Spare slot.
+* Class 4 routines.
+         jmp.l   inhex        Input multi digit hex number.
+         jmp.l   prompt       Print a string plus input hex
+         jmp.l   outh           "    " one     "    "    "
+         jmp.l   out2h          "    " two     "    "    "
+         jmp.l   out4h          "    " four    "    "    "
+         jmp.l   out8h        Print an eight digit hex numb.
+         jmp.l   dummy        Spare slot.
+         jmp.l   dummy        Spare slot.
+* Class 5 routines.
+         jmp.l   delay        Delay routine.
+         jmp.l   beep         Beep buzzer.
+         jmp.l   random       Random number generator.
+         jmp.l   getrtc       Get data from real time clock
+         jmp.l   putrtc       Put data to real time clock.
+         jmp.l   dummy        Spare slot.
+         jmp.l   dummy        Spare slot.
+         jmp.l   dummy        Spare slot.
+* Class 6 routines.
+         jmp.l   select       Select drive.
+j_disk   jmp.l  frestore      Recalibrate drive.
+         jmp.l  fseek         Seek to cylinder.
+         jmp.l  fread         Read sector.
+         jmp.l  fwrite        Write sector.
+         jmp.l   dummy        Spare slot.
+         jmp.l   dummy        Spare slot.
+         jmp.l   dummy        Spare slot.
+* Class 7 routines.
+         jmp.l   dvs          Define virtual screen.
+         jmp.l   sync         Wait for vertical blanking.
+         jmp.l   loadcmr      Load look up tables.
+         jmp.l   text         Display text screen.
+         jmp.l   hi_g1        Display 650 x 500 mono.
+         jmp.l   hi_g2        Display 650 x 500 4 colour.
+         jmp.l   lo_graph     Display 320 x 250 16 colour.
+         jmp.l   clearg       Clear graphics space.
+         jmp.l   boader       Define boarder colour.
+         jmp.l   setpen       Define `pen' style.
+         jmp.l   move         Move drawing point.
+         jmp.l   query        Return pel value.
+         jmp.l   point        Plot point.
+         jmp.l   line         Plot line.
+         jmp.l   rect         Plot rectangle.
+         jmp.l   circle       Plot circle.
+         jmp.l   patdef       Define fill pattern.
+         jmp.l   fill         Plot filled rectangle.
+         jmp.l   flood        Arbituary area fill.
+         jmp.l   scroll       Scroll through virtual screen.
+         jmp.l   pan          Pan across virtual screen.
+         jmp.l   locate       Centre displayed area on cursor.
+         jmp.l   mouse        Return mouse status.
+         jmp.l   wordblt      Move block (word bounds) with logical mods.
+         jmp.l   bitblt       Move block (bit bounds) with logical mods.
+         jmp.l   dummy        Spare slot.
+         jmp.l   dummy        Spare slot.
+         jmp.l   dummy        Spare slot.
+         jmp.l   dummy        Spare slot.
+         jmp.l   dummy        Spare slot.
+         jmp.l   dummy        Spare slot.
+         jmp.l   dummy        Spare slot.
+*
+copyrght dc.b    ' c 1986.  D.A.Rumball  R.A.G. '
+         dc.b    $20          Monk version number.
+         dc.b    2            OP/SYS code.
+*
+**************************************
+* Start of monitor. Entered on reset *
+**************************************
+*
+hdr      dc.b    $0c,'** MONK 68000 monitor  Ver 2.0   D.A.Rumball 1985 **',0
+prmpt    dc.b    '==>',0
+*
+mcold    move.w  #$2700,sr    Disable interrupts, supervisor.
+         move.b  #$c4,$ffe24  256k/16bits + 2 banks of ram.
+*
+         move.l  #$80000,a0        Move exception vectors to low ram.
+         move.l  #prom,a1
+         move.w  #255,d0
+cloop    move.l  (a1)+,(a0)+
+         dbf.s   d0,cloop
+         move.b  #$01,$ffe06      Switch vectors to ram.
+*
+         move.l  #j_table,a0   Move jump table to ram.
+         move.l  #jmp_tab,a1
+         move.w  #127,d0
+jloop    move.l  (a1)+,(a0)+
+         dbf.s   d0,jloop
+*
+         cmp.b   #$aa,p_down  Check scratch and clear if not valid.
+         beq.s   ram_ok
+         move.l  #ram,a0
+cloop1   clr.l   (a0)+        Clear out scratch storage space.
+         cmp.l   #ram+512,a0
+         bne.s   cloop1
+         move.b  #$aa,p_down
+*
+ram_ok   move.l  #u_stack,usptr Set up user stack pointer.
+*
+*******************************
+* System dependant init code. *
+*******************************
+ include minit
+*
+         lea     hdr(pc),a0
+         bsr     pstring
+MWARM    lea     prmpt(pc),a0
+         bsr     pstring
+ bsr flush
+         bsr     inch
+         bsr     locase
+         asl.l   #8,d0
+         move.l  d0,d1
+         bsr     inch
+         bsr     locase
+         add.b   d0,d1
+parse    lea     comtab(pc),a0
+comloop  cmp.w   #$ffff,(a0)
+         beq.s   notthere
+         cmp.w   (a0)+,d1
+         beq.s   found
+         addq    #4,a0
+         bra.s   comloop
+found    move.l  (a0),a1
+         jmp     (a1)
+*
+nts      dc.b    $d,'Unknown command! ',7,0
+notthere lea     nts(pc),a0
+         bsr     pdata1
+         bra.s   mwarm
+*
+*************************
+* Exception handling.   *
+*************************
+ include except
+*
+*******************
+* Console Drivers *
+*******************
+*
+* Dummy routine.
+dummy    rts     Dummy routine to do nothing.
+*
+* Character status routines.
+* Entry:- No parameters.
+* Exit :- No registers altered, (z)=0 if character queued.
+status   move.l  d1,-(sp)
+         clr.l   d1
+         move.b  iport,d1
+         jsr     statab(pc,d1)
+         beq.s   stt1
+         move.l  (sp)+,d1
+         move.w  #$0,ccr
+         rts
+stt1     move.l  (sp)+,d1
+         move.w  #4,ccr
+         rts
+statab   bra     stakey
+         bra     stater0
+         bra     stater1
+         bra     dummy
+*
+* Character input with no echo.
+* Entry :- No parameters.
+* Exit :- d0 = character.
+inch1    bsr.s   status
+         beq.s   inch1
+         move.l  d1,-(sp)
+         clr.l   d1
+         move.b  iport,d1
+         jsr     intab(pc,d1)
+         move.l  (sp)+,d1
+         rts
+intab    bra     inkey
+         bra     inter0
+         bra     inter1
+         bra     dummy
+*
+* Character input with echo.
+* Entry :- No parameters.
+* Exit :- d0 = character
+inch     bsr.s   inch1
+*
+* Character output routine.
+* Entry :- d0 = character.
+* Exit :-  No registers altered.
+outch    move.l  d1,-(sp)
+         clr.l   d1
+         move.b  oport,d1
+         jsr     outtab(pc,d1)
+         move.l  (sp)+,d1
+         rts
+outtab   bra     outvdu
+         bra     outter0
+         bra     outter1
+         bra     outpri
+
+***************************************
+* Hardware dependent console routines *
+***************************************
+ include console
+*
+***************************
+* Character set if needed *
+***************************
+ include 2.chars
+*
+********************
+* Graphics drivers *
+********************
+ include graphics
+*
+****************
+* Disk drivers *
+****************
+*
+ include disk
+*******************************
+* Common monitor subroutines. *
+*******************************
+*
+ NOLIST
+* Print a CR & LF .
+* Entry:- No parameters.
+* Exit:-   No registers altered.
+crlfs    dc.b    $0d,$0a,0,0
+pcrlf    move.l  a0,-(sp)
+         lea     crlfs(pc),a0
+         bsr.s   pdata1
+         move.l  (sp)+,a0
+         rts
+*
+* Print character string, terminate with zero byte.
+* Entry:- a0 points to string.
+* Exit:-  a0 points to 1st byte past string.
+pdata1   move.l  d0,-(sp)
+pdloop   move.b  (a0)+,d0
+         beq.s   pdend
+         bsr     outch
+         bra.s   pdloop
+pdend    move.l  (sp)+,d0
+         rts
+*
+* Print character string preceded by a CR-LF.
+* Entry:- a0 points to string.
+* Exit:- a0 points to 1st byte past string.
+pstring  bsr.s   pcrlf
+         bra.s   pdata1
+*
+* Prompt routine, print string followed by hex input.
+* Entry:- a0 points to string.
+* Exit:-  d1 contains hex input.
+prompt   bsr.s   pdata1
+         bsr.s   inhex
+         rts
+*
+* Delay routine.
+* Entry:- d1 = delay in milli secs.
+* Exit:-   No registers altered.
+delay    movem.l d0-d1,-(sp)
+dloop1   move.w  #400,d0
+dloop2   dbf     d0,dloop2
+         dbf     d1,dloop1
+         movem.l (sp)+,d0-d1
+         rts
+*
+* Input n-digit hex number, terminate on a space.
+* Entry:- No parameters.
+* Exit:- d1 = number.
+inhex    move.l  d0,-(sp)
+         clr.l   d1
+inhex1   bsr     inch
+         cmp.b   #' ',d0
+         bne.s   inhex2
+         move.l  (sp)+,d0
+         rts
+inhex2   bsr.s   locase
+         sub.b   #'0',d0
+         bmi.s   nothex
+         cmp.b   #9,d0
+         ble.s   inhex3
+         cmp.b   #$31,d0
+         bmi.s   nothex
+         cmp.b   #$36,d0
+         bgt.s   nothex
+         sub.b   #39,d0
+inhex3   asl.l #4,d1
+         add.l   d0,d1
+         bra.s   inhex1
+nothex   moveq #8,d0
+         bsr     outch
+         bsr.s   outs
+         bsr     outch
+         bra     inhex1
+*
+* Convert character from upper to lower case.
+* Entry:- d0 = character
+* Exit:-  d0 = converted character.
+locase   cmp.b   #'A',d0
+         bcs.s   loc1
+         cmp.b   #'Z',d0
+         bhi.s   loc1
+         addi.b  #'a'-'A',d0
+loc1     rts
+*
+* Hex print routines.
+* Entry:- d0 = number to print.
+* Exit:-  No registers altered.
+out8h    swap    d0
+         bsr.s   out4h
+         swap    d0
+out4h    ror.w   #8,d0
+         bsr.s   out2h
+         rol.w   #8,d0
+out2h    ror.b   #4,d0
+         bsr.s   outh
+         rol.b   #4,d0
+outh     move.l  d0,-(sp)
+         and.b   #$0f,d0
+         add.b   #'0',d0
+         cmp.b   #'9',d0
+         bls.s   out1
+         add.b   #'A'-'9'-1,d0
+out1     bsr     outch
+         move.l  (sp)+,d0
+         rts
+*
+* Print a space.
+* Entry:- No parameters.
+* Exit:-   No registers altered.
+outs     move.l  d0,-(sp)
+         moveq   #' ',d0
+         bsr     outch
+         move.l  (sp)+,d0
+         rts
+*
+* print n spaces.
+* Entry:- d2 = number of spaces.
+* Exit:-   No registers altered.
+outns    move.l  d2,-(sp)
+outns1   bsr.s   outs
+         dbf     d2,outns1
+         move.l  (sp)+,d2
+         rts
+*
+* Random number generator.
+* Entry :- if       (d0)  = 0   then   0 <= random number <= 255
+*          if  1 <= (d0) <= 255 then   0 <= random number <= (d0)
+*          if       (d0)  > 255 then (d0) = new seed
+* Exit  :- (d0) = 8 bit random number.
+random   movem.l d1-d2,-(sp)
+         cmp.l   #255,d0      >255?
+         ble.s   r1
+         move.l  d0,rand      New seed.
+         clr.l   d0
+r1       tst.l   d0           =0?
+         bne.s   r2
+         move.l  #255,d0
+r2       move.l  d0,d2
+r3       bsr.s   r4
+         cmp.b   d2,d0
+         bhi.s   r3
+         movem.l (sp)+,d1-d2
+         rts
+*
+r4       moveq   #7,d1
+         move.l  rand,d0
+randloop rol.l   #1,d0
+         btst.l  #29,d0
+         beq.s   r5
+         bchg.l  #0,d0
+r5       dbf     d1,randloop
+         move.l  d0,rand
+         and.l   #255,d0
+         rts
+*
+ LIST
+**************************************
+* Extra system subroutines fit here. *
+**************************************
+ include subs
+*
+***************************
+* Jump table for commands *
+***************************
+*
+* Group I commands - Memory.
+comtab   dc.w    'hd'         Hex dump of memory.
+         dc.l    hd
+         dc.w    'ad'         Ascii dump of memory.
+         dc.l    ad
+         dc.w    'me'         Memory examine and alter.
+         dc.l    me
+         dc.w    'pm'         Poke memory.
+         dc.l    pm
+         dc.w    'tm'         Test memory.
+         dc.l    tm
+         dc.w    'fm'         Fill memory.
+         dc.l    fm
+         dc.w    'sm'         Shift memory.
+         dc.l    sm
+         dc.w    'lk'         Load memory from keyboard.
+         dc.l    lk
+         dc.w    'fi'         Find byte string.
+         dc.l    fi
+*
+* Group II commands - program.
+         dc.w    'rp'         Run program.
+         dc.l    rp
+         dc.w    'ju'         Jump to program.
+         dc.l    ju
+         dc.w    'jc'         Jump to CPM warm start.
+         dc.l    jv
+         dc.w    'dr'         Display registers.
+         dc.l    dr
+         dc.w    'sa'         Set address register.
+         dc.l    sa
+         dc.w    'sd'         Set data register.
+         dc.l    sd
+         dc.w    'ss'         Set status register.
+         dc.l    ss
+         dc.w    'sp'         Set program counter.
+         dc.l    sp
+         dc.w    'tr'         Trace program.
+         dc.l    tr
+         dc.w    'cp'         Continue after breakpoint.
+         dc.l     cp
+         dc.w    'br'         List current breakpoints.
+         dc.l    br
+         dc.w    'db'         Define breakpoints.
+         dc.l    db
+*
+* Group III commands - disc.
+         dc.w    'td'         Test drive.
+         dc.l    td
+         dc.w    'ts'         Test floppy stepping.
+         dc.l    ts
+         dc.w    'df'         Disc format to VMOS format.
+         dc.l    df
+         dc.w    'bo'         Boot VMOS.
+         dc.l    boot
+         dc.w    'rs'         Read sector.
+         dc.l    rs
+         dc.w    'ws'         Write sector.
+         dc.l    ws
+*
+* Group IV commands - misc.
+         dc.w    'si'         Set input port.
+         dc.l    si
+         dc.w    'so'         Set output port.
+         dc.l    so
+**********************************
+* Extra system dependant command *
+* entries fit here.              *
+**********************************
+ include comtab
+* End of table.
+         dc.w    $ffff
+*
+***************************
+* Common system commands. *
+***************************
+*
+ include commands
+ include boot
+********************************************
+* Extra system dependant commands go here. *
+********************************************
+ include ecomms
+*
+*
+ end
+

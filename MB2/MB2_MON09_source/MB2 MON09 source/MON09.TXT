@@ -1,0 +1,1182 @@
+ NAM Mon09
+ STTL Ver 4.5 
+ OPT PAG
+ PAG
+**************************
+**************************
+** MON09  Ver 4.5       **
+** D. A. Rumball        **
+**************************
+**************************
+*
+******************************************
+* This program is the core section of a  *
+* general 6809(E) system monitor. It can *
+* be configured to a particular system   *
+* at assembly time by including on the   *
+* source disk libary files containing    *
+* the system specific code for the disk  *
+* and console drivers and extra commands *
+* and subroutines. These files are:-     *
+*  SCRATCH.....Contains RMB's for extra  *
+*              temp storage.             *
+*  FDB.........Contains the jump table   *
+*              entries for extra subs.   *
+*  COMTABLE....Contains the extra jump   *
+*              table entries for commands*
+*  MINIT.......Contains the power on     *
+*              and reset code.           *
+*  CONSOLE.....Contains the console      *
+*              driver code.              *
+*  DISK........Contains the disk driver  *
+*              code.                     *
+*  SUBS........Contains the code for any *
+*              extra system subroutines. *
+*  BOOT........Contains the boot routine.*
+*  COMMANDS....Contains the code for any *
+*              extra commands.           *
+******************************************
+*
+*
+*
+**************************
+* Common System Equates  *
+**************************
+*
+ LIB STARTADD
+RAM EQU  $DE00 Scratch ram + stack space.
+IO EQU $FF00 base address.
+SSTACK EQU (RAM+127-16) Top of system stack.
+SCRAT EQU (RAM+384) Start of scratch space.
+*
+**************************
+* scratch storage space  *
+**************************
+ ORG (RAM+128)
+BUFFER RMB 256 Floppy interface sector buffer.
+ ORG SCRAT
+STACK RMB 2 User system stack.
+NMIV RMB 2 NMI interrupt vector.
+IRQV RMB 2 IRQ interrupt vector.
+FIRQV RMB 2 FIRQ interrupt vector.
+SWI2V RMB 2 SWI2 interrupt vector.
+SWI3V RMB 2 SWI3 interrupt vector.
+IPORT RMB 1 Active input port.
+OPORT RMB 1 Active output port.
+DRIVE RMB 1 Format drive value.
+TRACK RMB 1 Format track value.
+SECTOR RMB 1 Format sector value.
+TEMP RMB 1
+XTEMP RMB 2
+YTEMP RMB 2
+TTO RMB 2
+RNDM RMB 4 Random number storage.
+WARMS RMB 1 Warm start flag.
+DDSTAB RMB 4 Disc driver type table.
+REAVEC RMB 2 Disc driver jump tables.
+WRIVEC RMB 2
+VERVEC RMB 2
+RSTVEC RMB 2
+DRVVEC RMB 2
+CHKVEC RMB 2
+QUIVEC RMB 2
+INIVEC RMB 2
+WARVEC RMB 2
+SEEVEC RMB 2
+*********************************************
+* Extra scratch space for system dependant  *
+* routines fits here.                       *
+*********************************************
+ LIB SCRATCH
+*
+ ORG PROM+$1000
+********************************************
+* Table of jump addresses for subroutines. *
+* To use these subroutines use the         *
+* indirect jump to subroutine thus:-       *
+*        DELAY EQU $F014                   *
+*        JSR [DELAY]                       *
+********************************************
+ FDB RESET Cold start.
+ FDB CONTRL Warm  start.
+ FDB INCH1 Input char without an echo.
+ FDB INCH Input char.
+ FDB STATUS Check for char.
+ FDB OUTCH Output char.
+ FDB PDATA1 Print string terminated by hex(04).
+ FDB PCRLF Print a cr followed by a lf.
+ FDB PSTRNG PCRLF followed by PDATA1.
+ FDB DUMMY No init code.
+ FDB DELAY Delay for (XREG) m/S.
+ FDB BADDR Get a four digit hex address into X.
+ FDB BYTE Get a two hex digit number into A.
+ FDB INHEX Get a one digit hex char into A.
+ FDB OUT2H Output two hex chars pointed to by X.
+ FDB OUT2HS OUT2H plus a space.
+ FDB OUT4HS Output four hex chars etc.
+ FDB OUTHR Output right hex digit in A.
+ FDB OUTHL Output left hex digit in A.
+ FDB OUTS Output a space.
+ FDB RANDOM Returns a random number in the range 0-255.
+ FDB PRINTA Output the contents of A.
+ FDB PRINTX Output the contents of X.
+ FDB READ Read sector routine.
+ FDB WRITE Write sector routine.
+ FDB VERIFY Verify sector routine.
+ FDB RST Restore to track 00.
+ FDB DRV Drive select.
+ FDB CHKRDY Check for drive ready.
+ FDB QUICK Quick check for drive ready.
+ FDB DINIT Drive cold start.
+ FDB WARM Drive warm start.
+ FDB SEEK Seek to track.
+*************************************
+* Extra FDB'S for system dependant  *
+* subroutines fit here.             *
+*************************************
+ LIB FDB
+*
+**************************************
+* Start of monitor  Entered on reset *
+**************************************
+*
+RESET STA $FFDD Set up SAM for 64k dynamic ram.
+ STA $FFDF Set up SAM for map type 1.
+*
+ LDA WARMS
+ CMPA #$AA Test for power down.
+ BEQ U1
+*
+ CLRA
+ LDX #SCRAT
+L1 STA ,X+ Clear out scratch storage.
+ CMPX #(RAM+512)
+ BNE L1
+ LDA #$AA
+ STA WARMS
+*
+ LDS #SSTACK Set initial stack pointer.
+ STS STACK   Same for user stack location.
+*
+U1 LDY #UNEXP
+ LDX #NMIV
+U1L STY ,X++
+ CMPX #NMIV+10
+ BNE U1L
+*
+***********************************
+* System dependant init code goes *
+* here. It should set the initial *
+* input and output ports then     *
+* check for auto boot.            *
+***********************************
+ LIB MINIT1
+*
+MINITR LDX #HDR Print header after reset.
+ JSR PDATA1
+CONTRL LDA SYSREG
+ ORA #4 Map in bottom 4k of eprom.
+ STA SYSREG
+ LDX #PROMPT
+ JSR PDATA1
+ BSR INCH Get two byte command into Y.
+ TFR A,B
+ BSR INCH
+ EXG A,B
+ TFR D,Y
+PARSE LDX #COMTAB Point to start of command table.
+NEXT CMPY ,X++ Look for match.
+ BNE NOPE No match.
+ JMP [,X]  Found it, so jump to routine.
+NOPE LEAX 2,X If no match then jump over address.
+ LDA ,X Check for end of table.
+ CMPA #$FF
+ BNE NEXT If not the end then try next entry.
+WHAT LDX #NOTTHS No match so print message.
+ JSR PDATA1
+ BRA CONTRL
+*
+UNEXP LDX #UNMESS Unexpected interrupt   Don't Panic!
+ JSR PSTRNG
+ ORCC #%01010000 Set interupt masks.
+ JMP RESET
+*
+* Interrupt vector routines.
+NMI JMP [NMIV]
+IRQ JMP [IRQV]
+FIRQ JMP [FIRQV]
+SWI2 JMP [SWI2V]
+SWI3 JMP [SWI3V]
+*
+DUMMY RTS
+*
+*****************************************************
+* Console drivers                                   *
+* ---------------                                   *
+* The system dependant code for the console drivers *
+* fits here. The entries in the jump tables INITAB  *
+* INTAB,OUTTAB and STATAB should be changed to suit *
+* these routines. For a description of the drivers  *
+* for an 6850 acia see section 3 of the general     *
+* Flex adaptation guide (pp6-8).                    *
+*****************************************************
+*
+ LIB CONSOLE
+*
+*****************************************
+* Disk drivers                          *
+* ------------                          *
+* The system dependant code for the     *
+* disc drivers fits here. Two tables    *
+* must be included. These are DDSTAB a  *
+* four byte table that defines which of *
+* the (up to four) following sets of    *
+* jump tables to use, and TABSRT the    *
+* jump tables themselves. For a full    *
+* description of the floppy drivers see *
+* section 4 (pp9-14) of the general     *
+* Flex adaptation guide.                *
+*****************************************
+*
+ LIB DISK
+* Read sector routine.
+* Entry: (X) = address where sector is to be placed.
+*        (A) = Track  number.
+*        (B) = Sector number.
+* Exit:  (B) = Error code  (z)=1 if no error.
+READ JMP [REAVEC]
+*
+* Write track routine.
+* Entry: (X) = Address of area of memory from which the data will be taken.
+*        (A) = Track number.
+*        (B) = Sector number.
+* Exit:  (B) = Error condition, (Z)=1 no an error.
+WRITE JMP [WRIVEC]
+*
+* Verify sector routine.
+* Entry: no parameters.
+* Exit:  (B) = Error condition (Z)=1 if no error.
+VERIFY JMP [VERVEC]
+*
+* Restore drive to track 00.
+* Entry: (X) = FCB address (3,X contains drive number).
+* Exit:  (B) = Error condition, (Z)=1 if no error.
+RST BSR DRV Select drive first.
+ BEQ RST1
+ RTS
+RST1 JMP [RSTVEC]
+*
+* Select current drive.
+* Entry: (X) = FCB address (3,X contains drive number).
+* Exit:  (B) = Error condition, (Z)=0 and (c)=1 if error.
+*        (B) = $0F if non existant drive.
+DRV PSHS X,Y
+ LDB 3,X Get driver type.
+ LDX #DDSTAB
+ LDA B,X
+ CMPA #$FF Is the drive nonexistant?
+ BNE DRIVE1
+ PULS X,Y
+ LDB #$0F
+ TSTB
+ SEC
+ RTS
+DRIVE1 LDB #20 Get correct table start address.
+ MUL
+ LDX #TABSRT
+ LEAX D,X
+ LDY #REAVEC Copy table into ram.
+ LDB #20
+DRIVE2 LDA ,X+
+ STA ,Y+
+ DECB
+ BNE DRIVE2
+ PULS X,Y
+ JMP [DRVVEC]
+*
+* Check for drive ready.
+* Entry: (X) = FCB address (3,X contains drive number)>
+* Exit:  (B) = Error condition, (Z)=0 AND (C)=1 if drive is not ready.
+CHKRDY JMP [CHKVEC]
+*
+* Quick drive ready check.
+* Entry: (X) = FCB address (3,X contains drive number).
+* Exit:  (B) = Error condition, (Z)=0 AND (c)=1 if drive not ready.
+QUICK JMP [QUIVEC]
+*
+* Init (cold start).
+* Entry: no parameters.
+* Exit: no change.
+DINIT CLRA
+DINIT1 STA DRIVE Init each valid drive in turn.
+ LDX #(DRIVE-3)
+ BSR DRV
+ BCS DINIT2
+ JSR [INIVEC]
+DINIT2 LDA DRIVE
+ INCA
+ CMPA #4
+ BNE DINIT1
+ RTS
+*
+* Warm start.
+* Entry: no parameters.
+* Exit: no change.
+WARM JMP [WARVEC]
+*
+* Seek track.
+* Entry: (A) = Track number.
+*        (B) = Sector number.
+* Exit:  (B) = Error condition, (Z)=1 if no error.
+SEEK JMP [SEEVEC]
+*
+*******************************
+* Common monitor subroutines. *
+*******************************
+*
+* Print a CR followed by a LF.
+* Entry: no parameters.
+* Exit: (A) destroyed.
+CRLFS FCB $0A,$0D,4
+PCRLF     PSHS    X
+          LDX     #CRLFS  Get CR,LF string,
+          BSR     PDATA1  and print it.
+ PULS X,PC
+*
+* Print character string .
+* Entry: (X) = Pointer to character string.
+* Exit:  (X) = Pointer to end of string token Hex(04).
+*        (A)   Destroyed.
+P         JSR     OUTCH   Print char.
+PDATA1    LDA     ,X+    Get character pointed to by X.
+          CMPA    #$04   End of string token?
+ BNE P If not then print char.
+          RTS
+*
+* Print character string preceded by a CR,LF.
+* Entry: (X) = Pointer to character string.
+* Exit:  (X) = Pointer to end of string token Hex(04).
+*        (A) = Destroyed.
+PSTRNG    BSR     PCRLF
+          BSR     PDATA1
+          RTS  
+*
+* Print the A reg.
+* Entry :- (A) = Data to be printed.
+PRINTA PSHS D,X
+ STA TEMP
+ LDX #TEMP
+ BSR OUT2HS
+ PULS D,X,PC
+*
+* Print the X reg.
+* Entry :- (X) = Data to be printed.
+PRINTX PSHS D,X
+ STX XTEMP
+ LDX #XTEMP
+ BSR OUT4HS
+ PULS D,X,PC
+*
+* Delay routine.
+* Entry: (X) = Delay time in milli seconds.
+* Exit:  no change.
+DELAY     PSHS    D,X,Y
+DELAY1    LDY     #52 Delay
+          TST     PSPEED
+          BEQ     DELAY2
+          LDY     #104 Twice delay for 2Mhz.
+DELAY2    MUL
+          LEAY    -1,Y
+          BNE     DELAY2
+          LEAX    -1,X
+          BNE     DELAY1
+          PULS    D,X,Y,PC
+*
+* Build a four hex digit address.
+* Entry: no parameters.
+* Exit:  (X) = Address.
+*        (A) = Destroyed.
+*        (B) = Destroyed.
+BADDR     BSR     BYTE                   Get 1st char.
+          TFR     A,B
+          BSR     BYTE                   and next.
+          EXG     A,B
+          TFR     D,X                    Put in X.
+          RTS
+*
+* Get a two digit hex byte.
+* Entry: no parameters.
+* Exit:  (A) = Byte.
+BYTE      PSHS    B
+          BSR     INHEX                  Get hex digit.
+          ASLA
+          ASLA                           Shift to msb.
+          ASLA
+          ASLA
+          TFR     A,B                    Save in B.
+          BSR     INHEX                  Get next digit.
+          PSHS    B
+          ADDA    ,S+                    Add together bytes.
+ PULS B,PC
+*
+* Print left hex digit.
+* Entry: (A) = Byte containing digit.
+* Exit:  (A) = Byte containing shifted digit.
+OUTHL     LSRA
+          LSRA
+          LSRA
+          LSRA
+*
+* Output right hex digit.
+* Entry: (A) = Byte containing digit.
+* Exit:  (A) = Ascii coded digit.
+OUTHR     ANDA    #$0F                   Get four bits only.
+          ADDA    #$30                   Add ascii zero.
+          CMPA    #$39                   Numeric overflow?
+          LBLS    OUTCH
+          ADDA    #$07                   Must be hex.
+          JMP    OUTCH
+*
+* Input a valid hex character (If not hex then backspace).
+* Entry: no parameters.
+* Exit:  (A) = Valid hex char.
+INHEX     JSR     INCH
+          SUBA    #$30                   Remove ascii bias.
+          BMI     NOTHEX
+          CMPA    #$09                   Number?
+          BLE     INHEX1                 Yes.
+          CMPA    #$11                   Keep testing.
+          BMI     NOTHEX
+          CMPA    #$16
+          BGT     NOTHEX
+          SUBA    #$07
+INHEX1    RTS
+NOTHEX    LDA     #$08                   If not a number
+          JSR     OUTCH                  Print a backspace and try again.
+          BRA     INHEX
+*
+* Hex print routines.
+* Entry: (X) = Pointer to a one or two byte hex number.
+* Exit:  (A) = Destroyed.
+OUT2H     LDA     0,X                    Output two hex chars.
+OUT2HA    BSR     OUTHL
+          LDA      ,X+
+          BRA     OUTHR
+OUT4HS    BSR     OUT2H                  Output 4 hex chars + space.
+OUT2HS    BSR     OUT2H                  Output 2 hex chars + space.
+*
+* Output a space.
+* Entry: no parameters.
+* Exit   (A) = Destroyed.
+OUTS      LDA     #'                    Output space.
+          JMP    OUTCH
+*
+* Random number generator.
+* Entry: no parameters.
+* Exit:  (A) = Random number from 0 to 255.
+RANDOM PSHS B
+ LDB #8
+RPT LDA RNDM+3
+ ASLA
+ ASLA
+ ASLA
+ EORA RNDM+3
+ ASLA
+ ASLA
+ ROL RNDM
+ ROL RNDM+1
+ ROL RNDM+2
+ ROL RNDM+3
+ DECB
+ BNE RPT
+ LDA RNDM
+ PULS B,PC
+*
+**************************************
+* Extra system subroutines fit here. *
+**************************************
+ LIB SUBS
+*
+ ORG PROM
+ LIB MINIT
+***************************
+* Jump table for commands *
+***************************
+COMTAB FCC 'AD' Ascii dump.
+ FDB AD
+ FCC 'HD' Hex dump .
+ FDB HD
+ FCC 'DR' Display cpu registers.
+ FDB DR
+*
+ FCC 'SB' Set baud rate for acia's.
+ FDB SB
+ FCC 'SI' Set input port.
+ FDB SI
+ FCC 'SO' Set output port.
+ FDB SO
+ FCC 'CD' Calculate two's complement branch length.
+ FDB CD
+*
+ FCC 'RP' Run program .
+ FDB RP
+ FCC 'JU' Jump to program .
+ FDB JU
+ FCC 'JF' Jump to flex warm start ($CD03).
+ FDB JF
+ FCC 'CP' Continue program after SWI.
+ FDB CP
+*
+ FCC 'ME' Memory examine and alter .
+ FDB ME
+ FCC 'PM' Poke memory with value (no verify of data).
+ FDB PM
+ FCC 'LK' Load ascii text from keyboard .
+ FDB LK
+ FCC 'SM' Shift a block of memory .
+ FDB SM
+ FCC 'FM' Fill memory with a constant value.
+ FDB FM
+ FCC 'FI' Find ascii string.
+ FDB FI
+*
+ FCC 'TM' Quick memory test.
+ FDB TM
+ FCC 'TS' Drive stepping and select test.
+ FDB TS
+ FCC 'TD' Test random read on drive.
+ FDB TD
+*
+ FCC 'BO' Boot FLEX.COR or FLEX.SYS from drive 0.
+ FDB BO
+ FCC 'RS' Read sector from floppy.
+ FDB RS
+ FCC 'WS' Write sector to floppy.
+ FDB WS
+ FCC 'DF' Format disc to FLEX format.
+ FDB DF
+*
+*************************************
+* Extra system dependant command    *
+* entries fit here.                 *
+*************************************
+ LIB COMTABLE
+ FCB $FF End of table flag.
+*
+***************************
+* Common system commands. *
+***************************
+*
+* Jump to program.
+JUMES FCC $0D,'Jump to program at ',4
+JU        LDX     #JUMES
+          JSR     PDATA1
+          JSR     BADDR
+ JMP MAPOUT
+*
+* Jump to flex warm start.
+JFMES FCC $0D,'Jump to flex warm start.',4
+JF        LDX     #JFMES
+          JSR     PDATA1
+ LDX #$CD03
+ JMP MAPOUT
+*
+* Set input port.
+SIMES FCC $0D,'Set input port to ',4
+SI        LDX     #SIMES
+          JSR     PDATA1
+          JSR     INHEX
+          ANDA    #$03
+          STA     IPORT
+          JMP     CONTRL
+*
+* Set output port.
+SOMES FCC $0D,'Set output port to ',4
+SO        LDX     #SOMES
+          JSR     PDATA1
+          JSR     INHEX
+          ANDA    #$03
+          STA     OPORT
+          JMP     CONTRL
+*
+********************************
+*    System specific Boot      *
+*    command goes here.        *
+********************************
+ LIB BOOT
+*
+*         Calculate displacement.
+CALDIS FCC $0D,'Calculate displacement from ',4
+TOS FCC ' to ',4
+CALD1 FCC $0D,$0A,' Long or short branch (L/S)? ',4
+VALUES FCC ' value ',4
+CD        LDX     #CALDIS
+          JSR     PDATA1
+          JSR     BADDR
+          LEAX    2,X
+          PSHS    X
+          LDX     #TOS
+          JSR     PDATA1
+          JSR     BADDR
+          TFR     X,Y
+          LDX     #CALD1
+          JSR     PDATA1
+          JSR     INCH
+          CMPA    #'L
+          BNE     CD1
+          PULS    X
+          LEAX    2,X
+          PSHS    X
+CD1       TFR     Y,D
+          SUBD    ,S
+          STD     ,S
+          LDX     #VALUES
+          JSR     PDATA1
+          PULS    X
+ JSR PRINTX
+          JMP     CONTRL
+*
+* Continue program.
+CONPRS FCC $0D,'Continue from SWI....',4
+CP        LDX     #CONPRS
+          JSR     PDATA1
+          INC     11,S
+          JMP     RP1
+*
+* Fill memory with constant.
+FILMES FCC $0D,'Fill memory with constant from ',4
+FM        LDX     #FILMES
+          JSR     PDATA1
+          JSR     BADDR
+          TFR     X,Y
+          LDX     #TOS
+          JSR     PDATA1
+          JSR     BADDR
+          PSHS    X
+          LDX     #VALUES
+          JSR     PDATA1
+          JSR     BYTE
+FM1       STA     ,Y+
+          CMPY    ,S
+          BNE     FM1
+          PULS    X
+          JMP     CONTRL
+*
+* Go to user routine at XXXX.
+RUNPRS FCC $0D,'Run program from ',4
+RP        LDX     #RUNPRS
+          JSR     PDATA1
+          JSR     BADDR
+          STX     10,S
+          LDA     #$FF
+          STA     ,S
+RP1       LDS     STACK
+          RTI
+*
+* SWI  return from user program.
+SWI STS STACK
+          LDX     10,S
+          LEAX    -1,X
+          STX     10,S
+ JMP DR1
+*
+* Ascii dump.
+ASCDUS FCC $0D,'Ascii dump of memory from ',4
+ADMES1 FCC '     0   4   8   C   0   4   8   C   0   4   8   C   0   4   8   C  F',4
+AD LDX #ASCDUS
+          JSR     PDATA1
+ JSR BADDR
+          JSR     PCRLF
+AD6 LDY #16
+ JSR PCRLF
+ PSHS X
+ LDX #ADMES1
+ JSR PSTRNG
+ PULS X
+AD1       JSR     PCRLF
+ JSR PRINTX
+          LDB     #64
+AD2       LDA     ,X+
+          CMPA    #32
+          BLT     AD4
+          CMPA    #$7F
+          BLT     AD5
+AD4       LDA     #'.
+AD5       JSR     OUTCH
+          DECB
+          BEQ     AD3
+          BRA     AD2
+AD3       LEAY    -1,Y
+          BNE     AD1
+          JSR     INCH
+ CMPA #$0D
+ BEQ AD6
+ CMPA #'-
+ LBNE CONTRL
+ LEAX -2048,X
+ BRA AD6
+*
+* Hexdump of memory starting at XXXX.
+HEXDUS FCC $0D,'Hex dump of memory from ',4
+HDMES1 FCC '     0  1  2  3  4  5  6  7   8  9  A  B  C  D  E  F  ',4
+HD        LDX     #HEXDUS
+          JSR     PDATA1
+          JSR     BADDR
+          JSR     PCRLF
+HD4 LDY #16
+ JSR PCRLF
+ PSHS X
+ LDX #HDMES1
+ JSR PSTRNG
+ PULS X
+HD1       JSR     PCRLF
+ JSR PRINTX
+ LDB #16
+HD2       JSR     OUT2HS
+          DECB
+          BEQ     HD3
+          CMPB    #8
+          BNE     HD2
+          JSR     OUTS
+          BRA     HD2
+HD3       LEAY    -1,Y
+          BNE     HD1
+          JSR     INCH
+ CMPA #$0D
+ BEQ HD4
+ CMPA #'-
+ LBNE CONTRL
+ LEAX -512,X
+ BRA HD4
+*
+* Poke memory.
+POKMES FCC $0D,'Poke memory at ',4
+PM        LDX     #POKMES
+          JSR     PDATA1
+          JSR     BADDR
+          TFR     X,Y
+          LDX     #VALUES
+          JSR     PDATA1
+          JSR     BYTE
+          STA     0,Y
+          JMP     CONTRL
+*
+* Keyboard to memory.
+LOAKES FCC $0D,'Load memory with text from keyboard to ',4
+LK        LDX     #LOAKES
+          JSR     PDATA1
+          JSR     BADDR
+          TFR     X,Y
+          LDX     #VALUES
+          JSR     PDATA1
+LK1       JSR     INCH
+          STA     ,Y+
+          CMPA    #$04
+          BNE     LK1
+          JMP     CONTRL
+*
+* Memory load and examine.
+MEMEXS FCC $0D,'Memory examine and modify from ',4
+NORAM FCC 7,'  No ram at that address!',4
+ME        LDX     #MEMEXS
+          JSR     PDATA1
+          JSR     BADDR
+ME1       JSR     PCRLF
+ JSR PRINTX
+          JSR     OUT2HS
+          JSR     INCH
+          CMPA    #'-
+          BNE     ME2
+          LEAX    -2,X
+          BRA     ME1
+ME2       CMPA    #$0D
+          BEQ     ME1
+          CMPA    #$20
+MED       LBNE    CONTRL
+          JSR     BYTE
+          STA     -1,X
+          CMPA    -1,X
+          BEQ     ME1
+ LDX #NORAM
+          JSR     PDATA1
+          JMP     CONTRL
+*
+* Print registers.
+DISRES FCC $0D,'Display CPU registers.',4
+RSTRNG FCC $0A,$0D,'CC  A  B DP    X    Y    U   PC    S',$0A,$0D,4
+DR LDX #DISRES
+          JSR     PDATA1
+DR1 LDX #RSTRNG
+          JSR    PDATA1
+          TFR     S,X
+          JSR    OUT2HS
+          JSR    OUT2HS
+          JSR    OUT2HS
+          JSR    OUT2HS
+          JSR    OUT4HS
+          JSR    OUT4HS
+          JSR    OUT4HS
+          JSR    OUT4HS
+          LDX     #STACK
+          JSR    OUT4HS
+          JMP    CONTRL
+*
+* Shift blocks of memory.
+SHIMES FCC $0D,'Shift block of memory from ',4
+LENGHS FCC ' Length ',4
+SM        LDX     #SHIMES
+          JSR     PDATA1
+          JSR     BADDR
+          PSHS    U
+          TFR     X,U
+          LDX     #TOS
+          JSR     PDATA1
+          JSR     BADDR
+          TFR     X,Y
+          LDX     #LENGHS
+          JSR     PDATA1
+          JSR     BADDR
+SM1       LDA     ,U+
+          STA     ,Y+
+          LEAX    -1,X
+          BNE     SM1
+          PULS    U
+          JMP     CONTRL
+*
+* Test memory.
+TESMES FCC $0D,'Test memory from ',4
+TMS1 FCC 7,$0A,$0D,'Error at location ',4
+TMS2 FCC 'changed to ',4
+TMS3 FCC ' Testing now with ',4
+TM        LDX     #TESMES
+          JSR     PDATA1
+          JSR     BADDR
+          TFR     X,Y
+          LDX     #TOS
+          JSR     PDATA1
+          JSR     BADDR
+          STX     XTEMP
+          CLRB
+          LDX     #TMS3
+          JSR     PDATA1
+TM5       STB     TEMP
+          LDX     #TEMP
+          JSR     OUT2H
+          TFR     Y,X
+TM1       STB     0,Y
+          CMPB    0,Y
+          BNE     TM2
+TM4       LEAY    1,Y
+          CMPY    XTEMP
+          BNE     TM1
+          INCB
+          BEQ     TM3
+          LDA     #$08
+          JSR     OUTCH
+          JSR     OUTCH
+          TFR     X,Y
+          BRA     TM5
+TM3       JMP     CONTRL
+TM2       LDX     #TMS1
+          JSR     PDATA1
+          STY     XTEMP
+          LDX     #XTEMP
+          JSR     OUT4HS
+          JSR     OUTS
+          JSR     OUTS
+          STB     TEMP
+          LDX     #TEMP
+          JSR     OUT2HS
+          LDX     #TMS2
+          JSR     PDATA1
+          LDA     0,Y
+          STA     TEMP
+          LDX     #TEMP
+          JSR     OUT2HS
+          BRA     TM3
+*
+*
+* Read floppy sector.
+REASES FCC $0D,'Read from sector on drive ',4
+TRACS FCC ' track ',4
+SECS FCC ' sector ',4
+ERR1 FCC $0D,$0A,7,'FDC error code = ',4
+RS LDX #REASES
+ JSR PDATA1
+ JSR INHEX
+ STA DRIVE
+ LDX #(DRIVE-3)
+ JSR DRV
+ LDX #TRACS
+ JSR PDATA1
+ JSR BYTE
+ STA TRACK
+ LDX #SECS
+ JSR PDATA1
+ JSR BYTE
+ STA SECTOR
+ LDX #TOS
+ JSR PDATA1
+ JSR BADDR
+ LDA TRACK
+ LDB SECTOR
+ JSR READ
+ LBEQ CONTRL
+ LDX #ERR1
+ JSR PDATA1
+ STB TEMP
+ LDX #TEMP
+ JSR OUT2HS
+ JMP CONTRL
+*
+* Write floppy sector
+WRIMES FCC $0D,'Write to sector on drive ',4
+FROMS FCC ' from ',4
+WS LDX #WRIMES
+ JSR PDATA1
+ JSR INHEX
+ STA DRIVE
+ LDX #(DRIVE-3)
+ JSR DRV
+ LDX #TRACS
+ JSR PDATA1
+ JSR BYTE
+ STA TRACK
+ LDX #SECS
+ JSR PDATA1
+ JSR BYTE
+ STA SECTOR
+ LDX #FROMS
+ JSR PDATA1
+ JSR BADDR
+ LDA TRACK
+ LDB SECTOR
+ JSR WRITE
+ LBEQ CONTRL
+ LDX #ERR1
+ JSR PDATA1
+ STB TEMP
+ LDX #TEMP
+ JSR OUT2HS
+ JMP CONTRL
+*
+* Format disc to FLEX standard.
+DISFOS FCC $0D,'Format disc to flex standard on drive ',4
+SURES FCC ' scratch disc in drive? ',4
+DF LDX #DISFOS
+ JSR PDATA1
+ JSR INHEX
+ STA DRIVE
+ LDX #DRIVE-3
+ JSR RST
+ CLR DEN
+ LDX #SURES
+ JSR PDATA1
+ JSR INCH
+ CMPA #'Y
+ LBNE CONTRL
+FMT LDA #$FF
+ STA TRACK
+ LDY #$0002
+FMT1 CLRA
+ STA SECTOR
+ INC TRACK
+ LDA TRACK
+ LDB #1
+ JSR SEEK
+ CLRA
+ LDX #0400
+ LDB #6
+ LBSR WABT
+ LDA #$FC
+ STA ,X+
+ LDD #$FF07
+ LBSR WABT
+FMT2 CLRA
+ INC SECTOR
+ LDB #6
+ LBSR WABT
+ LDA #$FE
+ STA ,X+
+ LDA TRACK
+ STA ,X+
+ CLRA
+ STA ,X+
+ LDA SECTOR
+ STA ,X+
+ LDA #1
+ STA ,X+
+ LDA #$F7
+ STA ,X+
+ LDD #$FF0B
+ LBSR WABT
+ CLRA
+ LDB #6
+ LBSR WABT
+ LDA #$FB
+ STA ,X+
+ TFR Y,D
+ STD ,X++
+ INCB
+ CMPB #11
+ BNE FMT3
+ INCA
+ LDB #1
+ CMPA #40
+ BNE FMT3
+ LDD #0
+FMT3 TFR D,Y
+ CLRA
+ LDB #254
+ LBSR WABT
+ LDA #$F7
+ STA ,X+
+ LDD #$FF0E
+ LBSR WABT
+ LDA SECTOR
+ CMPA #10
+ BNE FMT2
+ LDA #$FF
+ CLRB
+ LBSR WABT
+ LDX #0400
+ LDA #$F4
+ LBSR FCMD
+FMT4 LDA COMREG
+ BITA #2
+ BEQ FMT5
+ LDA ,X+
+ STA DATREG
+FMT5 LDA COMREG
+ BITA #1
+ BNE FMT4
+ LDA TRACK
+ CMPA #39
+ LBNE FMT1
+ LDX #DRIVE-3
+ JSR RST
+ LDX #BUFFER
+ CLRA
+ LDB #10
+ JSR READ
+ LDX #BUFFER
+ CLR ,X
+ CLR 1,X
+ CLRA
+ LDB #10
+ JSR WRITE
+ LDX #BUFFER
+ CLRA
+ LDB #3
+ JSR READ
+ LDX #BUFFER
+ CLR ,X
+ CLR 1,X
+ LDD #$5343
+ STD 16,X
+ LDD #$5241
+ STD 18,X
+ LDD #$5443
+ STD 20,X
+ LDD #$4821
+ STD 22,X
+ LDD #1
+ STD 27,X
+ LDD #$0101
+ STD 29,X
+ LDD #$270A
+ STD 31,X
+ STD 38,X
+ LDD #$0186
+ STD 33,X
+ CLRA
+ LDB #3
+ JSR WRITE
+ JMP CONTRL
+*
+*
+WABT PSHS B
+WABT1 STA ,X+
+ DECB
+ BNE WABT1
+ PULS B,PC
+*
+* Random read test on drive.
+TDMES FCC $0D,'Random sector read on drive ',4
+TDMES1 FCC 'Hit any key to stop.',4
+ERR2 FCC 'at track/sector ',4
+TD LDX #TDMES
+ JSR PDATA1
+ JSR INHEX
+ STA DRIVE
+ LDX #TDMES1
+ JSR PSTRNG
+ LDX #(DRIVE-3)
+ JSR RST
+TDLOOP JSR RANDOM
+ ANDA #$0F
+ ADDA #1
+ CMPA #10
+ BGT TDLOOP
+ STA SECTOR
+TDLP2 JSR RANDOM
+ ANDA #$3F
+ CMPA #39
+ BGT TDLP2
+ STA TRACK
+ LDB SECTOR
+ LDX #BUFFER
+ JSR READ
+ BNE TDLP9
+ JSR STATUS
+ BEQ TDLOOP
+ LDX #(DRIVE-3)
+ JSR RST
+ JMP CONTRL
+TDLP9 LDX #ERR1
+ JSR PDATA1
+ STB TEMP
+ LDX #TEMP
+ JSR OUT2HS
+ LDX #ERR2
+ JSR PDATA1
+ LDX #TRACK
+ JSR OUT4HS
+ JMP TDLOOP
+*
+* Test drive stepping.
+TSMESS FCC $0D,'Test stepping on drive ',4
+TS LDX #TSMESS
+ JSR PDATA1
+ JSR INHEX
+ STA DRIVE
+ LDX #(DRIVE-3)
+ JSR DRV
+TSLOOP LDA #40
+ LDB #1
+ JSR SEEK
+ JSR RST
+ JSR STATUS
+ LBNE CONTRL
+ BRA TSLOOP
+*
+*
+********************************************
+* Extra system dependant commands go here. *
+********************************************
+ LIB COMMANDS
+*
+* Restart control vectors.
+ ORG (PROM+$1FF0)
+          FDB      RESET               Not implemented in 6809.
+          FDB      SWI3                Software interupt three.
+          FDB      SWI2                Software interupt two.
+          FDB      FIRQ                Fast interupt request.
+          FDB      IRQ                 Interupt request.
+          FDB      SWI                 Software interupt.
+          FDB      NMI                 Non-maskable interupt.
+          FDB      RESET               Cold start.
+*
+*
+ END
+                                    

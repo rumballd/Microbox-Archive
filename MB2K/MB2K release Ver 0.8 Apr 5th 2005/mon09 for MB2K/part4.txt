@@ -1,0 +1,59 @@
+
+
+
+	 )
+
+   port map (
+      DO => rdata2,                -- 8-bit Data Output
+      DOP => dp2,                  -- 1-bit parity Output
+      ADDR => addr(10 downto 0),   -- 11-bit Address Input
+      CLK => clk,                  -- Clock
+      DI => wdata,                 -- 8-bit Data Input
+      DIP => dp2,                  -- 1-bit parity Input
+      EN => cs2,                   -- RAM Enable Input
+      SSR => rst,                  -- Synchronous Set/Reset Input
+      WE => we                     -- Write Enable Input
+   );
+   -- End of RAMB16_S9_inst instantiation
+
+
+   -- Decode high order address bits to select block, mux data outputs
+   decode_and_data_mux : process (addr(12 downto 11),
+                                  cs0, cs1, cs2 )  
+   begin
+   	we <= not rw;
+   	case addr(12 downto 11) is
+	
+		-- $F800 - $FFFF
+		when "11" => 
+		   rdata <= rdata2;
+		   cs2 <= cs; 
+		   cs1 <= '0';
+		   cs0 <= '0';
+ 
+		-- $F000 - $F7FF
+		when "10" => 
+		   rdata <= rdata1;
+		   cs2 <= '0'; 
+		   cs1 <= cs;
+		   cs0 <= '0';
+
+		-- $E800 - EFFF
+		when "01" => 
+		   rdata <= rdata0; 
+		   cs2 <= '0'; 
+		   cs1 <= '0';
+		   cs0 <= cs;
+
+		-- $E000 - E7FF  (external to this ROM - screen buffer and IO space)
+		when others => 
+		   rdata <= rdata0;   -- data is 'don't care' at this point
+		   cs2 <= '0'; 
+		   cs1 <= '0';
+		   cs0 <= '0';
+
+	end case;
+			      
+   end process;
+
+end architecture;

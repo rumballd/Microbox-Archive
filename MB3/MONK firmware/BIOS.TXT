@@ -1,0 +1,414 @@
+         cpm     i68k         Crasmb.......
+         opt     r2
+* CPM 68k BIOS for Microbox III.
+* First written Dec 85. D.A.Rumball.
+* Floppy disc drivers  are for the Western Digital WD1770/2.
+* (strange code constructs are due to Crasmb's
+* dislike of BRA ops in certain places !@#*&!)
+*
+* Equates.
+acia     equ     $000ff001    ACIA base address.
+clrreg   equ     28           Offset to clear bits.
+setreg   equ     30           Offset to set bits
+fdc      equ     $000fec01    FDC base address.
+fdccom   equ     fdc          FDC command reg.
+fdctrk   equ     fdc+2        FDC track reg.
+fdcsec   equ     fdc+4        FDC sector reg.
+fdcdat   equ     fdc+6        FDC data reg.
+*
+stp      equ     3            Step rate.
+rstcmd   equ     $00+stp      Restore command.
+seekcmd  equ     $10+stp      Seek command.
+readcmd  equ     $90          Read command.
+writecmd equ     $b2          Write command.
+*
+busy     equ     0            Fdc busy.
+drq      equ     1            Data request.
+*
+*
+         org     $1b000       Defined by cpm15000.map
+*
+* Cold start.
+init     move.l  #traphndl,$8c   Set up trap 3.
+         move.b  #0,oldtrk
+ move.b #$ff,wtrk
+ move.b #$ff,rtrk
+         jsr     flush        Flush read and write track buffers.
+         move.l  #0,d0        User 0, drive A.
+         rts
+* Vars and drive parameter blocks.
+drive    dc.b    0            Drive number.
+track    dc.b    0            Track number.
+sector   dc.b    0            Sector number.
+oldtrk   dc.b    0            Old track number.
+rtrk     dc.b    $ff          Current buffered read track.
+wtrk     dc.b    $ff          Current buffered write track.
+errcount dc.b    0            Retry error count.
+spare    dc.b    0            Force to even bound.
+dma      dc.l    0            Data move address.
+*
+memrgn   dc.w    1            One memory region.
+         dc.l    $20000       from 128k,
+         dc.l    $30000       length 192k.
+*
+dph0 dc.l xlt0
+ dc.w 0
+ dc.w 0
+ dc.w 0
+ dc.l dirbuff
+ dc.l dpb0
+ dc.l ckv0
+ dc.l alv0
+*
+dpb0 dc.w 16
+ dc.b 4
+ dc.b 15
+ dc.b 0
+ dc.b 0
+ dc.w 157
+ dc.w 63
+ dc.w 0
+ dc.w 16
+ dc.w 2
+*
+xlt0 dc.b 00,01,02,03,04,05,06,07
+     dc.b 08,09,10,11,12,13,14,15
+*
+dph1 dc.l xlt1
+ dc.w 0
+ dc.w 0
+ dc.w 0
+ dc.l dirbuff
+ dc.l dpb1
+ dc.l ckv1
+ dc.l alv1
+*
+dpb1 dc.w 16
+ dc.b 4
+ dc.b 15
+ dc.b 0
+ dc.b 0
+ dc.w 157
+ dc.w 63
+ dc.w 0
+ dc.w 16
+ dc.w 2
+*
+xlt1 dc.b 00,01,02,03,04,05,06,07
+     dc.b 08,09,10,11,12,13,14,15
+*
+* Main entry point for trap function calls.
+traphndl cmpi.b  #23,d0       function call ok?
+         bcc.s   trapng       if not return
+         and.l   #$ff,d0
+         lsl.l   #2,d0        times 4
+         add.l   #bbase,d0
+         movea.l d0,a0        Pick up function address
+         movea.l (a0),a0
+         jsr     (a0)
+trapng   rte                  return from exception.
+* Trap function table.
+bbase    dc.l    init
+         dc.l    wboot
+         dc.l    constat
+         dc.l    conin
+         dc.l    conout
+         dc.l    lstout
+         dc.l    pun
+         dc.l    rdr
+         dc.l    restore
+         dc.l    seldsk
+         dc.l    settrk
+         dc.l    setsec
+         dc.l    setdma
+         dc.l    read
+         dc.l    write
+         dc.l    listst
+         dc.l    sectran
+         dc.l    setdma
+         dc.l    getseg
+         dc.l    getiob
+         dc.l    setiob
+         dc.l    flush
+         dc.l    setexc
+*
+* CPM warm boot.
+wboot    jsr     flush
+         jmp     $150b8       warm boot cpm.
+*
+* Console read character status.
+constat  jsr.l   $c040c
+         beq.s   conend
+         move.l  #$ff,d0
+         rts
+conend   clr.l   d0
+         rts
+*
+* Console character read.
+conin    jmp.l   $c0412
+*
+* Console write character.
+conout   move.b  d1,d0
+         jmp.l   $c041e
+*
+* Printer out.
+lstout   rts
+listst   move.l  #$ff,d0
+         rts
+pun      rts
+rdr      rts
+*
+* Select disk, set density.
+seldsk   cmp.b   drive,d1     Drive same as before?
+         beq.s   sz           if so, don't swap track regs.
+*
+         move.b  d1,drive     Swap track registers.
+         jsr     flush        Change drive, so flush buffers.
+         move.b  oldtrk,d0
+         move.b  fdctrk,oldtrk
+         move.b  d0,fdctrk
+*
+sz       btst.b  #0,drive     Drive odd, or even?
+         bne.s   odd
+even     move.b  #$80,clrreg+acia    drive_0
+         move.b  #$40,setreg+acia    dden=1
+         move.l  #dph0,d0
+         bra.s   szend
+odd      move.b  #$80,setreg+acia    drive_1
+         move.b  #$40,setreg+acia    dden=1
+         move.l  #dph1,d0
+szend    rts
+*
+* Set track.
+settrk   move.b  d1,track
+         rts
+*
+* Set sector.
+setsec   move.b  d1,sector
+         rts
+*
+* Translate logical to physical sector.
+sectran  andi.l  #$ff,d1      Sector <= 255
+         tst.l   d2           If d2=0 then return sector
+         bne.s   secmore      Else translate.
+         move.l  d1,d2
+         rts
+secmore  movea.l d2,a0
+         ext.l   d1
+         move.b  0(a0,d1),d0
+         ext.l   d0
+         rts
+*
+* Set data move address.
+setdma   move.l  d1,dma
+         rts
+*
+getiob   rts
+setiob   rts
+*
+* Flush write buffers, disable read buffers.
+flush    move.b  #$ff,rtrk
+         move.b  wtrk,d2       Write out write buffer.
+ cmp.b #$ff,d2
+ beq.s fleok
+         move.b  #$ff,wtrk
+         lea.l   wbuff,a0
+         jsr.l   put_track
+         beq.s   fleok
+         move.l  #$ffff,d0        End not ok.
+ bra.s fle
+fleok moveq.l #0,d0
+fle      rts
+*
+* Set exception vector.
+setexc   andi.l  #$ff,d1
+         lsl.l   #2,d1
+         movea.l d1,a0
+         move.l  (a0),d0
+         move.l  d2,(a0)
+noset    rts
+*
+* Return memory bounds.
+getseg   move.l  #memrgn,d0
+         rts
+*
+* Wait until current command is finished.
+fwait    btst.b  #busy,fdccom
+         bne.s   fwait
+         rts
+* Send command in (d0) to fdc.
+fcmd     bsr.s   fwait
+         move.b  d0,fdccom
+         moveq.l #1,d0
+         divs.l  d0,d0        40uS delay.
+         divs.l  d0,d0
+         rts
+*
+* Seek to track in d2.
+seek     move.b  d2,d0
+         btst.b  #0,d0        Set correct side.
+         bne.s   s1
+         move.b  #$20,acia+setreg    Side=0.
+         bra.s   s2
+s1       move.b  #$20,clrreg+acia    Side=1.
+s2       lsr.b   #1,d0        Cylinder=track/2
+         move.b  d0,fdcdat    Set up new track.
+         move.b  #seekcmd,d0  Issue seek command.
+         bsr.s   fcmd
+         bsr.s   fwait
+         rts
+*
+* Restore to track 00.
+restore  move.b  #rstcmd,d0
+         bsr     fcmd
+         bsr     fwait
+         rts
+*
+* Read a logical sector from track/sector.
+read     move.b  track,d0     Track already in buffer?
+         cmp.b   rtrk,d0
+         beq.s   rmove        If so, then move data.
+         move.b  track,d2
+         lea.l   rbuff,a0
+         bsr.s   get_track    read in track to buffer.
+         beq.s   rmove        If no errors, then move data.
+         rts
+* move the data from the track buffer.
+rmove    move.b  track,rtrk   Update rtrk.
+         move.b  sector,d0
+         and.l   #$ff,d0
+         asl.l   #7,d0        sector times 128.
+         add.l   #rbuff,d0    add in buffer base.
+         movea.l d0,a0
+         movea.l dma,a1
+         move.l  #31,d0       128 bytes to move.
+rm1      move.l  (a0)+,(a1)+
+         dbf.s   d0,rm1       Tight move loop for 68010
+         moveq.l #0,d0        No errors!
+         rts
+*
+* GET_TRACK   Read a track into a buffer.
+* Read 2048 bytes from disc to buffer, retry 10 times before
+* giving up.
+* Entry:- (d2) = track tor read.  (a0) = base address of buffer.
+* Exit:-  No change.
+get_track movem.l d0-d2/a0-a1,-(sp)
+         move.b #10,errcount  Set retry count.
+gt1      bsr     seek         Move to track.
+         move.b  #0,fdcsec    Read from first sector.
+gt11     move.b  #readcmd,d0
+         bsr     fcmd
+         move.l  #2047,d0     2048 bytes to get.
+         movea.l #fdc,a1      Fdc base address.
+fr1      btst.b  #drq,(a1)    Data ready?
+         beq.s   fr2          If not, check for end of data.
+         move.b  6(a1),(a0)+  If so, get data.
+         dbf.s   d0,fr1
+         move.b  #$d0,fdccom  Abort read track.
+         bra.s   fr3
+fr2      btst.b  #busy,(a1)   End of command?
+         bne.s   fr1          If not, check for more data.
+fr3      moveq.l  #1,d0       Wait a bit for status to settle.
+         divs.l  d0,d0
+         divs.l  d0,d0
+         move.b  (a1),d0      Get error status.
+         and.b   #$1c,d0      Mask for read errors.
+         beq.s   fre          If ok then return.
+         bsr     restore      If not ok, recalibrate,
+         moveq.l #7,d1        ring bells,
+         bsr     conout       then decrement
+         subi.b  #1,errcount  the error count,
+         bne     gt1          and try again.
+         moveq.l #1,d0        Ten retries, so give up!
+fre      movem.l (sp)+,d0-d2/a0-a1
+         rts
+*
+* Write a logical sector to track/sector.
+write    move.b  d1,d3        Save parameter.
+         move.b  track,d0     Track already in buffer?
+         cmp.b   wtrk,d0
+         beq.s   wmove        If so, then move data.
+         move.b  wtrk,d2      Write out old track.
+         lea.l   wbuff,a0
+         bsr.s   put_track
+         beq.s   wt1          If no errors, then get track.
+         rts
+wt1      move.b  track,d2     Get new track for overwriting.
+         lea.l   wbuff,a0
+         bsr     get_track
+         beq.s   wmove
+         rts
+* move the data to the track buffer.
+wmove    move.b  track,wtrk   Update wtrk.
+         move.b  sector,d0
+         and.l   #$ff,d0
+         asl.l   #7,d0        sector times 128.
+         add.l   #wbuff,d0    add in buffer base.
+         movea.l d0,a0
+         movea.l dma,a1
+         move.l  #31,d0       128 bytes to move.
+wm1      move.l  (a1)+,(a0)+
+         dbf.s   d0,wm1       Tight move loop for 68010
+         cmp.b   #1,d3        Is this a directory sector?
+         bne.s   wse          No, normal end.
+         move.b  wtrk,d2      Else do write.
+         lea.l   wbuff,a0
+         bsr.s   put_track
+         bne.s   wse1         If error, panic.......
+wse      moveq.l #0,d0        No errors!
+wse1     rts
+*
+* PUT_TRACK  Write the write buffer to disk.
+* Write the buffer to disk, retry
+* 10 times before giving up, empty read buffer,
+* ignore if track = $ff (empty buffer).
+* Entry :- (d2) = track  (a0) = buffer base address.
+* Exit  :- No change.
+put_track cmp.b  #$ff,d2       Empty buffer?
+         bne.s   fwff
+         rts                   Yes, so return.
+fwff     movem.l d0-d2/a0-a1,-(sp)
+         move.b  #$ff,rtrk    Empty read buffer.
+         move.b  #10,errcount Set retry count.
+pt1      bsr     seek         Move to track.
+         move.b  #0,fdcsec    Write from 1st sector.
+         move.b  #writecmd,d0 Issue write command.
+         bsr     fcmd
+         movea.l #wbuff,a0    Get pointer to data buffer.
+         movea.l #fdc,a1      Point to fdc.
+         move.l  #2047,d0     Bytes to transfer.
+fw1      btst.b  #drq,(a1)    Data request?
+         beq.s   fw2          If not, check for end of data.
+         move.b  (a0)+,6(a1)  If so, put data.
+         dbf     d0,fw1
+ move.l #500,d0 Wait for last two bytes
+ww dbf d0,ww to get through the fdc.
+         move.b  #$d0,(a1)    Abort write track.
+         bra.s   fw3
+fw2      btst.b  #busy,(a1)   End of command?
+         bne.s   fw1          If not, check for more data.
+fw3      moveq   #1,d0
+         divs.l  d0,d0
+         divs.l  d0,d0
+         move.b  (a1),d0      Get error status, and verify.
+         and.b   #$5c,d0
+         beq.s   fwe          If no error on write, return.
+         bsr     restore      If not ok, recalibrate,
+         moveq.l #7,d1        ring bells,
+         bsr     conout       then decrement
+         subi.b  #1,errcount  the error count,
+         bne     pt1          and try again.
+         moveq.l #1,d0        Ten retries, so give up!
+fwe      movem.l (sp)+,d0-d2/a0-a1
+         rts
+*
+dirbuff ds.b 128
+*
+ckv0 ds.b 16
+alv0 ds.b 20
+*
+ckv1 ds.b 16
+alv1 ds.b 20
+*
+rbuff ds.b 2048
+wbuff ds.b 2048

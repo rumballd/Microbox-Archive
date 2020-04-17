@@ -1,0 +1,137 @@
+ NOLIST
+b_excpt  bsr.s   excp1        Buss error.
+a_excpt  bsr.s   excp1        Address error.
+i_excpt  bsr.s   excp2        Illegal instruction.
+d_excpt  bsr.s   excp2        Divide by zero.
+c_excpt  bsr.s   excp2        CHK.
+o_excpt  bsr.s   excp2        TRAPV.
+p_excpt  bsr.s   excp2        Privilege.
+t_excpt  bsr.s   excp2        Trace.
+x_excpt  bsr.s   excp2        L1010.
+y_excpt  bsr.s   excp2        L1111.
+s_excpt  bsr.s   excp2        Spurious interrupt.
+* Interrupts
+int      bsr.s   excp2        Unexpected interrupt
+int7     bsr.s   excp2        Level 7 interrupt.
+* Traps
+trp      bsr.s   excp2        Unexpected TRAP.
+trp14    bsr.s   excp2        Breakpoint.
+trp15    bsr.s   excp2        End of user program.
+*
+* Type one exception for buss and address error.
+* Reset program counter.
+excp1    movem.l d0/a0,-(sp)  Save some registers.
+         move.l  22(sp),a0    Program counter.
+         move.w  18(sp),d0    Instruction register.
+         cmp.w   -(a0),d0     Decrement PC and compare.
+         beq.s   excp10       Equal so ok.
+         cmp.w   -(a0),d0     "     "
+         beq.s   excp10       "     "
+         cmp.w   -(a0),d0     "     "
+         beq.s   excp10       "     "
+         cmp.w   -(a0),d0     "     "
+         beq.s   excp10       "     "
+         sub.l   #2,a0        No so must be this one.
+excp10   move.l  a0,22(sp)    Restore corrected PC.
+         movem.l (sp)+,d0/a0  Restore saved registers.
+         move.l  (sp),8(sp)   Overwrite with return address.
+         add.l   #8,sp        Modify SP and drop through....
+*
+* type two exceptions and fixed type ones.
+excp2    btst    #5,4(sp)     Test supervisor bit of saved SR
+         bne.s   excp3        If set then not user program runing.
+         move.l  a0,-(sp)     Save a0 temporarily.
+         lea.l   ud,a0        Point to user data register dump.
+         movem.l d0-d7/a0-a6,(a0) Save all the users register.
+         move.l  (sp)+,32(a0) Fix saved value of a0.
+         move.l  (sp)+,a1     Extract return address caused by bsr.
+         move.w  (sp)+,64(a0) Update users sr.
+         bclr    #7,64(a0)    Ensure trace bit turned off.
+         move.l  (sp)+,66(a0) Update users pc.
+         move.l  usp,a2       Extract usp.
+         move.l  a2,60(a0)    and place that in a7 slot.
+*
+         lea.l   brkp,a3      Point to breakpoint save space.
+         moveq   #4,d0        Counter.
+brkl     move.l  (a3)+,a4     Location of breakpoint.
+         move.w  (a3)+,d1     Origional code.
+         cmp.l   #0,a4        Was breakpoint set?
+         beq.s   brkl1        No..
+         move.w  d1,(a4)      Replace orgional code.
+brkl1    dbf     d0,brkl      Loop as required.
+         bra.s   excp4        Now write message.
+*
+excp3    move.l  (sp)+,a1     Extract return address stacked by bsr.
+*
+excp4    sub.l   #2,a1        Pointer to code we actually entered.
+         lea.l   s_stack,sp   Reset system stack.
+*********move.w  #intson,sr   Interrupts on agin.**********
+*
+         lea.l   t_excpt(pc),a0   Trace exception.
+         cmp.l   a0,a1         Was it one?
+         beq.s   excp5         Yes, handle it.
+         lea.l   trp14(pc),a0      Breakpoint trap.
+         cmp.l   a0,a1         Was it this.
+         beq.s   excp6         Handle it.
+*
+         bsr     wrabo         Write sutible message.
+         bra     mwarm         and handle any more commands.
+*
+excp5    tst.b   bflg          Test to see if c was last comman
+         bne     go1           Continue execution if so.
+*
+         bsr.s   wrabo         Write trace message.
+         bsr     drx           Print registers.
+         bsr     inch1
+         cmp.b   #$20,d0       Return?
+         bne     mwarm
+         bset    #7,usr       Set the trace bit in saved sr.
+         bra     go1          and continue execution.
+*
+excp6    sub.l   #2,upc       Back up user pc.
+         bsr.s   wrabo        Write breakpoint message.
+         bsr     drx          Display registers.
+         bra     mwarm        and ask for another command.
+*
+wrabo    lea.l   b_excpt(pc),a0   Base of table.
+         sub.l   a0,a1        Now a word offset from zero.
+         lea.l   abotab,a2    Pointer to abort offset table.
+         move.l  a1,d0        Offset into d0.
+         move.w  (a2,d0.l),a0 Offset of string from table base.
+         add.l   a2,a0        Add table base to point to string.
+         bra     pstring      Print message.
+*
+ab1      dc.b    'Buss error',0
+ab2      dc.b    'Address error',0
+ab3      dc.b    'Illegal instruction',0
+ab4      dc.b    'Division by zero',0
+ab5      dc.b    'CHK exception',0
+ab6      dc.b    'TRAPV exception',0
+ab7      dc.b    'Privilege violation',0
+ab8      dc.b    'Trace....',0
+ab9      dc.b    'Illegal instruction (1010)',0
+ab10     dc.b    'Illegal instruction (1111)',0
+ab11     dc.b    'Spurious interrupt',0
+ab12     dc.b    'Unexpected interrupt',0
+ab13     dc.b    'Level 7 interrupt',0
+ab14     dc.b    'TRAP exception',0
+ab15     dc.b    'Breakpoint',0
+ab16     dc.b    'End of user program',0
+*
+abotab   dc.w    ab1-abotab
+         dc.w    ab2-abotab
+         dc.w    ab3-abotab
+         dc.w    ab4-abotab
+         dc.w    ab5-abotab
+         dc.w    ab6-abotab
+         dc.w    ab7-abotab
+         dc.w    ab8-abotab
+         dc.w    ab9-abotab
+         dc.w    ab10-abotab
+         dc.w    ab11-abotab
+         dc.w    ab12-abotab
+         dc.w    ab13-abotab
+         dc.w    ab14-abotab
+         dc.w    ab15-abotab
+         dc.w    ab16-abotab
+ LIST

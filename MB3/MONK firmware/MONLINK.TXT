@@ -1,0 +1,37 @@
+*
+* Monitor jump table.
+cold     equ     $c0400
+warm     equ     $c0406       Monitor warm start.
+status   equ     $c040c       Test for recieved char.
+inch1    equ     $c0412       Input character, no echo.
+inch     equ     $c0418       Input character with echo.
+outch    equ     $c041e       Output character.
+pcrlf    equ     $c0424       Print a new line.
+pdata1   equ     $c042a       Print a string.
+pstrng   equ     $c0430       Print crlf + string.
+prompt   equ     $c0436       Print a string plus input hex number.
+inhex    equ     $c043c       Input multi digit hex number.
+locase   equ     $c0442       Convert character to lower case.
+out8h    equ     $c0448       Print an eight digit hex number.
+out4h    equ     $c044e         "    " four    "    "    "
+out2h    equ     $c0454         "    " two     "    "    "
+outh     equ     $c045a         "    " one     "    "    "
+outs     equ     $c0460       Print a space.
+outns    equ     $c0466       Print multiple spaces.
+delay    equ     $c046c       Delay routine.
+random   equ     $c0472       Random number generator.
+*
+putrtc   equ     $c0478       Put data to real time clock.
+getrtc   equ     $c047e       Get data from real time clock.
+beep     equ     $c0484       Beep buzzer.
+sync     equ     $c048a       Wait for vert blanking.
+load_lut equ     $c0490       load luts.
+text     equ     $c0496       Display text.
+hi_graph equ     $c049c       Display Hi-res graphics.
+lo_graph equ     $c04a2       Display Lo-res graphics.
+clearg   equ     $c04a8       Clear graphics area.
+move     equ     $c04ae       Move cursor.
+point    equ     $c04b4       Plot point.
+line     equ     $c04ba       Plot line.
+rect     equ     $c04c0       Plot rectangle.
+

@@ -1,0 +1,869 @@
+ NOLIST
+*******************************
+*      Hex memory dump        *
+*******************************
+*
+hds dc.b $d,'Hex dump of memory  from ',0
+hds1 dc.b '           0  1  2  3  4  5  6  7'
+     dc.b '   8  9  A  B  C  D  E  F',0
+hd lea hds(pc),a0
+ bsr prompt
+ move.l d1,a1
+hd2 bsr PCRLF
+ lea hds1(pc),a0
+ bsr PSTRING
+ moveq #15,d3
+hloop bsr.s loop
+ dbf d3,hloop
+*
+ bsr INCH1
+ cmpi #$d,d0
+ beq.s hd2
+ cmpi #'-',d0
+ bne MWARM
+ lea.l -512(a1),a1
+ bra.s hd2
+*
+loop moveq #15,d4
+ bsr PCRLF
+ move.l a1,d0
+ bsr OUT8H
+ moveq #2,d2
+ bsr OUTNS
+*
+loop1 move.b (a1)+,d0
+ bsr OUT2H
+ bsr OUTS
+ cmpi #8,d4
+ bne.s hd1
+ bsr OUTS
+hd1 dbf d4,loop1
+*
+ moveq #3,d2
+ bsr OUTNS
+ lea  -16(a1),a1
+ moveq #15,d4
+loop2 move.b (a1)+,d0
+ cmpi.b #$20,d0
+ blo.s hdx
+ cmpi.b #$7f,d0
+ blo.s hdy
+hdx moveq #'.',d0
+hdy bsr OUTCH
+ dbf d4,loop2
+ rts
+*******************************
+*     Ascii memory dump.      *
+*******************************
+*
+ads dc.b $d,'Ascii dump of memory from ',0
+ads1 dc.b '           0   4   8   C   0   4   8   C   '
+     dc.b '0   4   8   C   0   4   8   C  F',0
+ad lea ads(pc),a0
+ bsr prompt
+ move.l d1,a1
+ad2 bsr PCRLF
+ lea ads1(pc),a0
+ bsr PSTRING
+ moveq #15,d3
+adloop moveq #63,d4
+ bsr PCRLF
+ move.l a1,d0
+ bsr OUT8H
+ moveq #2,d2
+ bsr OUTNS
+adloop1 move.b (a1)+,d0
+ cmpi.b #$20,d0
+ blo.s adx
+ cmpi.b #$7f,d0
+ blo.s ady
+adx moveq #'.',d0
+ady bsr OUTCH
+ dbf d4,adloop1
+ dbf d3,adloop
+ bsr INCH1
+ cmpi.b #$d,d0
+ beq.s ad2
+ cmpi.b #'-',d0
+ bne MWARM
+ lea -2048(a1),a1
+ bra.s ad2
+*
+*******************************
+*  Memory examine and alter.  *
+*******************************
+*
+mes      dc.b     $d,'Memory examine and alter from ',0
+me       lea.l   mes(pc),a0
+         bsr     prompt
+         move.l  d1,a0
+         moveq   #1,d3
+*
+meloop   bsr     pcrlf
+         move.l  a0,d0
+         bsr     out8h
+         bsr     outs
+         bsr     outs
+         move.w  d3,d2
+         subq    #1,d2
+*
+meloop1  move.b  (a0)+,d0
+         bsr     out2h
+         dbf     d2,meloop1
+         bsr     inch
+         bsr     locase
+*
+         cmp.b   #$0d,d0
+         bne.s   me1
+         bra.s   meloop
+*
+me1      cmp.b   #'-',d0
+         bne.s   me2
+         sub.l   d3,a0
+         sub.l   d3,a0
+         bra.s   meloop
+*
+me2      cmp.b   #$08,d0
+         bne.s   me3
+         sub.l   d3,a0
+         bra.s   meloop
+*
+me3      cmp.b   #'b',d0
+         bne.s   me4
+         sub.l   d3,a0
+         moveq   #1,d3
+         bra.s   meloop
+*
+me4      cmp.b   #'w',d0
+         bne.s   me5
+         sub.l   d3,a0
+         moveq   #2,d3
+         bra.s   meloop
+*
+me5      cmp.b   #'l',d0
+         bne.s   me6
+         sub.l   d3,a0
+         moveq   #4,d3
+         bra.s   meloop
+*
+me6      cmp.b   #' ',d0
+         bne     mwarm
+         bsr     inhex
+*
+         cmpi    #2,d3
+         blt.s   me7
+         bgt.s   me8
+         move.w  d1,-2(a0)
+         bra     meloop
+me7      move.b  d1,-1(a0)
+         bra     meloop
+me8      move.l  d1,-4(a0)
+         bra     meloop
+*
+
+*******************************
+*  Poke memory with constant. *
+*******************************
+*
+pms      dc.b    $d,'Poke memory  at ',0
+pm       lea.l   pms(pc),a0
+         bsr     prompt
+         move.l  d1,a1
+         lea.l   values(pc),a0
+         bsr     pdata1
+         bsr     inhex
+         move.b  d1,(a1)
+         bra     mwarm
+*
+*******************************
+*     Quick memory test.      *
+*******************************
+*
+tms      dc.b    $d,'Quick test of memory from ',0
+tms1     dc.b    '     Testing now with ',0,0
+tms2     dc.b    'Error at location ',7,0
+tms3     dc.b    ' changed to ',0,0
+tm       lea.l   tms(pc),a0
+         bsr     prompt
+         move.l  d1,a3
+         lea.l   tos(pc),a0
+         bsr     prompt
+         move.l  d1,a4
+         lea.l   tms1(pc),a0
+         bsr     PDATA1
+         move.w  #$00ff,d1
+tml      move.b  d1,d0
+         bsr     OUT2H
+         moveq   #8,d0
+         bsr     OUTCH
+         bsr     OUTCH
+         move.l  a3,a2
+tml1     move.b  d1,(a2)
+         cmp.b   (a2)+,d1
+         bne.s   tmerr
+         cmp.l   a2,a4
+         bne.s   tml1
+         dbf     d1,tml
+         bra     MWARM
+tmerr    lea.l   tms2(pc),a0
+         bsr     PSTRING
+         sub.q   #1,a2
+         move.l  a2,d0
+         bsr     OUT8H
+         moveq   #3,d2
+         bsr     outns
+         move.b  d1,d0
+         bsr     OUT2H
+         lea.l   tms3(pc),a0
+         bsr     PDATA1
+         move.b  (a2),d0
+         bsr     OUT2H
+         bra     MWARM
+*
+*******************************
+*  Fill memory with constant. *
+*******************************
+*
+fms dc.b $d,'Fill memory with constant from ',0
+tos dc.b 'to ',0
+values dc.b 'value ',0
+FM lea fms(pc),a0
+ bsr prompt
+ move.l d1,a1
+ lea tos(pc),a0
+ bsr prompt
+ move.l d1,a2
+ lea values(pc),a0
+ bsr prompt
+fmloop move.b d1,(a1)+
+ cmp.l a1,a2
+ bne.s fmloop
+ bra MWARM
+*
+*******************************
+*     Shift memory block.     *
+*******************************
+*
+sms      dc.b    $d,'Shift memory from ',0
+lengths  dc.b    ' length ',0,0
+sm       lea.l   sms(pc),a0
+         bsr     prompt
+         move.l  d1,a1
+         lea.l   tos(pc),a0
+         bsr     prompt
+         move.l  d1,a2
+         lea.l   lengths(pc),a0
+         bsr     prompt
+         subq    #1,d1
+smloop   move.b  (a1)+,(a2)+
+         dbf     d1,smloop
+         bra     mwarm
+*
+*******************************
+*   Load text from keyboard.  *
+*******************************
+*
+lks      dc.b    $d,'Load text from keyboard to memory at ',0
+lks1     dc.b    ' text..(end with ^D)',0
+lk       lea.l   lks(pc),a0
+         bsr     prompt
+         move.l  d1,a1
+         lea.l   lks1(pc),a0
+         bsr     pdata1
+lkloop   bsr     inch
+         move.b  d0,(a1)+
+         cmp.b   #4,d0
+         bne.s   lkloop
+         clr.b   -1(a1)
+         bra     mwarm
+*
+*******************************
+*      Find byte string.      *
+*******************************
+*
+fis      dc.b    $d,'Find byte string from ',0
+nbs      dc.b    '   number of bytes in string ',0
+ebs      dc.b    '  Enter byte string... ',0
+fi       lea.l   fis(pc),a0
+         bsr     prompt
+         move.l  d1,a2
+         lea.l   tos(pc),a0
+         bsr     prompt
+         move.l  d1,a3
+         lea.l   nbs(pc),a0
+         bsr     prompt
+         move.l  d1,d7
+         subq    #1,d7
+         lea.l   ebs(pc),a0
+         bsr     pstring
+         lea.l   rbuff,a0
+inloop   bsr     inhex
+         move.b  d1,(a0)+
+         dbf     d7,inloop
+         move.l  a0,a1
+         lea.l   rbuff,a0
+fchk1    cmp.b   (a0)+,(a2)+
+         bne.s   fnope
+         cmp.l   a1,a0
+         bne.s   fchk1
+         bsr.s   ffound
+fnope    lea.l   rbuff,a0
+         move.l  a2,a4
+         cmp.l   a3,a2
+         bge     mwarm
+         bra.s   fchk1
+*
+ffound moveq #15,d4
+ bsr PCRLF
+ subq #1,a4
+ move.l a4,d0
+ bsr OUT8H
+ moveq #2,d2
+ bsr OUTNS
+*
+ subq #8,a4
+floop1 move.b (a4)+,d0
+ bsr OUT2H
+ bsr OUTS
+ cmpi #8,d4
+ bne.s fhd1
+ bsr OUTS
+fhd1 dbf d4,floop1
+*
+ moveq #4,d2
+ bsr OUTNS
+ lea  -16(a4),a4
+ moveq #15,d4
+floop2 move.b (a4)+,d0
+ cmpi.b #$20,d0
+ blo.s fhdx
+ cmpi.b #$7f,d0
+ blo.s fhdy
+fhdx moveq #'.',d0
+fhdy bsr OUTCH
+ dbf d4,floop2
+ rts
+*
+*******************************
+*      Run user program.      *
+*******************************
+*
+rps     dc.b    $d,'Run program from ',0,0
+rp      lea.l   rps(pc),a0
+        bsr     prompt
+        move.l  d1,upc
+*
+go1     btst    #5,usr       Check supervisor bit not set.
+        bne     goerr        Error if so.
+        clr.b   bflg         Clear breakpoint flag.
+*
+cgo     move.l  upc,a4       Extract user pc.
+        lea.l   brkp,a1      Point to breakpoint space.
+        moveq   #4,d0        Counter.
+        sub.l   a2,a2        Zero a2.
+go2     move.l  (a1)+,d1     Breakpoint address.
+        beq.s   go3          Zero address so no breakpoint.
+        move.w  0(a2,d1.l),(a1) Save orgional instruction.
+        cmp.l   d1,a4        Check if breakpoint at user pc.
+        beq.s   go3          Do not insert breakpoint if so.
+        move.w  #$4e4e,0(a2,d1.l) Replace with breakpoint trap.
+go3     add.l   #2,a1        Increment a1.
+        dbf     d0,go2       Try next breakpoint.
+*
+        move.l  usptr,a0     Extract user stack pointer.
+        move.l  a0,usp       And set it up.
+        move.l  upc,-(sp)    Stack user pc.
+        move.w  usr,-(sp)    Stack user sr.
+        movem.l ud,d0-d7/a0-a6 Set up user's registers.
+        rte                  Geronimo!
+*
+*******************************
+*    Jump tp user program.    *
+*******************************
+*
+jps      dc.b    $d,'Jump to program at  ',0
+ju       lea.l   jps(pc),a0
+         bsr     pdata1
+         bsr     inhex
+         move.l  d1,a0
+         jmp     (a0)
+*
+*******************************
+*  Jump to CPM  warm start.   *
+*******************************
+*
+jvs      dc.b    $d,'Jump to CPM-68k warm start..',0
+jv       lea.l   jvs(pc),a0
+         bsr     pdata1
+ move.l #traphndl,$8c restore trap #3
+         jmp     wboot
+*
+*******************************
+*   Display user registers.   *
+*******************************
+*
+drs      dc.b    $d,'Display registers.',0
+drs1     dc.b    'Pc ',0
+drs2     dc.b    'Sr ',0
+dr       lea.l   drs(pc),a0
+         bsr     pdata1
+         bsr.s   drx
+         bra     mwarm
+*
+drx      movem.l d0-d2/a0-a1,-(sp)
+         bsr     pcrlf
+         lea.l   drs1(pc),a0
+         bsr     pdata1
+         move.l  upc,d0
+         bsr     out8h
+         bsr     outs
+         bsr     outs
+         lea.l   drs2(pc),a0
+         bsr     pdata1
+         move.w  usr,d0
+         bsr     out4h
+         bsr     pcrlf
+         lea.l   ud,a1
+         move.b  #$d0,d1
+         bsr.s   drx1
+         bsr     pcrlf
+         bsr.s   drx1
+         bsr     pcrlf
+         move.b  #$a0,d1
+         bsr.s   drx1
+         bsr     pcrlf
+         bsr.s   drx1
+         movem.l (sp)+,d0-d2/a0-a1
+         rts
+*
+drx1     moveq   #3,d2
+drx2     move    d1,d0
+         bsr     out2h
+         bsr     outs
+         move.l  (a1)+,d0
+         bsr     out8h
+         bsr     outs
+         bsr     outs
+         addq    #1,d1
+         dbf     d2,drx2
+         rts
+*
+*******************************
+*    Set address register.    *
+*******************************
+*
+sas      dc.b    $d,'Set address register number ',0
+sa       lea.l   sas(pc),a0
+         bsr     prompt
+         move.b  d1,d0
+         andi    #7,d0
+         asl.b   #2,d0
+         lea.l   values(pc),a0
+         bsr     prompt
+         lea.l   ua,a0
+         move.l  d1,(a0,d0.b)
+         bra     mwarm
+*
+*******************************
+*      Set data register.     *
+*******************************
+*
+sds      dc.b    $d,'Set data register number ',0,0
+sd       lea.l   sds(pc),a0
+         bsr     prompt
+         move.b  d1,d0
+         andi    #7,d0
+         asl.b   #2,d0
+         lea.l   values(pc),a0
+         bsr     prompt
+         lea.l   ud,a0
+         move.l  d1,(a0,d0.b)
+         bra     mwarm
+*
+*******************************
+*     Set status register.    *
+*******************************
+*
+sss      dc.b    $d,'Set status register to ',0,0
+ss       lea.l   sss(pc),a0
+         bsr     prompt
+         lea.l   usr,a0
+         move.w  d1,(a0)
+         bra     mwarm
+*
+*******************************
+*     Set program counter.    *
+*******************************
+*
+sps      dc.b    $d,'Set program counter to ',0,0
+sp       lea.l   sps(pc),a0
+         bsr     prompt
+         lea.l   upc,a0
+         move.l  d1,(a0)
+         bra     mwarm
+*
+*******************************
+*     Trace user counter.     *
+*******************************
+*
+trs     dc.b    $d,'Trace program from ',0,0
+tr      lea.l   trs(pc),a0
+        bsr     prompt
+        move.l  d1,upc
+*
+        bset    #7,usr            Set trace bit in saved status reg.
+        bra     go1
+*
+*******************************
+* Continue after breakpoint.  *
+*******************************
+*
+cps dc.b $d,'Continue after breakpoint.',0
+cp lea.l cps(pc),a0
+ bsr pdata1
+ btst #5,usr
+ bne.s goerr
+ bset #7,usr
+ st bflg
+ bra   cgo
+*
+goerrs dc.b 'Supervisor bit set.',0
+goerr lea.l goerrs(pc),a0
+ bsr pstring
+ bra mwarm
+*
+*******************************
+*    Display breakpoints.     *
+*******************************
+*
+brs     dc.b    $d,'Display breakpoints.',0
+br      lea.l   brs(pc),a0
+        bsr     pdata1
+        bsr     pcrlf
+brk     lea.l   brkp,a1      Point to breakpoint table.
+        moveq   #0,d1        Counter.
+brk0    move.b  d1,d0        Breakpoint number into d0.
+        bsr     outh         Print breakpoint number.
+        bsr     outs
+        move.l  (a1),d0      Extract breakpoint location.
+        bsr     out8h
+        bsr     pcrlf
+brk01   add.l   #6,a1        Increment pointer.
+        add.b   #1,d1        Increment offset.
+        cmp.b   #4,d1        Check if done.
+        ble.s   brk0         Loop until done.
+        bra     mwarm
+*
+*******************************
+*      Define breakpoint.     *
+*******************************
+*
+dbs     dc.b    $d,'Define breakpoint number ',0,0
+bre     dc.b    'Invalid breakpoint',7,0
+db      lea.l   dbs(pc),a0
+        bsr     prompt
+        tst.l   d1           Check within bounds.
+        blt.s   brke         Too small.
+        cmp.l   #4,d1        Check other bound.
+        bgt.s   brke         Too big
+*
+        lea.l   brkp,a1      point to table.
+        muls    #6,d1        Offset in table.
+        add.l   d1,a1        Point to slot.
+*
+        lea.l   values(pc),a0
+        bsr     prompt
+        move.l  d1,(a1)      Place address in slot.
+        bra     mwarm
+*
+brke    lea.l   bre(pc),a0
+        bsr     pstring
+        bra     mwarm
+*
+
+*******************************
+*  Random read floppy test.   *
+*******************************
+*
+tds      dc.b    $d,'Random read test on drive ',0
+td       lea.l   tds(pc),a0
+         bsr     prompt
+         lea.l   sys_dcb,a0
+         move.l  #rbuff,6(a0)
+         move.b  d1,(a0)
+ bsr select
+         lea.l   hks(pc),a0
+         bsr     pdata1
+         lea.l   sys_dcb,a0
+         bsr     restore
+tdl      lea.l   sys_dcb,a0
+         move.l  #159,d0
+         bsr     random
+         move.b  d0,3(a0)
+         moveq   #15,d0
+         bsr     random
+         move.b  d0,5(a0)
+         bsr     read
+         bsr     derror
+         bsr     status
+         beq     tdl
+         lea.l   sys_dcb,a0
+         bsr     restore
+         bra     mwarm
+*
+
+*******************************
+*    Test floppy stepping.    *
+*******************************
+*
+tss      dc.b    $d,'Test stepping on drive ',0
+hks      dc.b    ' Hit any key to stop......',0
+ts       lea.l   sys_dcb,a1
+         lea.l   tss(pc),a0
+         bsr     prompt
+         move.b  d1,0(a1)
+ bsr select
+         lea.l   hks(pc),a0
+         bsr     pdata1
+         move.l  a1,a0
+         bsr     restore
+         move.b  #0,5(a0)
+tsl      move.b  #0,3(a0)
+         bsr     seek
+tsl1     move.b  #159,3(a0)
+         bsr     seek
+         bsr     status
+         beq.s   tsl
+         bsr     restore
+         bra     mwarm
+*
+*******************************
+*     Format floppy disc.     *
+*******************************
+*
+dfs      dc.b    $d,'Format disc to CPM-68k standard on drive ',0,0
+ays      dc.b    '  Are you sure(y-n)? ',0
+df       lea.l   dfs(pc),a0
+         bsr     prompt
+         lea.l   sys_dcb,a1
+         move.b  d1,(a1)
+         lea.l   ays(pc),a0
+         bsr     pdata1
+         bsr     inch
+         bsr     locase
+         cmp.b   #'y',d0
+         bne     mwarm
+         move.l  a1,a0
+ bsr select
+         bsr     restore
+*
+ move.b #$20,acia+setreg start on side_0
+         clr.l   d2           Track=00
+df1     move.b  #$f2,d0
+         bsr     fcmd
+* gap 1
+         moveq   #40,d1
+         move.b  #$ff,d0
+         bsr     w01
+*
+         clr.l   d3           sector=0
+* sector header
+df2     moveq   #6,d1
+         clr.l   d0
+         bsr     w01
+         moveq   #1,d1
+         move.b  #$fe,d0
+         bsr     w01
+* track
+         move.b  d2,d0
+ lsr.l #1,d0
+         bsr     w01
+* side
+         clr.l   d0
+         bsr     w01
+* sector
+         move.b  d3,d0
+         bsr     w01
+* length
+         moveq   #3,d0
+         bsr     w01
+         move.b  #$f7,d0
+         bsr     w01
+* data
+         moveq   #11,d1
+         move.b  #$ff,d0
+         bsr     w01
+         moveq   #6,d1
+         clr.l   d0
+         bsr     w01
+         moveq   #1,d1
+         move.b  #$fb,d0
+         bsr     w01
+         move.b  #$e5,d0
+         move.w  #1022,d1
+         bsr     w01
+* sector link
+         moveq   #1,d1
+         clr.l   d0
+         bsr     w01
+         move.b  d3,d0
+         addq    #1,d0
+         cmp.b   #2,d0
+         bne.s   dff2
+         clr.l   d0
+dff2    bsr     w01
+* crc
+         move.b  #$f7,d0
+         bsr     w01
+         moveq   #20,d1
+         move.b  #$ff,d0
+         bsr     w01
+*
+         addq    #1,d3
+         cmp.b   #2,d3
+         bne     df2
+*
+fb1     btst.b  #busy,fdccom
+         beq.s   fillend
+         btst.b  #drq,fdccom
+         beq.s   fb1
+         move.b  d0,fdcdat
+         bra.s   fb1
+*
+fillend addq    #1,d2
+         cmp.b   #160,d2
+         beq.s   df9
+ btst.l #0,d2
+ beq.s ttt1
+ move.b #$20,acia+clrreg
+ bra df1
+ttt1 move.b #$20,acia+setreg
+         moveq   #$40,d0
+         bsr     fcmd
+         bra     df1
+*
+df9     bsr frestore
+         bra     mwarm
+*
+* write (d0), (d1) times.
+w01     move.l  d1,-(sp)
+         subq    #1,d1        adjust for dbf count.
+w01loop btst.b  #drq,fdccom
+         beq.s   w01loop
+         move.b  d0,fdcdat
+         dbf     d1,w01loop
+         move.l  (sp)+,d1
+         rts
+
+*
+*******************************
+*      Read disc sector.      *
+*******************************
+*
+rss      dc.b    $d,'Read',0
+wps      dc.b    'The disc is write protected!',0
+snfs     dc.b    'Sector not found!',0
+crcs     dc.b    'CRC error!',0
+dls      dc.b    'Data lost or overrun!',0
+rs       lea.l   rss(pc),a0
+         bsr     pdata1
+         bsr.s   fdcb
+         bsr     read
+         bsr     derror
+         bra     mwarm
+*
+fds      dc.b    ' sector from drive ',0
+trks     dc.b    ' track ',0
+ssecs     dc.b    ' sector ',0
+das      dc.b    '  data address ',0,0
+ers      dc.b    'Error on drive ',0
+*
+fdcb     lea.l   sys_dcb,a1
+         lea.l   fds(pc),a0
+         bsr     prompt
+         move.b  d1,(a1)
+         lea.l   trks(pc),a0
+         bsr     prompt
+         move.b  d1,3(a1)
+         lea.l   ssecs(pc),a0
+         bsr     prompt
+         move.b  d1,5(a1)
+         lea.l   das(pc),a0
+         bsr     prompt
+         move.l  d1,6(a1)
+         move.l  a1,a0
+ bsr select
+         rts
+*
+derror   beq.s   dee
+         move.l  a0,-(sp)
+         move.b  d0,d7
+         lea.l   ers(pc),a0
+         bsr     pstring
+         lea.l   sys_dcb,a1
+         move.b  (a1)+,d0
+         bsr     outh
+         lea.l   trks(pc),a0
+         bsr     pdata1
+         move.b  (a1)+,d0
+         bsr     out2h
+         lea.l   ssecs(pc),a0
+         bsr     pdata1
+         move.b  (a1),d0
+         bsr     out2h
+         btst.b  #6,d7
+         beq.s   de1
+         lea.l   wps(pc),a0
+         bsr     pstring
+de1      btst.b  #4,d7
+         beq.s   de2
+         lea.l   snfs(pc),a0
+         bsr     pstring
+de2      btst.b  #3,d7
+         beq.s   de3
+         lea.l   crcs(pc),a0
+         bsr     pstring
+de3      btst.b  #2,d7
+         beq.s   de4
+         lea.l   dls(pc),a0
+         bsr     pstring
+de4      bsr     beep
+         move.l  (sp)+,a0
+dee      rts
+*
+*******************************
+*      Write disc sector.     *
+*******************************
+*
+wss      dc.b    $d,'Write',0,0
+ws       lea.l   wss(pc),a0
+         bsr     pdata1
+         bsr     fdcb
+         bsr     write
+         bsr     derror
+         bra     mwarm
+*
+
+*******************************
+*       Set input port.       *
+*******************************
+*
+sis      dc.b    $d,'Set input port to ',0
+si       lea.l   sis(pc),a0
+         bsr     prompt
+         asl.b   #2,d1
+         move.b  d1,iport
+         bra     mwarm
+*
+*******************************
+*       Set output port.      *
+*******************************
+*
+sos      dc.b    $d,'Set output port to ',0,0
+so       lea.l   sos(pc),a0
+         bsr     prompt
+         asl.b   #2,d1
+         move.b  d1,oport
+         bra     mwarm
+*
+ LIST
