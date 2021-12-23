@@ -4,8 +4,8 @@ Design files for the new version of the MB2 PCB created by Philippe Roehr
 Today (20/12/2021) the main pcb is still under test. Files can be updated if required.
 
 Gerber_main_41256.zip       Gerber files from main pcb
-Gerber_27C256           Gerber files for 27256 eprom disk pcb
-Gerber_27C256_28C256    Gerber files for 27256 or AT28C256 eprom disk pcb without 27526 programming capability
+Gerber_27256                Gerber files for 27256 eprom disk pcb
+Gerber_27256_28C256         Gerber files for 27256 or AT28C256 eprom disk pcb without 27526 programming capability
 
 This PCB is ready for double side floppy and 256 kb video ram.
 
