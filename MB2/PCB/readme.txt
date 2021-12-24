@@ -11,7 +11,7 @@ This PCB is ready for double side floppy and 256 kb video ram.
 
 MODIFICATIONS :
 
-J1 and J2 are for ds floppy fonction. Leave J1 open and populate J2 for ds floppy. If you want use an old version of MON09 with step rate
+J1 and J2 are for dual side floppy fonction. Leave J1 open and populate J2 for ds floppy. If you want use an old version of MON09 with step rate
 on PB6 then leave J2 open and populate J1.
 
 J3 is for connecting SK1/17 to SK2/15 or SK1/17 to IC19/18 or both...
