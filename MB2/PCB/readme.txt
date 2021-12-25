@@ -25,7 +25,7 @@ On SK8 +5V and PCLK has been added in case of.
 IC69 is for using 41256 dram on IC47 to IC62, not required if you use 4164 dram.
 
 Z1 and R58 are for increasing rtc disable speed at power off, protecting stored datas against crazy bus...
-Use 4.3 V zener + 470 R résistor.
+Use 4.3 V zener + 470 R resistor.
 
 There is also a jumper for clearing the rtc.
 
