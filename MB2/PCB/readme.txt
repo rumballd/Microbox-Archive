@@ -27,6 +27,6 @@ IC69 (74LS257) is for using 41256 dram on IC47 to IC62, not required if you use 
 Z2 and R58 are for increasing rtc disable speed at power off, protecting stored datas against crazy bus...
 Use 4.3 V zener + 220 R resistor.
 
-There is also a jumper to close for clearing the rtc (leave normally open).
+There is also a jumper to close for clearing the rtc (normally open).
 
 Philippe
