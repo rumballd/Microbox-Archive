@@ -22,7 +22,7 @@ If you invert Hsync and / or Vsync only SK8 can be used. Video out SK9 will not 
 
 On SK8 +5V and PCLK has been added in case of.
 
-IC69 is for using 41256 dram on IC47 to IC62, not required if you use 4164 dram.
+IC69 (74LS257) is for using 41256 dram on IC47 to IC62, not required if you use 4164 dram.
 
 Z2 and R58 are for increasing rtc disable speed at power off, protecting stored datas against crazy bus...
 Use 4.3 V zener + 220 R resistor.
