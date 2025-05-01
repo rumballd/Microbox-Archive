@@ -15,7 +15,7 @@ J1 and J2 are for dual side floppy fonction (R57 is the pull up resistor 1 kR). 
 MON09 with step rate on PB6 then leave J2 open and populate J1.
 
 J3 is for connecting SK1/17 to SK2/15 or SK1/17 to IC19/18 or both...
-See here connectors pinout : http://www.retro.co.za/6809/microbox/index.html. Thanks Wouters to put that online !
+See here connectors pinout : http://www.retro.co.za/6809/microbox/index.html. Thanks Wouter to put that online !
 
 J4 and J5 can invert Hsync and Vsync polarity (choice between Q or ~Q output) on SK8 connector. Normal position for composite video (SK9) use is J4 2-3 and J5 1-2.
 If you invert Hsync and / or Vsync only SK8 can be used. Video out SK9 will not works correctly.
