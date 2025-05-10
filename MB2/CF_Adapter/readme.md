@@ -25,9 +25,11 @@ WARNING : CF are detected even without a suitable Flex file system. Of course in
 
 The detection routine need a timeout so the monitor need time to come on screen especially if there is no Compact Flash connected.
 
-The eprom and ram disk routines has been removed from the monitor so you cant use these devices. "Ascii dump" is also removed and "Hex dump" has been improved to have hex and ascii display at the same time.
+The eprom and ram disk routines has been removed. With this monitor you cant use these devices.
 
-Master CF is disk $02 and slave CF is disk $03 in RTC table. Put $FF if no disk are used at this place.
+"Ascii dump" command is also removed and "Hex dump" command has been improved to have hex and ascii display at the same time.
+
+Master CF is disk typ $02 and slave CF is disk typ $03 in RTC table.
 
 For example to have :
 
@@ -36,17 +38,17 @@ For example to have :
     slave CF as Flex disk 2
     nothing as Flex disk 3
 
-put 02-00-03-FF into RTC table address $10.
+put 02-00-03-FF into RTC table at address $10.
 
 Anyway even if you ask about a CF as a disk somewhere but that the monitor dont detect it at boot it will be not be used. Accessing this disk under Flex simply give an error.
 
 Slave CF will not be detected if no master CF present.
 
 Last be not least :
-- The Flex disk geometry on the CF is -HARCODED- to 256 sectors per track.
-- Track number can be increased up to 255, the SIR must be set accordingly.
+- The Flex disk geometry for CF is -HARCODED- into the monitor to 256 sectors per track.
+- Track number can be increased up to 255 without modification, the track number is read from the SIR.
 
-You can find here an empty image with 122 tracks that can be used with Linux dd to set the disk on CF. Put it on the DEVICE (fe /dev/sdb), not into a partition. This image can be used with Michael Evenson FloppyMaintenance.
+You can find here an empty image with 122 tracks that can be used with Linux dd to set the file system on CF. Put it on the DEVICE (fe /dev/sdb), not into a partition. This image can be used with Michael Evenson 'FloppyMaintenance'.
 
 Please report any problem you get with this system. I will try to help.
 
@@ -54,5 +56,5 @@ Have fun !
 
 Philippe
 
-Ps : I have not do test with different device that Compact Flash card !!!
+Ps : !!! I have not do test with different device that Compact Flash card !!!
 
