@@ -249,7 +249,7 @@ BLANKD  EQU   $DFFF        ; ?
 
 ;* LIB MINIT
 HDR     FCB     $0A,$0D
-        FCC     '+++ Mon09 v5.0B Ph. Roehr 2025 +++'
+        FCC     '+++ Mon09 Ver 5.0 Ph. Roehr 2025 +++'
         FCB     $04
 PROMPT  FCB     $0A,$0D
         FCC     '=>'
@@ -2146,7 +2146,7 @@ WRT_IDE     PSHS    A
             STB     PORTC               ; set cf register address
             ORB     #IDE_WR             ; assert wr line
             STB     PORTC
-            EORB    #IDE_WR             ; prepare for release wr line
+            EORB    #IDE_WR				; prepare for release wr line
             BRA     ENDIDERW
 ;*
 ;* Do a one byte read cycle from ide
@@ -2158,10 +2158,10 @@ READ_IDE    LDA     #RD_IDE_8255        ; set 8255 A/B for input C for output
             ORB     #IDE_RD             ; assert rd line
             STB     PORTC
             LDA     PORTA               ; read lsb from d0-d7
-            EORB    #IDE_RD             ; prepare for rd line release
-
+            EORB    #IDE_RD             ; prepare for rd line release 
+            
 ENDIDERW    STB     PORTC               ; release line
-            CLR     PORTC               ; release ide device
+			CLR     PORTC               ; release ide device
             RTS
 ;*
 ;* Read sector from disk typ 8255 / ide
@@ -2237,39 +2237,32 @@ NOTRDY      JSR     NVZ0C1              ; error - clear Z - set C
 ;* Detect and init disk typ 2 & 3 CF on 8255 ide port
 INIDT2      LDB     #IDE_LBA3           ; set lba3 for master cf
             LDA     #LBA3MST
-            STA     LBA3                ; keep ram table sync
+            STA     LBA3                ; keep ram table sync 
             JSR     WRT_IDE
 
             LDD     #$0000
             STD     MSTCFOK             ; clear cf present flags
+			LDY     #MSTCFOK            ; Y point to master flag
 
-            LDX     #$FFFE              ; prepare for time out
+ILOOP       LDX     #$FFFE              ; prepare for time out
 ILOOP1      LDB     #IDE_STATUS         ; ask status register
             JSR     READ_IDE
             BITA    #BSYBIT             ; read busy bit
-            BEQ     MSTOK               ; if clear master cf ok
+            BEQ     MSTOK               ; if clear cf ok
             LEAX    -1,X                ; countdown
-            BEQ     ENDINI              ; time out end cf int (no master no slave)
+            BEQ     ENDINI              ; time out end cf int (if no master then no slave)
             BRA     ILOOP1              ; do again
 MSTOK       BITA    #RDYBIT             ; must also check ready bit set
             BEQ     ENDINI              ; error set ? yes end cf init
-            INC     MSTCFOK             ; set master flag
+            INC     ,Y+                 ; no set cf flag - Y point to next flag
 
+			CMPY    #SLVCFOK+1          ; master and slave done ?
+			BEQ     ENDINI              ; yes end of init  
+			
             LDB     #IDE_LBA3           ; set lba3 for slave cf
             LDA     #LBA3SLV
             JSR     WRT_IDE
-
-            LDX     #$FFFE              ; prepare for time out
-ILOOP2      LDB     #IDE_STATUS         ; ask status register
-            JSR     READ_IDE
-            BITA    #RDYBIT             ; read ready bit
-            BNE     SLVOK               ; wait ready bit set
-            LEAX    -1,X                ; countdown
-            BEQ     ENDINI              ; time out no slave cf
-            BRA     ILOOP2              ; do again
-SLVOK       BITA    #ERRBIT             ; must also check error bit clear
-            BNE     ENDINI              ; error ser ? end cf init
-            INC     SLVCFOK             ; set slave flag
+            BRA     ILOOP               ; do init again for slave cf
 
 ENDINI      LDB     #IDE_LBA3           ; set lba3 for master cf
             LDA     #LBA3MST
