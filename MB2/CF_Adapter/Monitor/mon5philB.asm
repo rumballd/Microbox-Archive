@@ -2146,7 +2146,7 @@ WRT_IDE     PSHS    A
             STB     PORTC               ; set cf register address
             ORB     #IDE_WR             ; assert wr line
             STB     PORTC
-            EORB    #IDE_WR				; prepare for release wr line
+            EORB    #IDE_WR             ; prepare for release wr line
             BRA     ENDIDERW
 ;*
 ;* Do a one byte read cycle from ide
@@ -2161,7 +2161,7 @@ READ_IDE    LDA     #RD_IDE_8255        ; set 8255 A/B for input C for output
             EORB    #IDE_RD             ; prepare for rd line release 
             
 ENDIDERW    STB     PORTC               ; release line
-			CLR     PORTC               ; release ide device
+            CLR     PORTC               ; release ide device
             RTS
 ;*
 ;* Read sector from disk typ 8255 / ide
@@ -2242,7 +2242,7 @@ INIDT2      LDB     #IDE_LBA3           ; set lba3 for master cf
 
             LDD     #$0000
             STD     MSTCFOK             ; clear cf present flags
-			LDY     #MSTCFOK            ; Y point to master flag
+            LDY     #MSTCFOK            ; Y point to master flag
 
 ILOOP       LDX     #$FFFE              ; prepare for time out
 ILOOP1      LDB     #IDE_STATUS         ; ask status register
@@ -2256,9 +2256,9 @@ MSTOK       BITA    #RDYBIT             ; must also check ready bit set
             BEQ     ENDINI              ; error set ? yes end cf init
             INC     ,Y+                 ; no set cf flag - Y point to next flag
 
-			CMPY    #SLVCFOK+1          ; master and slave done ?
-			BEQ     ENDINI              ; yes end of init  
-			
+            CMPY    #SLVCFOK+1          ; master and slave done ?
+            BEQ     ENDINI              ; yes end of init  
+            
             LDB     #IDE_LBA3           ; set lba3 for slave cf
             LDA     #LBA3SLV
             JSR     WRT_IDE

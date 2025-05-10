@@ -2285,7 +2285,7 @@
  F3D6 F7FF1E                      STB     PORTC               ; set cf register address
  F3D9 CA20                        ORB     #IDE_WR             ; assert wr line
  F3DB F7FF1E                      STB     PORTC
- F3DE C820                        EORB    #IDE_WR                             ; prepare for release wr line
+ F3DE C820                        EORB    #IDE_WR             ; prepare for release wr line
  F3E0 2012                        BRA     ENDIDERW
                       ;*
                       ;* Do a one byte read cycle from ide
@@ -2300,7 +2300,7 @@
  F3F2 C840                        EORB    #IDE_RD             ; prepare for rd line release 
                                   
  F3F4 F7FF1E          ENDIDERW    STB     PORTC               ; release line
- F3F7 7FFF1E                                  CLR     PORTC               ; release ide device
+ F3F7 7FFF1E                      CLR     PORTC               ; release ide device
  F3FA 39                          RTS
                       ;*
                       ;* Read sector from disk typ 8255 / ide
@@ -2381,7 +2381,7 @@
 
  F469 CC0000                      LDD     #$0000
  F46C FDDE7E                      STD     MSTCFOK             ; clear cf present flags
- F46F 108EDE7E                                LDY     #MSTCFOK            ; Y point to master flag
+ F46F 108EDE7E                    LDY     #MSTCFOK            ; Y point to master flag
 
  F473 8EFFFE          ILOOP       LDX     #$FFFE              ; prepare for time out
  F476 C60F            ILOOP1      LDB     #IDE_STATUS         ; ask status register
@@ -2395,9 +2395,9 @@
  F487 2711                        BEQ     ENDINI              ; error set ? yes end cf init
  F489 6CA0                        INC     ,Y+                 ; no set cf flag - Y point to next flag
 
- F48B 108CDE80                                CMPY    #SLVCFOK+1          ; master and slave done ?
- F48F 2709                                    BEQ     ENDINI              ; yes end of init  
-                                              
+ F48B 108CDE80                    CMPY    #SLVCFOK+1          ; master and slave done ?
+ F48F 2709                        BEQ     ENDINI              ; yes end of init  
+                                  
  F491 C60E                        LDB     #IDE_LBA3           ; set lba3 for slave cf
  F493 86F0                        LDA     #LBA3SLV
  F495 BDF3CA                      JSR     WRT_IDE
