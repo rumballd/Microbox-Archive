@@ -46,7 +46,7 @@ Slave CF will not be detected if no master CF present.
 
 Last be not least :
 - The Flex disk geometry for CF is -HARCODED- into the monitor to 256 sectors per track.
-- Track number can be increased up to 255 without modification, the track number is read from the SIR.
+- Track number can be increased up to 255 without modification, the number of tracks is read from the SIR.
 
 You can find here an empty image with 122 tracks that can be used with Linux dd to set the file system on CF. Put it on the DEVICE (fe /dev/sdb), not into a partition. This image can be used with Michael Evenson 'FloppyMaintenance'.
 
