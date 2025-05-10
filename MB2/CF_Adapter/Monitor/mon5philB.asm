@@ -2114,12 +2114,6 @@ PARMLOP     BSR     CMDWAIT
             BSR     WRT_IDE
             PULS    A,B,X,Y,PC
 ;*
-;* Check cf error status
-;CFERR       LDB     #IDE_STATUS         ; ask status register
-;            BSR     READ_IDE
-;            BITA    #ERRBIT             ; read error bit
-;            RTS                         ; return with z clear if error
-;*
 ;* Wait cf card command ready
 CMDWAIT     BSR     DATWAIT             ; wait data ready
 CWLOOP      LDB     #IDE_STATUS         ; ask status register
@@ -2128,7 +2122,7 @@ CWLOOP      LDB     #IDE_STATUS         ; ask status register
             BEQ     CWLOOP              ; wait ready bit set
             RTS
 ;*
-;* Wait cf card data ready with time out
+;* Wait cf card data ready
 DATWAIT     LDB     #IDE_STATUS         ; ask status register
             BSR     READ_IDE            ; A receive status register
             BITA    #BSYBIT             ; read busy bit
@@ -2248,7 +2242,7 @@ ILOOP       LDX     #$FFFE              ; prepare for time out
 ILOOP1      LDB     #IDE_STATUS         ; ask status register
             JSR     READ_IDE
             BITA    #BSYBIT             ; read busy bit
-            BEQ     MSTOK               ; if clear cf ok
+            BEQ     MSTOK               ; clear ? yes cf ok
             LEAX    -1,X                ; countdown
             BEQ     ENDINI              ; time out end cf int (if no master then no slave)
             BRA     ILOOP1              ; do again
