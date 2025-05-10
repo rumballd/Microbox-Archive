@@ -370,7 +370,7 @@ INIT4   JSR     GETRTC
 
 ;* IDE/CF detection and init
 RTCOK   LDA     #25
-        JSR     WAIT1MS    ; wait 25 ms after power on
+        JSR     WAIT1MS    ; wait > 25 ms after power on
         LDA     #RD_IDE_8255
         STA     PORTCTRL   ; set port C as output
         LDA     #IDE_RST   ; do a ide bus reset
@@ -380,10 +380,10 @@ LOOPRST DECA
         BNE     LOOPRST
         CLR     PORTC
         LDA     #5
-        JSR     WAIT1MS    ; wait 5 ms for cf to complete init
+        JSR     WAIT1MS    ; wait > 5 ms for cf to complete init
         LDD     #$0000     ; init ram cf table
         STD     MSTCFOK    ; clear both cf present flags
-        LDA     #IDE_FEA_16BIT      ; prepare for 16 bits mode
+        LDA     #IDE_FEA_16BIT ; prepare for 16 bits mode
         STA     SETFEA
         LDA     #$01       ; prepare for rw 1 sector at a time
         STA     SCTCNT
@@ -2077,8 +2077,6 @@ DRVERR      BSR     NVZ0C1              ; error
             PULS    A,X,PC
 ;*
 ;* Compute lba number from flex track/sector
-;* Check if flex disk number stored at 3,x is master ($02) or slave ($03) cf
-;* and set cf master or slave select bit in lba3 accordingly
 ;*
 ;* The cf disk is assumed to be 122 tracks (00$ to $79) of 256 sectors ($00 to $ff)
 ;* This is a 15990784 bytes disk in 31232 lba of 512 bytes
@@ -2114,12 +2112,6 @@ PARMLOP     BSR     CMDWAIT
             BSR     WRT_IDE
             PULS    A,B,X,Y,PC
 ;*
-;* Check cf error status
-;CFERR       LDB     #IDE_STATUS         ; ask status register
-;            BSR     READ_IDE
-;            BITA    #ERRBIT             ; read error bit
-;            RTS                         ; return with z clear if error
-;*
 ;* Wait cf card command ready
 CMDWAIT     BSR     DATWAIT             ; wait data ready
 CWLOOP      LDB     #IDE_STATUS         ; ask status register
@@ -2146,7 +2138,7 @@ WRT_IDE     PSHS    A
             STB     PORTC               ; set cf register address
             ORB     #IDE_WR             ; assert wr line
             STB     PORTC
-            EORB    #IDE_WR             ; prepare for release wr line
+            EORB    #IDE_WR             ; prepare for wr line release
             BRA     ENDIDERW
 ;*
 ;* Do a one byte read cycle from ide
@@ -2158,8 +2150,8 @@ READ_IDE    LDA     #RD_IDE_8255        ; set 8255 A/B for input C for output
             ORB     #IDE_RD             ; assert rd line
             STB     PORTC
             LDA     PORTA               ; read lsb from d0-d7
-            EORB    #IDE_RD             ; prepare for rd line release 
-            
+            EORB    #IDE_RD             ; prepare for rd line release
+
 ENDIDERW    STB     PORTC               ; release line
             CLR     PORTC               ; release ide device
             RTS
@@ -2237,7 +2229,7 @@ NOTRDY      JSR     NVZ0C1              ; error - clear Z - set C
 ;* Detect and init disk typ 2 & 3 CF on 8255 ide port
 INIDT2      LDB     #IDE_LBA3           ; set lba3 for master cf
             LDA     #LBA3MST
-            STA     LBA3                ; keep ram table sync 
+            STA     LBA3                ; keep ram table sync
             JSR     WRT_IDE
 
             LDD     #$0000
@@ -2257,8 +2249,8 @@ MSTOK       BITA    #RDYBIT             ; must also check ready bit set
             INC     ,Y+                 ; no set cf flag - Y point to next flag
 
             CMPY    #SLVCFOK+1          ; master and slave done ?
-            BEQ     ENDINI              ; yes end of init  
-            
+            BEQ     ENDINI              ; yes end of init
+
             LDB     #IDE_LBA3           ; set lba3 for slave cf
             LDA     #LBA3SLV
             JSR     WRT_IDE

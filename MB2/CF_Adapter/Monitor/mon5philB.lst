@@ -390,7 +390,7 @@
 
                       ;* IDE/CF detection and init
  E1A1 8619            RTCOK   LDA     #25
- E1A3 BDEFD2                  JSR     WAIT1MS    ; wait 25 ms after power on
+ E1A3 BDEFD2                  JSR     WAIT1MS    ; wait > 25 ms after power on
  E1A6 8692                    LDA     #RD_IDE_8255
  E1A8 B7FF1F                  STA     PORTCTRL   ; set port C as output
  E1AB 8680                    LDA     #IDE_RST   ; do a ide bus reset
@@ -400,10 +400,10 @@
  E1B3 26FD                    BNE     LOOPRST
  E1B5 7FFF1E                  CLR     PORTC
  E1B8 8605                    LDA     #5
- E1BA BDEFD2                  JSR     WAIT1MS    ; wait 5 ms for cf to complete init
+ E1BA BDEFD2                  JSR     WAIT1MS    ; wait > 5 ms for cf to complete init
  E1BD CC0000                  LDD     #$0000     ; init ram cf table
  E1C0 FDDE7E                  STD     MSTCFOK    ; clear both cf present flags
- E1C3 8681                    LDA     #IDE_FEA_16BIT      ; prepare for 16 bits mode
+ E1C3 8681                    LDA     #IDE_FEA_16BIT ; prepare for 16 bits mode
  E1C5 B7DE78                  STA     SETFEA
  E1C8 8601                    LDA     #$01       ; prepare for rw 1 sector at a time
  E1CA B7DE79                  STA     SCTCNT
@@ -2216,8 +2216,6 @@
  F38B 3592                        PULS    A,X,PC
                       ;*
                       ;* Compute lba number from flex track/sector
-                      ;* Check if flex disk number stored at 3,x is master ($02) or slave ($03) cf
-                      ;* and set cf master or slave select bit in lba3 accordingly
                       ;*
                       ;* The cf disk is assumed to be 122 tracks (00$ to $79) of 256 sectors ($00 to $ff)
                       ;* This is a 15990784 bytes disk in 31232 lba of 512 bytes
@@ -2253,12 +2251,6 @@
  F3B2 8D16                        BSR     WRT_IDE
  F3B4 35B6                        PULS    A,B,X,Y,PC
                       ;*
-                      ;* Check cf error status
-                      ;CFERR       LDB     #IDE_STATUS         ; ask status register
-                      ;            BSR     READ_IDE
-                      ;            BITA    #ERRBIT             ; read error bit
-                      ;            RTS                         ; return with z clear if error
-                      ;*
                       ;* Wait cf card command ready
  F3B6 8D09            CMDWAIT     BSR     DATWAIT             ; wait data ready
  F3B8 C60F            CWLOOP      LDB     #IDE_STATUS         ; ask status register
@@ -2285,7 +2277,7 @@
  F3D6 F7FF1E                      STB     PORTC               ; set cf register address
  F3D9 CA20                        ORB     #IDE_WR             ; assert wr line
  F3DB F7FF1E                      STB     PORTC
- F3DE C820                        EORB    #IDE_WR             ; prepare for release wr line
+ F3DE C820                        EORB    #IDE_WR             ; prepare for wr line release
  F3E0 2012                        BRA     ENDIDERW
                       ;*
                       ;* Do a one byte read cycle from ide
@@ -2297,8 +2289,8 @@
  F3EA CA40                        ORB     #IDE_RD             ; assert rd line
  F3EC F7FF1E                      STB     PORTC
  F3EF B6FF1C                      LDA     PORTA               ; read lsb from d0-d7
- F3F2 C840                        EORB    #IDE_RD             ; prepare for rd line release 
-                                  
+ F3F2 C840                        EORB    #IDE_RD             ; prepare for rd line release
+
  F3F4 F7FF1E          ENDIDERW    STB     PORTC               ; release line
  F3F7 7FFF1E                      CLR     PORTC               ; release ide device
  F3FA 39                          RTS
@@ -2376,7 +2368,7 @@
                       ;* Detect and init disk typ 2 & 3 CF on 8255 ide port
  F45F C60E            INIDT2      LDB     #IDE_LBA3           ; set lba3 for master cf
  F461 86E0                        LDA     #LBA3MST
- F463 B7DE7D                      STA     LBA3                ; keep ram table sync 
+ F463 B7DE7D                      STA     LBA3                ; keep ram table sync
  F466 BDF3CA                      JSR     WRT_IDE
 
  F469 CC0000                      LDD     #$0000
@@ -2396,8 +2388,8 @@
  F489 6CA0                        INC     ,Y+                 ; no set cf flag - Y point to next flag
 
  F48B 108CDE80                    CMPY    #SLVCFOK+1          ; master and slave done ?
- F48F 2709                        BEQ     ENDINI              ; yes end of init  
-                                  
+ F48F 2709                        BEQ     ENDINI              ; yes end of init
+
  F491 C60E                        LDB     #IDE_LBA3           ; set lba3 for slave cf
  F493 86F0                        LDA     #LBA3SLV
  F495 BDF3CA                      JSR     WRT_IDE
