@@ -56,5 +56,6 @@ Have fun !
 
 Philippe
 
-Ps : !!! I have not do test with different device that Compact Flash card !!!
+Ps 1 : !!! I have not do test with different device that Compact Flash card !!!
+Ps 2 : RTC default table in this monitor is different from the original monitor. Gdc timing is suitable for a lcd tv with composite video input and serial speed is set to 19200 baud.
 
