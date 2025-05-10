@@ -249,239 +249,239 @@
 
                       ;* LIB MINIT
  E000 0A0D            HDR     FCB     $0A,$0D
- E002 2B2B2B204D6F6E          FCC     '+++ Mon09 Ver 5.0 Ph. Roehr 2025 +++'
+ E002 2B2B2B204D6F6E          FCC     '+++ Mon09 Ver 5.0B Ph. Roehr 2025 +++'
  E009 30392056657220
- E010 352E302050682E
- E017 20526F65687220
- E01E 32303235202B2B
- E025 2B
- E026 04                      FCB     $04
- E027 0A0D            PROMPT  FCB     $0A,$0D
- E029 3D3E                    FCC     '=>'
- E02B 04                      FCB     $04
- E02C 07              NOTTHS  FCB     $07
- E02D 20556E6B6E6F77          FCC     ' Unknown command! '
- E034 6E20636F6D6D61
- E03B 6E642120
- E03F 04                      FCB     $04
- E040 070707070707    UNMESS  FCB     $07,$07,$07,$07,$07,$07
- E046 07070707                FCB     $07,$07,$07,$07
- E04A 554E4558504543          FCC     'UNEXPECTED INTERUPT!!!!!!!!!!'
- E051 54454420494E54
- E058 45525550542121
- E05F 21212121212121
- E066 21
- E067 04                      FCB     $04
- E068 070707          PFAIL   FCB     $07,$07,$07
- E06B 506F7765722066          FCC     'Power failure in RTC, reloading defaults'
- E072 61696C75726520
- E079 696E205254432C
- E080 2072656C6F6164
- E087 696E6720646566
- E08E 61756C7473
- E093 04                      FCB     $04
- E094 4D617374657220  CFMST   FCC     'Master CF detected'
- E09B 43462064657465
- E0A2 63746564
- E0A6 04                      FCB     $04
- E0A7 536C6176652043  CFSLV   FCC     'Slave CF detected'
- E0AE 46206465746563
- E0B5 746564
- E0B8 04                      FCB     $04
+ E010 352E3042205068
+ E017 2E20526F656872
+ E01E 2032303235202B
+ E025 2B2B
+ E027 04                      FCB     $04
+ E028 0A0D            PROMPT  FCB     $0A,$0D
+ E02A 3D3E                    FCC     '=>'
+ E02C 04                      FCB     $04
+ E02D 07              NOTTHS  FCB     $07
+ E02E 20556E6B6E6F77          FCC     ' Unknown command! '
+ E035 6E20636F6D6D61
+ E03C 6E642120
+ E040 04                      FCB     $04
+ E041 070707070707    UNMESS  FCB     $07,$07,$07,$07,$07,$07
+ E047 07070707                FCB     $07,$07,$07,$07
+ E04B 554E4558504543          FCC     'UNEXPECTED INTERUPT!!!!!!!!!!'
+ E052 54454420494E54
+ E059 45525550542121
+ E060 21212121212121
+ E067 21
+ E068 04                      FCB     $04
+ E069 070707          PFAIL   FCB     $07,$07,$07
+ E06C 506F7765722066          FCC     'Power failure in RTC, reloading defaults'
+ E073 61696C75726520
+ E07A 696E205254432C
+ E081 2072656C6F6164
+ E088 696E6720646566
+ E08F 61756C7473
+ E094 04                      FCB     $04
+ E095 4D617374657220  CFMST   FCC     'Master CF detected'
+ E09C 43462064657465
+ E0A3 63746564
+ E0A7 04                      FCB     $04
+ E0A8 536C6176652043  CFSLV   FCC     'Slave CF detected'
+ E0AF 46206465746563
+ E0B6 746564
+ E0B9 04                      FCB     $04
                       ;*
                       ;* default values for RTC RAM
                       ;*
- E0B9 50FF010002      TCONST  FCB     $50,$FF,$01,$00,$02
- E0BE 0308003A00              FCB     $03,$08,$00,$3A,$00
- E0C3 5000000800              FCB     $50,$00,$00,$08,$00
- E0C8 001B00011F              FCB     $00,$1B,$00,$01,$1F
- E0CD 2E65080604              FCB     $2E,$65,$08,$06,$04
- E0D2 2041000000              FCB     $20,$41,$00,$00,$00
- E0D7 0000000000              FCB     $00,$00,$00,$00,$00
- E0DC 0000000000              FCB     $00,$00,$00,$00,$00
- E0E1 0000000000              FCB     $00,$00,$00,$00,$00
- E0E6 0000000000              FCB     $00,$00,$00,$00,$00
+ E0BA 50FF010002      TCONST  FCB     $50,$FF,$01,$00,$02
+ E0BF 0308003A00              FCB     $03,$08,$00,$3A,$00
+ E0C4 5000000800              FCB     $50,$00,$00,$08,$00
+ E0C9 001B00011F              FCB     $00,$1B,$00,$01,$1F
+ E0CE 2E65080604              FCB     $2E,$65,$08,$06,$04
+ E0D3 2041000000              FCB     $20,$41,$00,$00,$00
+ E0D8 0000000000              FCB     $00,$00,$00,$00,$00
+ E0DD 0000000000              FCB     $00,$00,$00,$00,$00
+ E0E2 0000000000              FCB     $00,$00,$00,$00,$00
+ E0E7 0000000000              FCB     $00,$00,$00,$00,$00
                       ;*
                       ;* System dependant init : part 2 of RESET routine
                       ;*
- E0EB BFDF98          MINIT1  STX     RNDM
- E0EE C60D                    LDB     #$0D
- E0F0 BDF5EA                  JSR     GETRTC     ; read D-reg
- E0F3 8480                    ANDA    #$80       ; mask off bit 0-6
- E0F5 B7DFB5                  STA     RTCFAIL    ; =0 if no power
- E0F8 B6FF02                  LDA     SYSREG
- E0FB 43                      COMA
- E0FC 44                      LSRA
+ E0EC BFDF98          MINIT1  STX     RNDM
+ E0EF C60D                    LDB     #$0D
+ E0F1 BDF5EA                  JSR     GETRTC     ; read D-reg
+ E0F4 8480                    ANDA    #$80       ; mask off bit 0-6
+ E0F6 B7DFB5                  STA     RTCFAIL    ; =0 if no power
+ E0F9 B6FF02                  LDA     SYSREG
+ E0FC 43                      COMA
  E0FD 44                      LSRA
  E0FE 44                      LSRA
  E0FF 44                      LSRA
- E100 1F89                    TFR     A,B
- E102 C401                    ANDB    #$01
- E104 F7DF8C                  STB     IPORT
- E107 1F89                    TFR     A,B
- E109 54                      LSRB
- E10A C401                    ANDB    #$01
- E10C F7DF8D                  STB     OPORT
- E10F 7DDFB5                  TST     RTCFAIL
- E112 260F                    BNE     INIT2      ; RTC data valid ?
- E114 8EE0B9                  LDX     #TCONST    ; no, so get default values
- E117 C60E                    LDB     #$0E
- E119 A680            IRTC    LDA     ,X+
- E11B BDF608                  JSR     PUTRTC
- E11E 5C                      INCB
- E11F C140                    CMPB    #$40
- E121 26F6                    BNE     IRTC
- E123 C60E            INIT2   LDB     #$0E       ; get RTC saved data
- E125 BDF5EA                  JSR     GETRTC
- E128 1F89                    TFR     A,B
- E12A 8480                    ANDA    #$80
- E12C B7DFF9                  STA     PSPEED     ; init cpu speed (?)
- E12F 1F98                    TFR     B,A
- E131 8440                    ANDA    #$40
- E133 B7DFFA                  STA     MDFFA      ; init ?
- E136 1F98                    TFR     B,A
- E138 8430                    ANDA    #$30
- E13A 48                      ASLA
+ E100 44                      LSRA
+ E101 1F89                    TFR     A,B
+ E103 C401                    ANDB    #$01
+ E105 F7DF8C                  STB     IPORT
+ E108 1F89                    TFR     A,B
+ E10A 54                      LSRB
+ E10B C401                    ANDB    #$01
+ E10D F7DF8D                  STB     OPORT
+ E110 7DDFB5                  TST     RTCFAIL
+ E113 260F                    BNE     INIT2      ; RTC data valid ?
+ E115 8EE0BA                  LDX     #TCONST    ; no, so get default values
+ E118 C60E                    LDB     #$0E
+ E11A A680            IRTC    LDA     ,X+
+ E11C BDF608                  JSR     PUTRTC
+ E11F 5C                      INCB
+ E120 C140                    CMPB    #$40
+ E122 26F6                    BNE     IRTC
+ E124 C60E            INIT2   LDB     #$0E       ; get RTC saved data
+ E126 BDF5EA                  JSR     GETRTC
+ E129 1F89                    TFR     A,B
+ E12B 8480                    ANDA    #$80
+ E12D B7DFF9                  STA     PSPEED     ; init cpu speed (?)
+ E130 1F98                    TFR     B,A
+ E132 8440                    ANDA    #$40
+ E134 B7DFFA                  STA     MDFFA      ; init ?
+ E137 1F98                    TFR     B,A
+ E139 8430                    ANDA    #$30
  E13B 48                      ASLA
- E13C 84C0                    ANDA    #$C0
- E13E B7DFFB                  STA     DROMSZ     ; !!! NOT RELEVANT IN THIS VERSION !!!
- E141 1F98                    TFR     B,A
- E143 840C                    ANDA    #$0C
- E145 44                      LSRA
+ E13C 48                      ASLA
+ E13D 84C0                    ANDA    #$C0
+ E13F B7DFFB                  STA     DROMSZ     ; !!! NOT RELEVANT IN THIS VERSION !!!
+ E142 1F98                    TFR     B,A
+ E144 840C                    ANDA    #$0C
  E146 44                      LSRA
- E147 B7DFF7                  STA     SPEED      ; init cpu speed
- E14A 1F98                    TFR     B,A
- E14C 8403                    ANDA    #$03
- E14E B7DFF8                  STA     TSTEP      ; init disc step speed
- E151 4F                      CLRA
- E152 BBDFF7                  ADDA    SPEED
- E155 B7FF10                  STA     COMREG
- E158 7DDFF9                  TST     PSPEED
- E15B 2703                    BEQ     INIT3
- E15D B7FFD9                  STA     SET_R1     ; init SAM values for FAST/SLOW
- E160 86CE            INIT3   LDA     #$CE
- E162 B7FF09                  STA     ACIA1+1    ; init acia 1 and 2
- E165 B7FF05                  STA     ACIA2+1    ; 2 stop bits,no parity,8 bits,baud rate factor=X16
- E168 8627                    LDA     #$27
- E16A B7FF09                  STA     ACIA1+1    ; enable reciever & transmitter
- E16D B7FF05                  STA     ACIA2+1
- E170 C60F                    LDB     #$0F
- E172 BDF5EA                  JSR     GETRTC
- E175 B7FF0C                  STA     BAUD       ; 9600 baud
- E178 44                      LSRA
+ E147 44                      LSRA
+ E148 B7DFF7                  STA     SPEED      ; init cpu speed
+ E14B 1F98                    TFR     B,A
+ E14D 8403                    ANDA    #$03
+ E14F B7DFF8                  STA     TSTEP      ; init disc step speed
+ E152 4F                      CLRA
+ E153 BBDFF7                  ADDA    SPEED
+ E156 B7FF10                  STA     COMREG
+ E159 7DDFF9                  TST     PSPEED
+ E15C 2703                    BEQ     INIT3
+ E15E B7FFD9                  STA     SET_R1     ; init SAM values for FAST/SLOW
+ E161 86CE            INIT3   LDA     #$CE
+ E163 B7FF09                  STA     ACIA1+1    ; init acia 1 and 2
+ E166 B7FF05                  STA     ACIA2+1    ; 2 stop bits,no parity,8 bits,baud rate factor=X16
+ E169 8627                    LDA     #$27
+ E16B B7FF09                  STA     ACIA1+1    ; enable reciever & transmitter
+ E16E B7FF05                  STA     ACIA2+1
+ E171 C60F                    LDB     #$0F
+ E173 BDF5EA                  JSR     GETRTC
+ E176 B7FF0C                  STA     BAUD       ; 9600 baud
  E179 44                      LSRA
  E17A 44                      LSRA
  E17B 44                      LSRA
- E17C B7FF0D                  STA     BAUD+1
- E17F BDF8D3                  JSR     GDCINI     ; init graphic controler
- E182 869B                    LDA     #$9B
- E184 B7FF1F                  STA     PIA2+3
- E187 C610                    LDB     #$10
- E189 8EDF9D                  LDX     #DDSTAB    ; load disc drive table
- E18C BDF5EA          INIT4   JSR     GETRTC
- E18F A780                    STA     ,X+
- E191 5C                      INCB
- E192 C114                    CMPB    #$14
- E194 26F6                    BNE     INIT4
- E196 7DDFB5                  TST     RTCFAIL    ; message if RTC data not valid
- E199 2606                    BNE     RTCOK
- E19B 8EE068                  LDX     #PFAIL
- E19E BDF525                  JSR     PSTRNG
+ E17C 44                      LSRA
+ E17D B7FF0D                  STA     BAUD+1
+ E180 BDF8D3                  JSR     GDCINI     ; init graphic controler
+ E183 869B                    LDA     #$9B
+ E185 B7FF1F                  STA     PIA2+3
+ E188 C610                    LDB     #$10
+ E18A 8EDF9D                  LDX     #DDSTAB    ; load disc drive table
+ E18D BDF5EA          INIT4   JSR     GETRTC
+ E190 A780                    STA     ,X+
+ E192 5C                      INCB
+ E193 C114                    CMPB    #$14
+ E195 26F6                    BNE     INIT4
+ E197 7DDFB5                  TST     RTCFAIL    ; message if RTC data not valid
+ E19A 2606                    BNE     RTCOK
+ E19C 8EE069                  LDX     #PFAIL
+ E19F BDF525                  JSR     PSTRNG
 
                       ;* IDE/CF detection and init
- E1A1 8619            RTCOK   LDA     #25
- E1A3 BDEFD2                  JSR     WAIT1MS    ; wait > 25 ms after power on
- E1A6 8692                    LDA     #RD_IDE_8255
- E1A8 B7FF1F                  STA     PORTCTRL   ; set port C as output
- E1AB 8680                    LDA     #IDE_RST   ; do a ide bus reset
- E1AD B7FF1E                  STA     PORTC
- E1B0 860A                    LDA     #10        ; keep reset low > 25 µs
- E1B2 4A              LOOPRST DECA
- E1B3 26FD                    BNE     LOOPRST
- E1B5 7FFF1E                  CLR     PORTC
- E1B8 8605                    LDA     #5
- E1BA BDEFD2                  JSR     WAIT1MS    ; wait > 5 ms for cf to complete init
- E1BD CC0000                  LDD     #$0000     ; init ram cf table
- E1C0 FDDE7E                  STD     MSTCFOK    ; clear both cf present flags
- E1C3 8681                    LDA     #IDE_FEA_16BIT ; prepare for 16 bits mode
- E1C5 B7DE78                  STA     SETFEA
- E1C8 8601                    LDA     #$01       ; prepare for rw 1 sector at a time
- E1CA B7DE79                  STA     SCTCNT
- E1CD 86E0                    LDA     #LBA3MST   ; prepare for master cf
- E1CF B7DE7D                  STA     LBA3
- E1D2 7FDE7C                  CLR     LBA2       ; set all lba's to 0
- E1D5 7FDE7B                  CLR     LBA1
- E1D8 7FDE7A                  CLR     LBA0
- E1DB BDF45F                  JSR     INIDT2     ; init typ 2/3 disk
- E1DE 7DDE7E                  TST     MSTCFOK    ; master cf ok ?
- E1E1 2711                    BEQ     CONTINI    ; no continue init
- E1E3 8EE094                  LDX     #CFMST     ; display master cf message
- E1E6 BDF525                  JSR     PSTRNG
- E1E9 7DDE7F                  TST     SLVCFOK    ; slave cf ok ?
- E1EC 2706                    BEQ     CONTINI    ; no continue init
- E1EE 8EE0A7                  LDX     #CFSLV     ; display slave cf message
- E1F1 BDF525                  JSR     PSTRNG
+ E1A2 8619            RTCOK   LDA     #25
+ E1A4 BDEFD3                  JSR     WAIT1MS    ; wait > 25 ms after power on
+ E1A7 8692                    LDA     #RD_IDE_8255
+ E1A9 B7FF1F                  STA     PORTCTRL   ; set port C as output
+ E1AC 8680                    LDA     #IDE_RST   ; do a ide bus reset
+ E1AE B7FF1E                  STA     PORTC
+ E1B1 860A                    LDA     #10        ; keep reset low > 25 µs
+ E1B3 4A              LOOPRST DECA
+ E1B4 26FD                    BNE     LOOPRST
+ E1B6 7FFF1E                  CLR     PORTC
+ E1B9 8605                    LDA     #5
+ E1BB BDEFD3                  JSR     WAIT1MS    ; wait > 5 ms for cf to complete init
+ E1BE CC0000                  LDD     #$0000     ; init ram cf table
+ E1C1 FDDE7E                  STD     MSTCFOK    ; clear both cf present flags
+ E1C4 8681                    LDA     #IDE_FEA_16BIT ; prepare for 16 bits mode
+ E1C6 B7DE78                  STA     SETFEA
+ E1C9 8601                    LDA     #$01       ; prepare for rw 1 sector at a time
+ E1CB B7DE79                  STA     SCTCNT
+ E1CE 86E0                    LDA     #LBA3MST   ; prepare for master cf
+ E1D0 B7DE7D                  STA     LBA3
+ E1D3 7FDE7C                  CLR     LBA2       ; set all lba's to 0
+ E1D6 7FDE7B                  CLR     LBA1
+ E1D9 7FDE7A                  CLR     LBA0
+ E1DC BDF45F                  JSR     INIDT2     ; init typ 2/3 disk
+ E1DF 7DDE7E                  TST     MSTCFOK    ; master cf ok ?
+ E1E2 2711                    BEQ     CONTINI    ; no continue init
+ E1E4 8EE095                  LDX     #CFMST     ; display master cf message
+ E1E7 BDF525                  JSR     PSTRNG
+ E1EA 7DDE7F                  TST     SLVCFOK    ; slave cf ok ?
+ E1ED 2706                    BEQ     CONTINI    ; no continue init
+ E1EF 8EE0A8                  LDX     #CFSLV     ; display slave cf message
+ E1F2 BDF525                  JSR     PSTRNG
                       ;* End of IDE/CF init
 
- E1F4 B6FF02          CONTINI LDA     SYSREG
- E1F7 43                      COMA               ; autoboot ?
- E1F8 102B012C                LBMI    BO         ; yes, boot FLEX
- E1FC 7EF0D9                  JMP     MINITR     ; no, go to monitor
+ E1F5 B6FF02          CONTINI LDA     SYSREG
+ E1F8 43                      COMA               ; autoboot ?
+ E1F9 102B012C                LBMI    BO         ; yes, boot FLEX
+ E1FD 7EF0D9                  JMP     MINITR     ; no, go to monitor
                       ;*
                       ;***************************
                       ;* Jump table for commands *
                       ;***************************
- E1FF 4844            COMTAB  FCC     'HD' ; Hex dump .
- E201 E5D2                    FDB     HD
- E203 4452                    FCC     'DR' ; Display cpu registers.
- E205 E75A                    FDB     DR
+ E200 4844            COMTAB  FCC     'HD' ; Hex dump .
+ E202 E5D3                    FDB     HD
+ E204 4452                    FCC     'DR' ; Display cpu registers.
+ E206 E75B                    FDB     DR
                       *
- E207 5342                    FCC     'SB' ; Set baud rate for acia's.
- E209 EDF4                    FDB     SB
- E20B 5349                    FCC     'SI' ; Set input port.
- E20D E2C3                    FDB     SI
- E20F 534F                    FCC     'SO' ; Set output port.
- E211 E2E9                    FDB     SO
- E213 4344                    FCC     'CD' ; Calculate two's complement branch length.
- E215 E4A0                    FDB     CD
+ E208 5342                    FCC     'SB' ; Set baud rate for acia's.
+ E20A EDF5                    FDB     SB
+ E20C 5349                    FCC     'SI' ; Set input port.
+ E20E E2C4                    FDB     SI
+ E210 534F                    FCC     'SO' ; Set output port.
+ E212 E2EA                    FDB     SO
+ E214 4344                    FCC     'CD' ; Calculate two's complement branch length.
+ E216 E4A1                    FDB     CD
                       *
- E217 5250                    FCC     'RP' ; Run program .
- E219 E560                    FDB     RP
- E21B 4A55                    FCC     'JU' ; Jump to program .
- E21D E27D                    FDB     JU
- E21F 4A46                    FCC     'JF' ; Jump to flex warm start ($CD03).
- E221 E2A3                    FDB     JF
- E223 4350                    FCC     'CP' ; Continue program after SWI.
- E225 E4F6                    FDB     CP
+ E218 5250                    FCC     'RP' ; Run program .
+ E21A E561                    FDB     RP
+ E21C 4A55                    FCC     'JU' ; Jump to program .
+ E21E E27E                    FDB     JU
+ E220 4A46                    FCC     'JF' ; Jump to flex warm start ($CD03).
+ E222 E2A4                    FDB     JF
+ E224 4350                    FCC     'CP' ; Continue program after SWI.
+ E226 E4F7                    FDB     CP
                       *
- E227 4D45                    FCC     'ME' ; Memory examine and alter .
- E229 E6E0                    FDB     ME
- E22B 504D                    FCC     'PM' ; Poke memory with value (no verify of data).
- E22D E645                    FDB     PM
- E22F 4C4B                    FCC     'LK' ; Load ascii text from keyboard .
- E231 E687                    FDB     LK
- E233 534D                    FCC     'SM' ; Shift a block of memory .
- E235 E7AF                    FDB     SM
- E237 464D                    FCC     'FM' ; Fill memory with a constant value.
- E239 E522                    FDB     FM
- E23B 4649                    FCC     'FI' ; Find ascii string.
- E23D ED1E                    FDB     FI
+ E228 4D45                    FCC     'ME' ; Memory examine and alter .
+ E22A E6E1                    FDB     ME
+ E22C 504D                    FCC     'PM' ; Poke memory with value (no verify of data).
+ E22E E646                    FDB     PM
+ E230 4C4B                    FCC     'LK' ; Load ascii text from keyboard .
+ E232 E688                    FDB     LK
+ E234 534D                    FCC     'SM' ; Shift a block of memory .
+ E236 E7B0                    FDB     SM
+ E238 464D                    FCC     'FM' ; Fill memory with a constant value.
+ E23A E523                    FDB     FM
+ E23C 4649                    FCC     'FI' ; Find ascii string.
+ E23E ED1F                    FDB     FI
                       *
- E23F 544D                    FCC     'TM' ; Quick memory test.
- E241 E825                    FDB     TM
- E243 5453                    FCC     'TS' ; Drive stepping and select test.
- E245 EBF6                    FDB     TS
- E247 5444                    FCC     'TD' ; Test random read on drive.
- E249 EB75                    FDB     TD
+ E240 544D                    FCC     'TM' ; Quick memory test.
+ E242 E826                    FDB     TM
+ E244 5453                    FCC     'TS' ; Drive stepping and select test.
+ E246 EBF7                    FDB     TS
+ E248 5444                    FCC     'TD' ; Test random read on drive.
+ E24A EB76                    FDB     TD
                       *
- E24B 424F                    FCC     'BO' ; Boot FLEX.COR or FLEX.SYS from logical drive 0
- E24D E328                    FDB     BO
- E24F 5253                    FCC     'RS' ; Read sector from floppy.
- E251 E8E2                    FDB     RS
- E253 5753                    FCC     'WS' ; Write sector to floppy.
- E255 E956                    FDB     WS
- E257 4446                    FCC     'DF' ; Format disc to FLEX format.
- E259 E9E9                    FDB     DF
+ E24C 424F                    FCC     'BO' ; Boot FLEX.COR or FLEX.SYS from logical drive 0
+ E24E E329                    FDB     BO
+ E250 5253                    FCC     'RS' ; Read sector from floppy.
+ E252 E8E3                    FDB     RS
+ E254 5753                    FCC     'WS' ; Write sector to floppy.
+ E256 E957                    FDB     WS
+ E258 4446                    FCC     'DF' ; Format disc to FLEX format.
+ E25A E9EA                    FDB     DF
                       ;*
                       ;*************************************
                       ;* Extra system dependant command    *
@@ -489,875 +489,875 @@
                       ;*************************************
                       ;* LIB COMTABLE
                       ;*
- E25B 4246                    FCC     'BF' ; Boot Flex from floppy 0 regardless of allocation
- E25D EC1B                    FDB     BF
- E25F 4443                    FCC     'DC' ; Display RTC contents
- E261 EC3B                    FDB     DC
- E263 4D43                    FCC     'MC' ; RTC examine and alter
- E265 ECAB                    FDB     MC
+ E25C 4246                    FCC     'BF' ; Boot Flex from floppy 0 regardless of allocation
+ E25E EC1C                    FDB     BF
+ E260 4443                    FCC     'DC' ; Display RTC contents
+ E262 EC3C                    FDB     DC
+ E264 4D43                    FCC     'MC' ; RTC examine and alter
+ E266 ECAC                    FDB     MC
                       ;*
- E267 FF                      FCB     $FF  ; End of table flag.
+ E268 FF                      FCB     $FF  ; End of table flag.
                       ;*
                       ;***************************
                       ;* Common system commands. *
                       ;***************************
                       ;*
                       ;* Jump to program.
- E268 0D4A756D702074  JUMES   FCB     $0D,"Jump to program at ",4
- E26F 6F2070726F6772
- E276 616D2061742004
+ E269 0D4A756D702074  JUMES   FCB     $0D,"Jump to program at ",4
+ E270 6F2070726F6772
+ E277 616D2061742004
 
- E27D 8EE268          JU      LDX     #JUMES
- E280 BDF51E                  JSR     PDATA1
- E283 BDF55C                  JSR     BADDR
- E286 7EF637                  JMP     MAPOUT
+ E27E 8EE269          JU      LDX     #JUMES
+ E281 BDF51E                  JSR     PDATA1
+ E284 BDF55C                  JSR     BADDR
+ E287 7EF637                  JMP     MAPOUT
                       ;*
                       ;* Jump to flex warm start.
- E289 0D4A756D702074  JFMES   FCB     $0D,"Jump to flex warm start.",4
- E290 6F20666C657820
- E297 7761726D207374
- E29E 6172742E04
+ E28A 0D4A756D702074  JFMES   FCB     $0D,"Jump to flex warm start.",4
+ E291 6F20666C657820
+ E298 7761726D207374
+ E29F 6172742E04
 
- E2A3 8EE289          JF      LDX     #JFMES
- E2A6 BDF51E                  JSR     PDATA1
- E2A9 8ECD03                  LDX     #$CD03
- E2AC 7EF637                  JMP     MAPOUT
+ E2A4 8EE28A          JF      LDX     #JFMES
+ E2A7 BDF51E                  JSR     PDATA1
+ E2AA 8ECD03                  LDX     #$CD03
+ E2AD 7EF637                  JMP     MAPOUT
                       ;*
                       ;* Set input port.
- E2AF 0D53657420696E  SIMES   FCB     $0D,"Set input port to ",4
- E2B6 70757420706F72
- E2BD 7420746F2004
+ E2B0 0D53657420696E  SIMES   FCB     $0D,"Set input port to ",4
+ E2B7 70757420706F72
+ E2BE 7420746F2004
 
- E2C3 8EE2AF          SI      LDX     #SIMES
- E2C6 BDF51E                  JSR     PDATA1
- E2C9 BDF58C                  JSR     INHEX
- E2CC 8403                    ANDA    #$03
- E2CE B7DF8C                  STA     IPORT
- E2D1 7EF0DF                  JMP     CONTRL
+ E2C4 8EE2B0          SI      LDX     #SIMES
+ E2C7 BDF51E                  JSR     PDATA1
+ E2CA BDF58C                  JSR     INHEX
+ E2CD 8403                    ANDA    #$03
+ E2CF B7DF8C                  STA     IPORT
+ E2D2 7EF0DF                  JMP     CONTRL
                       ;*
                       ;* Set output port.
- E2D4 0D536574206F75  SOMES   FCB     $0D,"Set output port to ",4
- E2DB 7470757420706F
- E2E2 727420746F2004
+ E2D5 0D536574206F75  SOMES   FCB     $0D,"Set output port to ",4
+ E2DC 7470757420706F
+ E2E3 727420746F2004
 
- E2E9 8EE2D4          SO      LDX     #SOMES
- E2EC BDF51E                  JSR     PDATA1
- E2EF BDF58C                  JSR     INHEX
- E2F2 8403                    ANDA    #$03
- E2F4 B7DF8D                  STA     OPORT
- E2F7 7EF0DF                  JMP     CONTRL
+ E2EA 8EE2D5          SO      LDX     #SOMES
+ E2ED BDF51E                  JSR     PDATA1
+ E2F0 BDF58C                  JSR     INHEX
+ E2F3 8403                    ANDA    #$03
+ E2F5 B7DF8D                  STA     OPORT
+ E2F8 7EF0DF                  JMP     CONTRL
                       ;*
                       ;********************************
                       ;*    System specific Boot      *
                       ;*    command goes here.        *
                       ;********************************
                       ;* LIB BOOT
- E2FA 0D              BOMES   FCB     $0D
- E2FB 426F6F74696E67          FCC     "Booting FLEX...."
- E302 20464C45582E2E
- E309 2E2E
- E30B 04                      FCB     $04
- E30C 0A0D07          NOFLX   FCB     $0A,$0D,$07
- E30F 43616E27742066          FCC     "Can't find FLEX!" ; Can't find FLex
- E316 696E6420464C45
- E31D 5821
- E31F 04                      FCB     $04
- E320 464C4558        BODIS   FCC     "FLEX"
- E324 00000000                FCB     $00,$00,$00,$00
+ E2FB 0D              BOMES   FCB     $0D
+ E2FC 426F6F74696E67          FCC     "Booting FLEX...."
+ E303 20464C45582E2E
+ E30A 2E2E
+ E30C 04                      FCB     $04
+ E30D 0A0D07          NOFLX   FCB     $0A,$0D,$07
+ E310 43616E27742066          FCC     "Can't find FLEX!" ; Can't find FLex
+ E317 696E6420464C45
+ E31E 5821
+ E320 04                      FCB     $04
+ E321 464C4558        BODIS   FCC     "FLEX"
+ E325 00000000                FCB     $00,$00,$00,$00
 
                       ;* Action BO (BOot flex from logical drive 0)
- E328 8EE2FA          BO      LDX     #BOMES     ; send message
- E32B BDF51E                  JSR     PDATA1
- E32E 7FDF8E                  CLR     DRIVE      ; select drive 0
- E331 8EDF8B                  LDX     #DRIVE-3
- E334 BDF4AE                  JSR     RST        ; drive select and track 0
- E337 C605                    LDB     #$05       ; sector 5
- E339 F7DF90                  STB     SECTOR
- E33C 4F                      CLRA
- E33D B7DF8F                  STA     TRACK      ; (start of directory)
- E340 F6DF90          BO1     LDB     SECTOR
- E343 B6DF8F                  LDA     TRACK
- E346 8EDE80                  LDX     #BUFFER    ; point to buffer
- E349 BDF4A2                  JSR     READ       ; read sector
- E34C 8EDE90                  LDX     #BUFFER+16 ; point to 1st name
- E34F C60A                    LDB     #$0A       ; names per sector
- E351 108EE320        BO2     LDY     #BODIS     ; (compare template)
- E355 3410                    PSHS    X          ; save addr of name
- E357 A680            BO3     LDA     ,X+        ; compare characters
- E359 A1A0                    CMPA    ,Y+
- E35B 260D                    BNE     BO4        ; match ?
- E35D 108CE328                CMPY    #BO        ; yes,all done ?
- E361 26F4                    BNE     BO3        ; no,compare next
- E363 EC05                    LDD     $05,X      ; yes,get start addr
- E365 FDDF94                  STD     YTEMP      ; of file & store it
- E368 201D                    BRA     RDSEC      ; go and load it
- E36A 5A              BO4     DECB               ; no match.next name
- E36B 2707                    BEQ     BO5        ; end of sector ?
- E36D 3510                    PULS    X          ; no,recover name addr
- E36F 308818                  LEAX    $18,X      ; point to next name
- E372 20DD                    BRA     BO2        ; and try again
- E374 FCDE80          BO5     LDD     BUFFER     ; next dir sector
- E377 2705                    BEQ     BOFAIL     ; end of directory ?
- E379 FDDF8F                  STD     TRACK      ; no,update T/S addr
- E37C 20C2                    BRA     BO1        ; and try again
- E37E 8EE30C          BOFAIL  LDX     #NOFLX     ; yes,failed !
- E381 BDF525                  JSR     PSTRNG     ; send error message
- E384 7EF0DF                  JMP     CONTRL     ; and back to Mono9
+ E329 8EE2FB          BO      LDX     #BOMES     ; send message
+ E32C BDF51E                  JSR     PDATA1
+ E32F 7FDF8E                  CLR     DRIVE      ; select drive 0
+ E332 8EDF8B                  LDX     #DRIVE-3
+ E335 BDF4AE                  JSR     RST        ; drive select and track 0
+ E338 C605                    LDB     #$05       ; sector 5
+ E33A F7DF90                  STB     SECTOR
+ E33D 4F                      CLRA
+ E33E B7DF8F                  STA     TRACK      ; (start of directory)
+ E341 F6DF90          BO1     LDB     SECTOR
+ E344 B6DF8F                  LDA     TRACK
+ E347 8EDE80                  LDX     #BUFFER    ; point to buffer
+ E34A BDF4A2                  JSR     READ       ; read sector
+ E34D 8EDE90                  LDX     #BUFFER+16 ; point to 1st name
+ E350 C60A                    LDB     #$0A       ; names per sector
+ E352 108EE321        BO2     LDY     #BODIS     ; (compare template)
+ E356 3410                    PSHS    X          ; save addr of name
+ E358 A680            BO3     LDA     ,X+        ; compare characters
+ E35A A1A0                    CMPA    ,Y+
+ E35C 260D                    BNE     BO4        ; match ?
+ E35E 108CE329                CMPY    #BO        ; yes,all done ?
+ E362 26F4                    BNE     BO3        ; no,compare next
+ E364 EC05                    LDD     $05,X      ; yes,get start addr
+ E366 FDDF94                  STD     YTEMP      ; of file & store it
+ E369 201D                    BRA     RDSEC      ; go and load it
+ E36B 5A              BO4     DECB               ; no match.next name
+ E36C 2707                    BEQ     BO5        ; end of sector ?
+ E36E 3510                    PULS    X          ; no,recover name addr
+ E370 308818                  LEAX    $18,X      ; point to next name
+ E373 20DD                    BRA     BO2        ; and try again
+ E375 FCDE80          BO5     LDD     BUFFER     ; next dir sector
+ E378 2705                    BEQ     BOFAIL     ; end of directory ?
+ E37A FDDF8F                  STD     TRACK      ; no,update T/S addr
+ E37D 20C2                    BRA     BO1        ; and try again
+ E37F 8EE30D          BOFAIL  LDX     #NOFLX     ; yes,failed !
+ E382 BDF525                  JSR     PSTRNG     ; send error message
+ E385 7EF0DF                  JMP     CONTRL     ; and back to Mono9
                       * Load Flex.sys
- E387 FCDF94          RDSEC   LDD     YTEMP      ; (T/S adr. of file)
- E38A FDDE80                  STD     BUFFER     ; put in buffer
- E38D 108EDF80                LDY     #BUFFER+256
- E391 8D34            BOFL1   BSR     NEXTB
- E393 8102                    CMPA    #$02       ; binary record ?
- E395 270A                    BEQ     BOFL2      ; yes,go set TTO
- E397 8116                    CMPA    #$16       ; transfer addr ?
- E399 26F6                    BNE     BOFL1      ; cont.until 02 or 16
- E39B 8D2A                    BSR     NEXTB      ; it was a transfer addr
- E39D 8D28                    BSR     NEXTB      ; Discard it and
- E39F 20F0                    BRA     BOFL1      ; find next record
- E3A1 8D24            BOFL2   BSR     NEXTB      ; get load adr.Hi
- E3A3 B7DF96                  STA     TTO
- E3A6 8D1F                    BSR     NEXTB      ; get load adr.Lo
- E3A8 B7DF97                  STA     TTO+1
- E3AB 8D1A                    BSR     NEXTB      ; get byte count
- E3AD 1F89                    TFR     A,B        ; put it in ACC B
- E3AF 5D                      TSTB               ; if 0, end of record
- E3B0 27DF                    BEQ     BOFL1      ; go find next rec
- E3B2 BEDF96                  LDX     TTO        ; else,copy to [TTO]
- E3B5 3414            BOFL3   PSHS    X,B        ; save count & adr
- E3B7 8D0E                    BSR     NEXTB      ; get a byte
- E3B9 3514                    PULS    X,B        ; recall cnt.& adr skip
- E3BB 8CDE00                  CMPX    #RAM       ; Microbox loads
- E3BE 2202                    BHI     BOFL4      ; this area from tables
- E3C0 A780                    STA     ,X+
- E3C2 5A              BOFL4   DECB               ; end of record ?
- E3C3 26F0                    BNE     BOFL3      ; no,continue
- E3C5 20CA                    BRA     BOFL1      ; yes,find next rec
+ E388 FCDF94          RDSEC   LDD     YTEMP      ; (T/S adr. of file)
+ E38B FDDE80                  STD     BUFFER     ; put in buffer
+ E38E 108EDF80                LDY     #BUFFER+256
+ E392 8D34            BOFL1   BSR     NEXTB
+ E394 8102                    CMPA    #$02       ; binary record ?
+ E396 270A                    BEQ     BOFL2      ; yes,go set TTO
+ E398 8116                    CMPA    #$16       ; transfer addr ?
+ E39A 26F6                    BNE     BOFL1      ; cont.until 02 or 16
+ E39C 8D2A                    BSR     NEXTB      ; it was a transfer addr
+ E39E 8D28                    BSR     NEXTB      ; Discard it and
+ E3A0 20F0                    BRA     BOFL1      ; find next record
+ E3A2 8D24            BOFL2   BSR     NEXTB      ; get load adr.Hi
+ E3A4 B7DF96                  STA     TTO
+ E3A7 8D1F                    BSR     NEXTB      ; get load adr.Lo
+ E3A9 B7DF97                  STA     TTO+1
+ E3AC 8D1A                    BSR     NEXTB      ; get byte count
+ E3AE 1F89                    TFR     A,B        ; put it in ACC B
+ E3B0 5D                      TSTB               ; if 0, end of record
+ E3B1 27DF                    BEQ     BOFL1      ; go find next rec
+ E3B3 BEDF96                  LDX     TTO        ; else,copy to [TTO]
+ E3B6 3414            BOFL3   PSHS    X,B        ; save count & adr
+ E3B8 8D0E                    BSR     NEXTB      ; get a byte
+ E3BA 3514                    PULS    X,B        ; recall cnt.& adr skip
+ E3BC 8CDE00                  CMPX    #RAM       ; Microbox loads
+ E3BF 2202                    BHI     BOFL4      ; this area from tables
+ E3C1 A780                    STA     ,X+
+ E3C3 5A              BOFL4   DECB               ; end of record ?
+ E3C4 26F0                    BNE     BOFL3      ; no,continue
+ E3C6 20CA                    BRA     BOFL1      ; yes,find next rec
 
                       ;* This subroutine gets the next byte from the buffer
                       ;* into ACC A. If the buffer is empty,the next sector
                       ;* is first read into the buffer. If all sectors have
                       ;* been read,a branch to 'Read tables & Exit' occures.
                       ;*
- E3C7 108CDF80        NEXTB   CMPY    #BUFFER+256
- E3CB 2610                    BNE     NEXT2      ; buffer empty ?
- E3CD 8EDE80                  LDX     #BUFFER    ; yes,read next sector
- E3D0 EC84                    LDD     ,X         ; look at link adr
- E3D2 270C                    BEQ     LDTBL      ; no more, do tables
- E3D4 BDF4A2                  JSR     READ
+ E3C8 108CDF80        NEXTB   CMPY    #BUFFER+256
+ E3CC 2610                    BNE     NEXT2      ; buffer empty ?
+ E3CE 8EDE80                  LDX     #BUFFER    ; yes,read next sector
+ E3D1 EC84                    LDD     ,X         ; look at link adr
+ E3D3 270C                    BEQ     LDTBL      ; no more, do tables
+ E3D5 BDF4A2                  JSR     READ
                       ;* If read error,density setting is toggled so try again
- E3D7 26AE                    BNE     RDSEC      ; error if not 0
- E3D9 108EDE84                LDY     #BUFFER+4  ; point to name
- E3DD A6A0            NEXT2   LDA     ,Y+
- E3DF 39                      RTS
+ E3D8 26AE                    BNE     RDSEC      ; error if not 0
+ E3DA 108EDE84                LDY     #BUFFER+4  ; point to name
+ E3DE A6A0            NEXT2   LDA     ,Y+
+ E3E0 39                      RTS
                       ;*
                       ;* Read Tables & Exit
                       ;*
- E3E0 8ED3E5          LDTBL   LDX     #CINCHN    ; load table 1
- E3E3 108EE41F                LDY     #TABLE1
- E3E7 ECA1            LDTB1   LDD     ,Y++
- E3E9 ED81                    STD     ,X++
- E3EB 8CD3FD                  CMPX    #$D3FD
- E3EE 26F7                    BNE     LDTB1
- E3F0 8EDE00                  LDX     #RAM
- E3F3 108EE437                LDY     #TABLE2    ; load table 2
- E3F7 ECA1            LDTB2   LDD     ,Y++
- E3F9 ED81                    STD     ,X++
- E3FB 8CDE1E                  CMPX    #$DE1E
- E3FE 26F7                    BNE     LDTB2
- E400 8639                    LDA     #$39
- E402 B7CA02                  STA     MCA02
- E405 7DDFB5                  TST     RTCFAIL    ; valid data ?
- E408 270F                    BEQ     GOFLX      ; no,ignore
- E40A 8ECC00                  LDX     #TTYBS     ; else,copy in
- E40D C614                    LDB     #$14       ; TTYSET & ASN options
- E40F BDF5EA          CPRTC   JSR     GETRTC
- E412 A780                    STA     ,X+
- E414 5C                      INCB
- E415 C121                    CMPB    #$21
- E417 26F6                    BNE     CPRTC
- E419 8ECD00          GOFLX   LDX     #COLDS     ; select Cold Start
- E41C 7EF637                  JMP     MAPOUT     ; and jump to it
+ E3E1 8ED3E5          LDTBL   LDX     #CINCHN    ; load table 1
+ E3E4 108EE420                LDY     #TABLE1
+ E3E8 ECA1            LDTB1   LDD     ,Y++
+ E3EA ED81                    STD     ,X++
+ E3EC 8CD3FD                  CMPX    #$D3FD
+ E3EF 26F7                    BNE     LDTB1
+ E3F1 8EDE00                  LDX     #RAM
+ E3F4 108EE438                LDY     #TABLE2    ; load table 2
+ E3F8 ECA1            LDTB2   LDD     ,Y++
+ E3FA ED81                    STD     ,X++
+ E3FC 8CDE1E                  CMPX    #$DE1E
+ E3FF 26F7                    BNE     LDTB2
+ E401 8639                    LDA     #$39
+ E403 B7CA02                  STA     MCA02
+ E406 7DDFB5                  TST     RTCFAIL    ; valid data ?
+ E409 270F                    BEQ     GOFLX      ; no,ignore
+ E40B 8ECC00                  LDX     #TTYBS     ; else,copy in
+ E40E C614                    LDB     #$14       ; TTYSET & ASN options
+ E410 BDF5EA          CPRTC   JSR     GETRTC
+ E413 A780                    STA     ,X+
+ E415 5C                      INCB
+ E416 C121                    CMPB    #$21
+ E418 26F6                    BNE     CPRTC
+ E41A 8ECD00          GOFLX   LDX     #COLDS     ; select Cold Start
+ E41D 7EF637                  JMP     MAPOUT     ; and jump to it
                       ;*
                       ;* Table 1 : console I/O
                       ;*
- E41F F153            TABLE1  FDB     INCH1
- E421 F130                    FDB     DUMMY
- E423 FFFE                    FDB     VCRST
- E425 FFFE                    FDB     VCRST
- E427 F130                    FDB     DUMMY
- E429 F130                    FDB     DUMMY
- E42B F130                    FDB     DUMMY
- E42D F0DF                    FDB     CONTRL
- E42F F130                    FDB     DUMMY
- E431 F131                    FDB     STATUS
- E433 F16E                    FDB     OUTCH
- E435 F16C                    FDB     INCH
+ E420 F153            TABLE1  FDB     INCH1
+ E422 F130                    FDB     DUMMY
+ E424 FFFE                    FDB     VCRST
+ E426 FFFE                    FDB     VCRST
+ E428 F130                    FDB     DUMMY
+ E42A F130                    FDB     DUMMY
+ E42C F130                    FDB     DUMMY
+ E42E F0DF                    FDB     CONTRL
+ E430 F130                    FDB     DUMMY
+ E432 F131                    FDB     STATUS
+ E434 F16E                    FDB     OUTCH
+ E436 F16C                    FDB     INCH
                       ;*
                       ;* Table 2 : disk I/O
- E437 7EF4A2          TABLE2  JMP     READ
- E43A 7EF4A6                  JMP     WRITE
- E43D 7EF4AA                  JMP     VERIFY
- E440 7EF4AE                  JMP     RST
- E443 7EF4B7                  JMP     DRV
- E446 7EF4E7                  JMP     CHKRDY
- E449 7EF4EB                  JMP     QUICK
- E44C 7EF4EF                  JMP     DINIT
- E44F 7EF507                  JMP     WARM
- E452 7EF50B                  JMP     SEEK
+ E438 7EF4A2          TABLE2  JMP     READ
+ E43B 7EF4A6                  JMP     WRITE
+ E43E 7EF4AA                  JMP     VERIFY
+ E441 7EF4AE                  JMP     RST
+ E444 7EF4B7                  JMP     DRV
+ E447 7EF4E7                  JMP     CHKRDY
+ E44A 7EF4EB                  JMP     QUICK
+ E44D 7EF4EF                  JMP     DINIT
+ E450 7EF507                  JMP     WARM
+ E453 7EF50B                  JMP     SEEK
                       ;*
                       ;*         Calculate displacement.
- E455 0D43616C63756C  CALDIS  FCB     $0D,"Calculate displacement from ",4
- E45C 61746520646973
- E463 706C6163656D65
- E46A 6E742066726F6D
- E471 2004
- E473 20746F2004      TOS     FCB     " to ",4
- E478 0D0A204C6F6E67  CALD1   FCB     $0D,$0A," Long or short branch (L/S)? ",4
- E47F 206F722073686F
- E486 7274206272616E
- E48D 636820284C2F53
- E494 293F2004
- E498 2076616C756520  VALUES  FCB     " value ",4
- E49F 04
+ E456 0D43616C63756C  CALDIS  FCB     $0D,"Calculate displacement from ",4
+ E45D 61746520646973
+ E464 706C6163656D65
+ E46B 6E742066726F6D
+ E472 2004
+ E474 20746F2004      TOS     FCB     " to ",4
+ E479 0D0A204C6F6E67  CALD1   FCB     $0D,$0A," Long or short branch (L/S)? ",4
+ E480 206F722073686F
+ E487 7274206272616E
+ E48E 636820284C2F53
+ E495 293F2004
+ E499 2076616C756520  VALUES  FCB     " value ",4
+ E4A0 04
 
- E4A0 8EE455          CD      LDX     #CALDIS
- E4A3 BDF51E                  JSR     PDATA1
- E4A6 BDF55C                  JSR     BADDR      ; get 'from'
- E4A9 3002                    LEAX    2,X        ; add 2
- E4AB 3410                    PSHS    X          ; save it
- E4AD 8EE473                  LDX     #TOS
- E4B0 BDF51E                  JSR     PDATA1
- E4B3 BDF55C                  JSR     BADDR      ; get 'to'
- E4B6 1F12                    TFR     X,Y        ; save in Y
- E4B8 8EE478                  LDX     #CALD1
- E4BB BDF51E                  JSR     PDATA1
- E4BE BDF16C                  JSR     INCH       ; get 'L/S'
- E4C1 814C                    CMPA    #'L'       ; was it L ?
- E4C3 2606                    BNE     CD1        ; no,branch
- E4C5 3510                    PULS    X          ; recall 'from'
- E4C7 3002                    LEAX    2,X        ; add 2
- E4C9 3410                    PSHS    X          ; save again
- E4CB 1F20            CD1     TFR     Y,D        ; D = 'to'
- E4CD A3E4                    SUBD    ,S         ; subtract 'from'
- E4CF EDE4                    STD     ,S         ; 'offset' now TO S
- E4D1 8EE498                  LDX     #VALUES
- E4D4 BDF51E                  JSR     PDATA1
- E4D7 3510                    PULS    X
- E4D9 BDF536                  JSR     PRINTX     ; 'offset'
- E4DC 7EF0DF                  JMP     CONTRL
+ E4A1 8EE456          CD      LDX     #CALDIS
+ E4A4 BDF51E                  JSR     PDATA1
+ E4A7 BDF55C                  JSR     BADDR      ; get 'from'
+ E4AA 3002                    LEAX    2,X        ; add 2
+ E4AC 3410                    PSHS    X          ; save it
+ E4AE 8EE474                  LDX     #TOS
+ E4B1 BDF51E                  JSR     PDATA1
+ E4B4 BDF55C                  JSR     BADDR      ; get 'to'
+ E4B7 1F12                    TFR     X,Y        ; save in Y
+ E4B9 8EE479                  LDX     #CALD1
+ E4BC BDF51E                  JSR     PDATA1
+ E4BF BDF16C                  JSR     INCH       ; get 'L/S'
+ E4C2 814C                    CMPA    #'L'       ; was it L ?
+ E4C4 2606                    BNE     CD1        ; no,branch
+ E4C6 3510                    PULS    X          ; recall 'from'
+ E4C8 3002                    LEAX    2,X        ; add 2
+ E4CA 3410                    PSHS    X          ; save again
+ E4CC 1F20            CD1     TFR     Y,D        ; D = 'to'
+ E4CE A3E4                    SUBD    ,S         ; subtract 'from'
+ E4D0 EDE4                    STD     ,S         ; 'offset' now TO S
+ E4D2 8EE499                  LDX     #VALUES
+ E4D5 BDF51E                  JSR     PDATA1
+ E4D8 3510                    PULS    X
+ E4DA BDF536                  JSR     PRINTX     ; 'offset'
+ E4DD 7EF0DF                  JMP     CONTRL
                       ;*(its not format, the program just send a reset command and configure the cf, no relation with the datas stored)
                       ;* Continue program. [There is a BUG in this routine]
- E4DF 0D436F6E74696E  CONPRS  FCB     $0D,"Continue from SWI....",4
- E4E6 75652066726F6D
- E4ED 205357492E2E2E
- E4F4 2E04
+ E4E0 0D436F6E74696E  CONPRS  FCB     $0D,"Continue from SWI....",4
+ E4E7 75652066726F6D
+ E4EE 205357492E2E2E
+ E4F5 2E04
 
- E4F6 8EE4DF          CP      LDX     #CONPRS
- E4F9 BDF51E                  JSR     PDATA1
- E4FC 6C6B                    INC     11,S       ; (PC-low)
- E4FE 7EE56F                  JMP     RP1        ; recover SP & RTI.
+ E4F7 8EE4E0          CP      LDX     #CONPRS
+ E4FA BDF51E                  JSR     PDATA1
+ E4FD 6C6B                    INC     11,S       ; (PC-low)
+ E4FF 7EE570                  JMP     RP1        ; recover SP & RTI.
                       ;* BUG here? What if PC-low = $FF ???
                       ;* why not  LDX   10,S
                       ;* LEAX   1,X
                       ;* STX   10,S   ie. Increment PC.
                       ;*
                       ;* Fill memory with constant.
- E501 0D46696C6C206D  FILMES  FCB     $0D,"Fill memory with constant from ",4
- E508 656D6F72792077
- E50F 69746820636F6E
- E516 7374616E742066
- E51D 726F6D2004
+ E502 0D46696C6C206D  FILMES  FCB     $0D,"Fill memory with constant from ",4
+ E509 656D6F72792077
+ E510 69746820636F6E
+ E517 7374616E742066
+ E51E 726F6D2004
 
- E522 8EE501          FM      LDX     #FILMES
- E525 BDF51E                  JSR     PDATA1
- E528 BDF55C                  JSR     BADDR      ; get 'from'
- E52B 1F12                    TFR     X,Y        ; save in Y
- E52D 8EE473                  LDX     #TOS
- E530 BDF51E                  JSR     PDATA1
- E533 BDF55C                  JSR     BADDR      ; get 'to'
- E536 3410                    PSHS    X          ; save in X
- E538 8EE498                  LDX     #VALUES
- E53B BDF51E                  JSR     PDATA1
- E53E BDF567                  JSR     BYTE       ; get 'value'
- E541 A7A0            FM1     STA     ,Y+        ; fill until
- E543 10ACE4                  CMPY    ,S         ; from = to
- E546 26F9                    BNE     FM1        ; then
- E548 3510                    PULS    X          ; tidy stack
- E54A 7EF0DF                  JMP     CONTRL
+ E523 8EE502          FM      LDX     #FILMES
+ E526 BDF51E                  JSR     PDATA1
+ E529 BDF55C                  JSR     BADDR      ; get 'from'
+ E52C 1F12                    TFR     X,Y        ; save in Y
+ E52E 8EE474                  LDX     #TOS
+ E531 BDF51E                  JSR     PDATA1
+ E534 BDF55C                  JSR     BADDR      ; get 'to'
+ E537 3410                    PSHS    X          ; save in X
+ E539 8EE499                  LDX     #VALUES
+ E53C BDF51E                  JSR     PDATA1
+ E53F BDF567                  JSR     BYTE       ; get 'value'
+ E542 A7A0            FM1     STA     ,Y+        ; fill until
+ E544 10ACE4                  CMPY    ,S         ; from = to
+ E547 26F9                    BNE     FM1        ; then
+ E549 3510                    PULS    X          ; tidy stack
+ E54B 7EF0DF                  JMP     CONTRL
                       ;*
                       ;* Go to user routine at XXXX.
- E54D 0D52756E207072  RUNPRS  FCB     $0D,"Run program from ",4
- E554 6F6772616D2066
- E55B 726F6D2004
+ E54E 0D52756E207072  RUNPRS  FCB     $0D,"Run program from ",4
+ E555 6F6772616D2066
+ E55C 726F6D2004
 
- E560 8EE54D          RP      LDX     #RUNPRS
- E563 BDF51E                  JSR     PDATA1
- E566 BDF55C                  JSR     BADDR      ; input start addr
- E569 AF6A                    STX     10,S       ; stack it as PC
- E56B 86FF                    LDA     #$FF
- E56D A7E4                    STA     ,S         ; stack as CC
- E56F 10FEDF80        RP1     LDS     STACK      ; recover SP
- E573 3B                      RTI                ; load all registers
+ E561 8EE54E          RP      LDX     #RUNPRS
+ E564 BDF51E                  JSR     PDATA1
+ E567 BDF55C                  JSR     BADDR      ; input start addr
+ E56A AF6A                    STX     10,S       ; stack it as PC
+ E56C 86FF                    LDA     #$FF
+ E56E A7E4                    STA     ,S         ; stack as CC
+ E570 10FEDF80        RP1     LDS     STACK      ; recover SP
+ E574 3B                      RTI                ; load all registers
                       ;*
                       ;* SWI return from user program.
- E574 10FFDF80        SWI     STS     STACK      ; save SP
- E578 AE6A                    LDX     10,S       ; get PC
- E57A 301F                    LEAX    -1,X       ; decrement it
- E57C AF6A                    STX     10,S       ; and put it back
- E57E 7EE760                  JMP     DR1        ; display registers
+ E575 10FFDF80        SWI     STS     STACK      ; save SP
+ E579 AE6A                    LDX     10,S       ; get PC
+ E57B 301F                    LEAX    -1,X       ; decrement it
+ E57D AF6A                    STX     10,S       ; and put it back
+ E57F 7EE761                  JMP     DR1        ; display registers
                       ;*
                       ;* Hexdump of memory starting at XXXX.
                       ;* @@ Modified 04/2025 PhR to get also ascii display on each line
- E581 0D486578206475  HEXDUS  FCB     $0D,"Hex dump of memory from ",4
- E588 6D70206F66206D
- E58F 656D6F72792066
- E596 726F6D2004
- E59B 20202020203020  HDMES1  FCB     "     0  1  2  3  4  5  6  7   8  9  A  B  C  D  E  F  ",4
- E5A2 20312020322020
- E5A9 33202034202035
- E5B0 20203620203720
- E5B7 20203820203920
- E5BE 20412020422020
- E5C5 43202044202045
- E5CC 202046202004
+ E582 0D486578206475  HEXDUS  FCB     $0D,"Hex dump of memory from ",4
+ E589 6D70206F66206D
+ E590 656D6F72792066
+ E597 726F6D2004
+ E59C 20202020203020  HDMES1  FCB     "     0  1  2  3  4  5  6  7   8  9  A  B  C  D  E  F  ",4
+ E5A3 20312020322020
+ E5AA 33202034202035
+ E5B1 20203620203720
+ E5B8 20203820203920
+ E5BF 20412020422020
+ E5C6 43202044202045
+ E5CD 202046202004
 
- E5D2 8EE581          HD      LDX     #HEXDUS
- E5D5 BDF51E                  JSR     PDATA1
- E5D8 BDF55C                  JSR     BADDR      ; get start addr
- E5DB BDF512                  JSR     PCRLF
- E5DE 108E0010        HD4     LDY     #16
- E5E2 BDF512                  JSR     PCRLF
- E5E5 3410                    PSHS    X
- E5E7 8EE59B                  LDX     #HDMES1
- E5EA BDF525                  JSR     PSTRNG     ; print header
- E5ED 3510                    PULS    X
- E5EF BDF512          HD1     JSR     PCRLF
- E5F2 BDF536                  JSR     PRINTX     ; print address
- E5F5 C610                    LDB     #16        ; byte counter
- E5F7 BDF5B3          HD2     JSR     OUT2HS     ; print a byte
- E5FA 5A                      DECB
- E5FB 2709                    BEQ     HD3        ; end of line ?
- E5FD C108                    CMPB    #8         ; half way ?
- E5FF 26F6                    BNE     HD2
- E601 BDF5B5                  JSR     OUTS       ; yes,print a space
- E604 20F1                    BRA     HD2
+ E5D3 8EE582          HD      LDX     #HEXDUS
+ E5D6 BDF51E                  JSR     PDATA1
+ E5D9 BDF55C                  JSR     BADDR      ; get start addr
+ E5DC BDF512                  JSR     PCRLF
+ E5DF 108E0010        HD4     LDY     #16
+ E5E3 BDF512                  JSR     PCRLF
+ E5E6 3410                    PSHS    X
+ E5E8 8EE59C                  LDX     #HDMES1
+ E5EB BDF525                  JSR     PSTRNG     ; print header
+ E5EE 3510                    PULS    X
+ E5F0 BDF512          HD1     JSR     PCRLF
+ E5F3 BDF536                  JSR     PRINTX     ; print address
+ E5F6 C610                    LDB     #16        ; byte counter
+ E5F8 BDF5B3          HD2     JSR     OUT2HS     ; print a byte
+ E5FB 5A                      DECB
+ E5FC 2709                    BEQ     HD3        ; end of line ?
+ E5FE C108                    CMPB    #8         ; half way ?
+ E600 26F6                    BNE     HD2
+ E602 BDF5B5                  JSR     OUTS       ; yes,print a space
+ E605 20F1                    BRA     HD2
                       ; @@ BEGIN ASCII DUMP ADD
- E606 BDF5B5          HD3     JSR     OUTS       ; @@ print space
- E609 C6F0                    LDB     #-16       ; @@ prepare for 16 loops
- E60B A685            ASCLOOP LDA     B,X        ; @@ load byte
- E60D 8120                    CMPA    #$20       ; @@ printable ?
- E60F 2D04                    BLT     NOTPRT     ; @@ no
- E611 817F                    CMPA    #$7F       ; @@ printable ?
- E613 2D02                    BLT     HDCONT     ; @@ yes
- E615 862E            NOTPRT  LDA     #'.'       ; @@ if not printable print a dot
- E617 BDF16E          HDCONT  JSR     OUTCH      ; @@ now print
- E61A 5C                      INCB               ; @@ next byte
- E61B 26EE                    BNE     ASCLOOP    ; @@ 16 bytes printed ? no do again
+ E607 BDF5B5          HD3     JSR     OUTS       ; @@ print space
+ E60A C6F0                    LDB     #-16       ; @@ prepare for 16 loops
+ E60C A685            ASCLOOP LDA     B,X        ; @@ load byte
+ E60E 8120                    CMPA    #$20       ; @@ printable ?
+ E610 2D04                    BLT     NOTPRT     ; @@ no
+ E612 817F                    CMPA    #$7F       ; @@ printable ?
+ E614 2D02                    BLT     HDCONT     ; @@ yes
+ E616 862E            NOTPRT  LDA     #'.'       ; @@ if not printable print a dot
+ E618 BDF16E          HDCONT  JSR     OUTCH      ; @@ now print
+ E61B 5C                      INCB               ; @@ next byte
+ E61C 26EE                    BNE     ASCLOOP    ; @@ 16 bytes printed ? no do again
                       ; @@ END ASCII DUMP ADD
- E61D 313F                    LEAY    -1,Y       ; end of page ?
- E61F 26CE                    BNE     HD1        ; no,do another line
- E621 BDF16C                  JSR     INCH       ; yes,input a char
- E624 810D                    CMPA    #$0D       ; if char == CR
- E626 27B6                    BEQ     HD4        ; do another page
- E628 812D                    CMPA    #'-'       ; if char == '-'
- E62A 10260AB1                LBNE    CONTRL
- E62E 3089FE00                LEAX    -512,X     ; do previous page
- E632 20AA                    BRA     HD4
+ E61E 313F                    LEAY    -1,Y       ; end of page ?
+ E620 26CE                    BNE     HD1        ; no,do another line
+ E622 BDF16C                  JSR     INCH       ; yes,input a char
+ E625 810D                    CMPA    #$0D       ; if char == CR
+ E627 27B6                    BEQ     HD4        ; do another page
+ E629 812D                    CMPA    #'-'       ; if char == '-'
+ E62B 10260AB0                LBNE    CONTRL
+ E62F 3089FE00                LEAX    -512,X     ; do previous page
+ E633 20AA                    BRA     HD4
                       ;*
                       ;* Poke memory.
- E634 0D506F6B65206D  POKMES  FCB     $0D,"Poke memory at ",4
- E63B 656D6F72792061
- E642 742004
+ E635 0D506F6B65206D  POKMES  FCB     $0D,"Poke memory at ",4
+ E63C 656D6F72792061
+ E643 742004
 
- E645 8EE634          PM      LDX     #POKMES
- E648 BDF51E                  JSR     PDATA1
- E64B BDF55C                  JSR     BADDR      ; input addr
- E64E 1F12                    TFR     X,Y
- E650 8EE498                  LDX     #VALUES
- E653 BDF51E                  JSR     PDATA1
- E656 BDF567                  JSR     BYTE       ; input 'value'
- E659 A7A4                    STA     ,Y         ; store at addr
- E65B 7EF0DF                  JMP     CONTRL
+ E646 8EE635          PM      LDX     #POKMES
+ E649 BDF51E                  JSR     PDATA1
+ E64C BDF55C                  JSR     BADDR      ; input addr
+ E64F 1F12                    TFR     X,Y
+ E651 8EE499                  LDX     #VALUES
+ E654 BDF51E                  JSR     PDATA1
+ E657 BDF567                  JSR     BYTE       ; input 'value'
+ E65A A7A4                    STA     ,Y         ; store at addr
+ E65C 7EF0DF                  JMP     CONTRL
                       ;*
                       ;* Keyboard to memory.
- E65E 0D4C6F6164206D  LOAKES  FCB     $0D,"Load memory with text from keyboard to ",4
- E665 656D6F72792077
- E66C 69746820746578
- E673 742066726F6D20
- E67A 6B6579626F6172
- E681 6420746F2004
+ E65F 0D4C6F6164206D  LOAKES  FCB     $0D,"Load memory with text from keyboard to ",4
+ E666 656D6F72792077
+ E66D 69746820746578
+ E674 742066726F6D20
+ E67B 6B6579626F6172
+ E682 6420746F2004
 
- E687 8EE65E          LK      LDX     #LOAKES
- E68A BDF51E                  JSR     PDATA1
- E68D BDF55C                  JSR     BADDR      ; input addr
- E690 1F12                    TFR     X,Y
- E692 8EE498                  LDX     #VALUES
- E695 BDF51E                  JSR     PDATA1
- E698 BDF16C          LK1     JSR     INCH       ; input a character
- E69B A7A0                    STA     ,Y+        ; store it
- E69D 8104                    CMPA    #$04       ; was it EOT ?
- E69F 26F7                    BNE     LK1        ; no,input another
- E6A1 7EF0DF                  JMP     CONTRL
+ E688 8EE65F          LK      LDX     #LOAKES
+ E68B BDF51E                  JSR     PDATA1
+ E68E BDF55C                  JSR     BADDR      ; input addr
+ E691 1F12                    TFR     X,Y
+ E693 8EE499                  LDX     #VALUES
+ E696 BDF51E                  JSR     PDATA1
+ E699 BDF16C          LK1     JSR     INCH       ; input a character
+ E69C A7A0                    STA     ,Y+        ; store it
+ E69E 8104                    CMPA    #$04       ; was it EOT ?
+ E6A0 26F7                    BNE     LK1        ; no,input another
+ E6A2 7EF0DF                  JMP     CONTRL
                       ;*
                       ;* Memory load and examine.
- E6A4 0D4D656D6F7279  MEMEXS   FCB    $0D,"Memory examine and modify from ",4
- E6AB 206578616D696E
- E6B2 6520616E64206D
- E6B9 6F646966792066
- E6C0 726F6D2004
- E6C5 0720204E6F2072  NORAM    FCB    7,"  No ram at that address!",4
- E6CC 616D2061742074
- E6D3 68617420616464
- E6DA 726573732104
+ E6A5 0D4D656D6F7279  MEMEXS   FCB    $0D,"Memory examine and modify from ",4
+ E6AC 206578616D696E
+ E6B3 6520616E64206D
+ E6BA 6F646966792066
+ E6C1 726F6D2004
+ E6C6 0720204E6F2072  NORAM    FCB    7,"  No ram at that address!",4
+ E6CD 616D2061742074
+ E6D4 68617420616464
+ E6DB 726573732104
 
- E6E0 8EE6A4          ME      LDX     #MEMEXS
- E6E3 BDF51E                  JSR     PDATA1
- E6E6 BDF55C                  JSR     BADDR      ; input addr
- E6E9 BDF512          ME1     JSR     PCRLF
- E6EC BDF536                  JSR     PRINTX     ; display addr
- E6EF BDF5B3                  JSR     OUT2HS     ; and content
- E6F2 BDF16C                  JSR     INCH       ; input a char
- E6F5 812D                    CMPA    #'-'       ; was it a '-' ?
- E6F7 2604                    BNE     ME2
- E6F9 301E                    LEAX    -2,X       ; yes,back 2 locations
- E6FB 20EC                    BRA     ME1
- E6FD 810D            ME2     CMPA    #$0D       ; was it CR ?
- E6FF 27E8                    BEQ     ME1        ; yes,display next
- E701 8120                    CMPA    #$20       ; was it a space ?
- E703 102609D8        MED     LBNE    CONTRL     ; no,abort
- E707 BDF567                  JSR     BYTE       ; yes,input byte
- E70A A71F                    STA     -1,X       ; overwrite old byte
- E70C A11F                    CMPA    -1,X       ; read it back
- E70E 27D9                    BEQ     ME1        ; OK,display it
- E710 8EE6C5                  LDX     #NORAM     ; cant read,send
- E713 BDF51E                  JSR     PDATA1     ; error message
- E716 7EF0DF                  JMP     CONTRL
+ E6E1 8EE6A5          ME      LDX     #MEMEXS
+ E6E4 BDF51E                  JSR     PDATA1
+ E6E7 BDF55C                  JSR     BADDR      ; input addr
+ E6EA BDF512          ME1     JSR     PCRLF
+ E6ED BDF536                  JSR     PRINTX     ; display addr
+ E6F0 BDF5B3                  JSR     OUT2HS     ; and content
+ E6F3 BDF16C                  JSR     INCH       ; input a char
+ E6F6 812D                    CMPA    #'-'       ; was it a '-' ?
+ E6F8 2604                    BNE     ME2
+ E6FA 301E                    LEAX    -2,X       ; yes,back 2 locations
+ E6FC 20EC                    BRA     ME1
+ E6FE 810D            ME2     CMPA    #$0D       ; was it CR ?
+ E700 27E8                    BEQ     ME1        ; yes,display next
+ E702 8120                    CMPA    #$20       ; was it a space ?
+ E704 102609D7        MED     LBNE    CONTRL     ; no,abort
+ E708 BDF567                  JSR     BYTE       ; yes,input byte
+ E70B A71F                    STA     -1,X       ; overwrite old byte
+ E70D A11F                    CMPA    -1,X       ; read it back
+ E70F 27D9                    BEQ     ME1        ; OK,display it
+ E711 8EE6C6                  LDX     #NORAM     ; cant read,send
+ E714 BDF51E                  JSR     PDATA1     ; error message
+ E717 7EF0DF                  JMP     CONTRL
                       ;*
                       ;* Print registers.
- E719 0D446973706C61  DISRES  FCB     $0D,"Display CPU registers.",4
- E720 79204350552072
- E727 65676973746572
- E72E 732E04
- E731 0A0D4343202041  RSTRNG  FCB     $0A,$0D,"CC  A  B DP    X    Y    U   PC    S",$0A,$0D,4
- E738 20204220445020
- E73F 20202058202020
- E746 20592020202055
- E74D 20202050432020
- E754 2020530A0D04
+ E71A 0D446973706C61  DISRES  FCB     $0D,"Display CPU registers.",4
+ E721 79204350552072
+ E728 65676973746572
+ E72F 732E04
+ E732 0A0D4343202041  RSTRNG  FCB     $0A,$0D,"CC  A  B DP    X    Y    U   PC    S",$0A,$0D,4
+ E739 20204220445020
+ E740 20202058202020
+ E747 20592020202055
+ E74E 20202050432020
+ E755 2020530A0D04
 
- E75A 8EE719          DR      LDX     #DISRES
- E75D BDF51E                  JSR     PDATA1
- E760 8EE731          DR1     LDX     #RSTRNG
- E763 BDF51E                  JSR     PDATA1     ; print header
- E766 1F41                    TFR     S,X
- E768 BDF5B3                  JSR     OUT2HS     ; print registers
- E76B BDF5B3                  JSR     OUT2HS
- E76E BDF5B3                  JSR     OUT2HS
- E771 BDF5B3                  JSR     OUT2HS
- E774 BDF5B1                  JSR     OUT4HS
- E777 BDF5B1                  JSR     OUT4HS
- E77A BDF5B1                  JSR     OUT4HS
- E77D BDF5B1                  JSR     OUT4HS
- E780 8EDF80                  LDX     #STACK     ; get Stack Pointer
- E783 BDF5B1                  JSR     OUT4HS     ; print it
- E786 7EF0DF                  JMP     CONTRL
+ E75B 8EE71A          DR      LDX     #DISRES
+ E75E BDF51E                  JSR     PDATA1
+ E761 8EE732          DR1     LDX     #RSTRNG
+ E764 BDF51E                  JSR     PDATA1     ; print header
+ E767 1F41                    TFR     S,X
+ E769 BDF5B3                  JSR     OUT2HS     ; print registers
+ E76C BDF5B3                  JSR     OUT2HS
+ E76F BDF5B3                  JSR     OUT2HS
+ E772 BDF5B3                  JSR     OUT2HS
+ E775 BDF5B1                  JSR     OUT4HS
+ E778 BDF5B1                  JSR     OUT4HS
+ E77B BDF5B1                  JSR     OUT4HS
+ E77E BDF5B1                  JSR     OUT4HS
+ E781 8EDF80                  LDX     #STACK     ; get Stack Pointer
+ E784 BDF5B1                  JSR     OUT4HS     ; print it
+ E787 7EF0DF                  JMP     CONTRL
                       ;*
                       ;* Shift blocks of memory.
- E789 0D536869667420  SHIMES  FCB     $0D,"Shift block of memory from ",4
- E790 626C6F636B206F
- E797 66206D656D6F72
- E79E 792066726F6D20
- E7A5 04
- E7A6 204C656E677468  LENGHS  FCB     " Length ",4
- E7AD 2004
+ E78A 0D536869667420  SHIMES  FCB     $0D,"Shift block of memory from ",4
+ E791 626C6F636B206F
+ E798 66206D656D6F72
+ E79F 792066726F6D20
+ E7A6 04
+ E7A7 204C656E677468  LENGHS  FCB     " Length ",4
+ E7AE 2004
 
- E7AF 8EE789          SM      LDX     #SHIMES
- E7B2 BDF51E                  JSR     PDATA1
- E7B5 BDF55C                  JSR     BADDR      ; get 'from' addr
- E7B8 3440                    PSHS    U
- E7BA 1F13                    TFR     X,U        ; store it in U
- E7BC 8EE473                  LDX     #TOS
- E7BF BDF51E                  JSR     PDATA1
- E7C2 BDF55C                  JSR     BADDR      ; get 'to' addr
- E7C5 1F12                    TFR     X,Y        ; store it in Y
- E7C7 8EE7A6                  LDX     #LENGHS
- E7CA BDF51E                  JSR     PDATA1
- E7CD BDF55C                  JSR     BADDR      ; get length of block
- E7D0 A6C0            SM1     LDA     ,U+        ; move a byte
- E7D2 A7A0                    STA     ,Y+
- E7D4 301F                    LEAX    -1,X       ; dec. length
- E7D6 26F8                    BNE     SM1        ; repeat 'till end
- E7D8 3540                    PULS    U
- E7DA 7EF0DF                  JMP     CONTRL
+ E7B0 8EE78A          SM      LDX     #SHIMES
+ E7B3 BDF51E                  JSR     PDATA1
+ E7B6 BDF55C                  JSR     BADDR      ; get 'from' addr
+ E7B9 3440                    PSHS    U
+ E7BB 1F13                    TFR     X,U        ; store it in U
+ E7BD 8EE474                  LDX     #TOS
+ E7C0 BDF51E                  JSR     PDATA1
+ E7C3 BDF55C                  JSR     BADDR      ; get 'to' addr
+ E7C6 1F12                    TFR     X,Y        ; store it in Y
+ E7C8 8EE7A7                  LDX     #LENGHS
+ E7CB BDF51E                  JSR     PDATA1
+ E7CE BDF55C                  JSR     BADDR      ; get length of block
+ E7D1 A6C0            SM1     LDA     ,U+        ; move a byte
+ E7D3 A7A0                    STA     ,Y+
+ E7D5 301F                    LEAX    -1,X       ; dec. length
+ E7D7 26F8                    BNE     SM1        ; repeat 'till end
+ E7D9 3540                    PULS    U
+ E7DB 7EF0DF                  JMP     CONTRL
                       ;*
                       ;* Test memory.
- E7DD 0D54657374206D  TESMES  FCB     $0D,"Test memory from ",4
- E7E4 656D6F72792066
- E7EB 726F6D2004
- E7F0 070A0D4572726F  TMS1    FCB     7,$0A,$0D,"Error at location ",4
- E7F7 72206174206C6F
- E7FE 636174696F6E20
- E805 04
- E806 6368616E676564  TMS2    FCB     "changed to ",4
- E80D 20746F2004
- E812 2054657374696E  TMS3    FCB     " Testing now with ",4
- E819 67206E6F772077
- E820 6974682004
+ E7DE 0D54657374206D  TESMES  FCB     $0D,"Test memory from ",4
+ E7E5 656D6F72792066
+ E7EC 726F6D2004
+ E7F1 070A0D4572726F  TMS1    FCB     7,$0A,$0D,"Error at location ",4
+ E7F8 72206174206C6F
+ E7FF 636174696F6E20
+ E806 04
+ E807 6368616E676564  TMS2    FCB     "changed to ",4
+ E80E 20746F2004
+ E813 2054657374696E  TMS3    FCB     " Testing now with ",4
+ E81A 67206E6F772077
+ E821 6974682004
 
- E825 8EE7DD          TM      LDX     #TESMES
- E828 BDF51E                  JSR     PDATA1
- E82B BDF55C                  JSR     BADDR      ; get 'from'
- E82E 1F12                    TFR     X,Y        ; put in Y
- E830 8EE473                  LDX     #TOS
- E833 BDF51E                  JSR     PDATA1
- E836 BDF55C                  JSR     BADDR      ; get 'to'
- E839 BFDF92                  STX     XTEMP      ; store it
- E83C 5F                      CLRB
- E83D 8EE812                  LDX     #TMS3
- E840 BDF51E                  JSR     PDATA1
- E843 F7DF91          TM5     STB     TEMP       ; store 'with'
- E846 8EDF91                  LDX     #TEMP
- E849 BDF5A9                  JSR     OUT2H      ; display 'with'
- E84C 1F21                    TFR     Y,X
- E84E E7A4            TM1     STB     ,Y         ; write/read test
- E850 E1A4                    CMPB    ,Y
- E852 261A                    BNE     TM2        ; test fails,branch
- E854 3121            TM4     LEAY    1,Y        ; else,next location
- E856 10BCDF92                CMPY    XTEMP      ; all done ?
- E85A 26F2                    BNE     TM1
- E85C 5C                      INCB               ; yes,next 'with' byte
- E85D 270C                    BEQ     TM3        ; done 'em all.Exit
- E85F 8608                    LDA     #$08       ; else,update 'with'
- E861 BDF16E                  JSR     OUTCH      ; byte,return to
- E864 BDF16E                  JSR     OUTCH      ; first location
- E867 1F12                    TFR     X,Y        ; and continue
- E869 20D8                    BRA     TM5
- E86B 7EF0DF          TM3     JMP     CONTRL
- E86E 8EE7F0          TM2     LDX     #TMS1      ; error message
- E871 BDF51E                  JSR     PDATA1
- E874 10BFDF92                STY     XTEMP
- E878 8EDF92                  LDX     #XTEMP     ; (faulty location)
- E87B BDF5B1                  JSR     OUT4HS
- E87E BDF5B5                  JSR     OUTS
- E881 BDF5B5                  JSR     OUTS
- E884 F7DF91                  STB     TEMP       ; (test byte)
- E887 8EDF91                  LDX     #TEMP
- E88A BDF5B3                  JSR     OUT2HS
- E88D 8EE806                  LDX     #TMS2
- E890 BDF51E                  JSR     PDATA1
- E893 A6A4                    LDA     ,Y         ; (byte read back)
- E895 B7DF91                  STA     TEMP
- E898 8EDF91                  LDX     #TEMP
- E89B BDF5B3                  JSR     OUT2HS
- E89E 20CB                    BRA     TM3        ; exit
+ E826 8EE7DE          TM      LDX     #TESMES
+ E829 BDF51E                  JSR     PDATA1
+ E82C BDF55C                  JSR     BADDR      ; get 'from'
+ E82F 1F12                    TFR     X,Y        ; put in Y
+ E831 8EE474                  LDX     #TOS
+ E834 BDF51E                  JSR     PDATA1
+ E837 BDF55C                  JSR     BADDR      ; get 'to'
+ E83A BFDF92                  STX     XTEMP      ; store it
+ E83D 5F                      CLRB
+ E83E 8EE813                  LDX     #TMS3
+ E841 BDF51E                  JSR     PDATA1
+ E844 F7DF91          TM5     STB     TEMP       ; store 'with'
+ E847 8EDF91                  LDX     #TEMP
+ E84A BDF5A9                  JSR     OUT2H      ; display 'with'
+ E84D 1F21                    TFR     Y,X
+ E84F E7A4            TM1     STB     ,Y         ; write/read test
+ E851 E1A4                    CMPB    ,Y
+ E853 261A                    BNE     TM2        ; test fails,branch
+ E855 3121            TM4     LEAY    1,Y        ; else,next location
+ E857 10BCDF92                CMPY    XTEMP      ; all done ?
+ E85B 26F2                    BNE     TM1
+ E85D 5C                      INCB               ; yes,next 'with' byte
+ E85E 270C                    BEQ     TM3        ; done 'em all.Exit
+ E860 8608                    LDA     #$08       ; else,update 'with'
+ E862 BDF16E                  JSR     OUTCH      ; byte,return to
+ E865 BDF16E                  JSR     OUTCH      ; first location
+ E868 1F12                    TFR     X,Y        ; and continue
+ E86A 20D8                    BRA     TM5
+ E86C 7EF0DF          TM3     JMP     CONTRL
+ E86F 8EE7F1          TM2     LDX     #TMS1      ; error message
+ E872 BDF51E                  JSR     PDATA1
+ E875 10BFDF92                STY     XTEMP
+ E879 8EDF92                  LDX     #XTEMP     ; (faulty location)
+ E87C BDF5B1                  JSR     OUT4HS
+ E87F BDF5B5                  JSR     OUTS
+ E882 BDF5B5                  JSR     OUTS
+ E885 F7DF91                  STB     TEMP       ; (test byte)
+ E888 8EDF91                  LDX     #TEMP
+ E88B BDF5B3                  JSR     OUT2HS
+ E88E 8EE807                  LDX     #TMS2
+ E891 BDF51E                  JSR     PDATA1
+ E894 A6A4                    LDA     ,Y         ; (byte read back)
+ E896 B7DF91                  STA     TEMP
+ E899 8EDF91                  LDX     #TEMP
+ E89C BDF5B3                  JSR     OUT2HS
+ E89F 20CB                    BRA     TM3        ; exit
                       ;*
                       ;*
                       ;* Read floppy sector.
- E8A0 0D526561642066  REASES  FCB     $0D,"Read from sector on drive ",4
- E8A7 726F6D20736563
- E8AE 746F72206F6E20
- E8B5 64726976652004
- E8BC 20747261636B20  TRACS   FCB     " track ",4
- E8C3 04
- E8C4 20736563746F72  SECS    FCB     " sector ",4
- E8CB 2004
- E8CD 0D0A0746444320  ERR1    FCB     $0D,$0A,7,"FDC error code = ",4
- E8D4 6572726F722063
- E8DB 6F6465203D2004
+ E8A1 0D526561642066  REASES  FCB     $0D,"Read from sector on drive ",4
+ E8A8 726F6D20736563
+ E8AF 746F72206F6E20
+ E8B6 64726976652004
+ E8BD 20747261636B20  TRACS   FCB     " track ",4
+ E8C4 04
+ E8C5 20736563746F72  SECS    FCB     " sector ",4
+ E8CC 2004
+ E8CE 0D0A0746444320  ERR1    FCB     $0D,$0A,7,"FDC error code = ",4
+ E8D5 6572726F722063
+ E8DC 6F6465203D2004
 
- E8E2 8EE8A0          RS      LDX     #REASES
- E8E5 BDF51E                  JSR     PDATA1
- E8E8 BDF58C                  JSR     INHEX      ; get drive No
- E8EB B7DF8E                  STA     DRIVE
- E8EE 8EDF8B                  LDX     #(DRIVE-3)
- E8F1 BDF4B7                  JSR     DRV        ; get drive
- E8F4 8EE8BC                  LDX     #TRACS
- E8F7 BDF51E                  JSR     PDATA1
- E8FA BDF567                  JSR     BYTE       ; get track
- E8FD B7DF8F                  STA     TRACK
- E900 8EE8C4                  LDX     #SECS
- E903 BDF51E                  JSR     PDATA1
- E906 BDF567                  JSR     BYTE       ; get sector
- E909 B7DF90                  STA     SECTOR
- E90C 8EE473                  LDX     #TOS
- E90F BDF51E                  JSR     PDATA1
- E912 BDF55C                  JSR     BADDR      ; get load addr
- E915 B6DF8F                  LDA     TRACK
- E918 F6DF90                  LDB     SECTOR
- E91B BDF4A2                  JSR     READ       ; read it in
- E91E 102707BD                LBEQ    CONTRL     ; if no read error
- E922 8EE8CD                  LDX     #ERR1
- E925 BDF51E                  JSR     PDATA1     ; else,error message
- E928 F7DF91                  STB     TEMP       ; (status,masked)
- E92B 8EDF91                  LDX     #TEMP
- E92E BDF5B3                  JSR     OUT2HS     ; error No
- E931 7EF0DF                  JMP     CONTRL
+ E8E3 8EE8A1          RS      LDX     #REASES
+ E8E6 BDF51E                  JSR     PDATA1
+ E8E9 BDF58C                  JSR     INHEX      ; get drive No
+ E8EC B7DF8E                  STA     DRIVE
+ E8EF 8EDF8B                  LDX     #(DRIVE-3)
+ E8F2 BDF4B7                  JSR     DRV        ; get drive
+ E8F5 8EE8BD                  LDX     #TRACS
+ E8F8 BDF51E                  JSR     PDATA1
+ E8FB BDF567                  JSR     BYTE       ; get track
+ E8FE B7DF8F                  STA     TRACK
+ E901 8EE8C5                  LDX     #SECS
+ E904 BDF51E                  JSR     PDATA1
+ E907 BDF567                  JSR     BYTE       ; get sector
+ E90A B7DF90                  STA     SECTOR
+ E90D 8EE474                  LDX     #TOS
+ E910 BDF51E                  JSR     PDATA1
+ E913 BDF55C                  JSR     BADDR      ; get load addr
+ E916 B6DF8F                  LDA     TRACK
+ E919 F6DF90                  LDB     SECTOR
+ E91C BDF4A2                  JSR     READ       ; read it in
+ E91F 102707BC                LBEQ    CONTRL     ; if no read error
+ E923 8EE8CE                  LDX     #ERR1
+ E926 BDF51E                  JSR     PDATA1     ; else,error message
+ E929 F7DF91                  STB     TEMP       ; (status,masked)
+ E92C 8EDF91                  LDX     #TEMP
+ E92F BDF5B3                  JSR     OUT2HS     ; error No
+ E932 7EF0DF                  JMP     CONTRL
                       ;*
                       ;* Write floppy sector
- E934 0D577269746520  WRIMES  FCB     $0D,"Write to sector on drive ",4
- E93B 746F2073656374
- E942 6F72206F6E2064
- E949 726976652004
- E94F 2066726F6D2004  FROMS   FCB     " from ",4
+ E935 0D577269746520  WRIMES  FCB     $0D,"Write to sector on drive ",4
+ E93C 746F2073656374
+ E943 6F72206F6E2064
+ E94A 726976652004
+ E950 2066726F6D2004  FROMS   FCB     " from ",4
 
- E956 8EE934          WS      LDX     #WRIMES
- E959 BDF51E                  JSR     PDATA1
- E95C BDF58C                  JSR     INHEX      ; get drive No
- E95F B7DF8E                  STA     DRIVE
- E962 8EDF8B                  LDX     #(DRIVE-3)
- E965 BDF4B7                  JSR     DRV        ; get drive
- E968 8EE8BC                  LDX     #TRACS
- E96B BDF51E                  JSR     PDATA1
- E96E BDF567                  JSR     BYTE       ; get track
- E971 B7DF8F                  STA     TRACK
- E974 8EE8C4                  LDX     #SECS
- E977 BDF51E                  JSR     PDATA1
- E97A BDF567                  JSR     BYTE       ; get sector
- E97D B7DF90                  STA     SECTOR
- E980 8EE94F                  LDX     #FROMS
- E983 BDF51E                  JSR     PDATA1
- E986 BDF55C                  JSR     BADDR      ; get data addr
- E989 B6DF8F                  LDA     TRACK
- E98C F6DF90                  LDB     SECTOR
- E98F BDF4A6                  JSR     WRITE      ; write sector
- E992 10270749                LBEQ    CONTRL     ; if no write error
- E996 8EE8CD                  LDX     #ERR1
- E999 BDF51E                  JSR     PDATA1     ; else,error message
- E99C F7DF91                  STB     TEMP
- E99F 8EDF91                  LDX     #TEMP
- E9A2 BDF5B3                  JSR     OUT2HS
- E9A5 7EF0DF                  JMP     CONTRL
+ E957 8EE935          WS      LDX     #WRIMES
+ E95A BDF51E                  JSR     PDATA1
+ E95D BDF58C                  JSR     INHEX      ; get drive No
+ E960 B7DF8E                  STA     DRIVE
+ E963 8EDF8B                  LDX     #(DRIVE-3)
+ E966 BDF4B7                  JSR     DRV        ; get drive
+ E969 8EE8BD                  LDX     #TRACS
+ E96C BDF51E                  JSR     PDATA1
+ E96F BDF567                  JSR     BYTE       ; get track
+ E972 B7DF8F                  STA     TRACK
+ E975 8EE8C5                  LDX     #SECS
+ E978 BDF51E                  JSR     PDATA1
+ E97B BDF567                  JSR     BYTE       ; get sector
+ E97E B7DF90                  STA     SECTOR
+ E981 8EE950                  LDX     #FROMS
+ E984 BDF51E                  JSR     PDATA1
+ E987 BDF55C                  JSR     BADDR      ; get data addr
+ E98A B6DF8F                  LDA     TRACK
+ E98D F6DF90                  LDB     SECTOR
+ E990 BDF4A6                  JSR     WRITE      ; write sector
+ E993 10270748                LBEQ    CONTRL     ; if no write error
+ E997 8EE8CE                  LDX     #ERR1
+ E99A BDF51E                  JSR     PDATA1     ; else,error message
+ E99D F7DF91                  STB     TEMP
+ E9A0 8EDF91                  LDX     #TEMP
+ E9A3 BDF5B3                  JSR     OUT2HS
+ E9A6 7EF0DF                  JMP     CONTRL
                       ;*
                       ;* Format disc to FLEX standard.
- E9A8 0D466F726D6174  DISFOS  FCB     $0D,"Format disc to flex standard on drive ",4
- E9AF 20646973632074
- E9B6 6F20666C657820
- E9BD 7374616E646172
- E9C4 64206F6E206472
- E9CB 6976652004
- E9D0 20736372617463  SURES   FCB     " scratch disc in drive? ",4
- E9D7 68206469736320
- E9DE 696E2064726976
- E9E5 653F2004
+ E9A9 0D466F726D6174  DISFOS  FCB     $0D,"Format disc to flex standard on drive ",4
+ E9B0 20646973632074
+ E9B7 6F20666C657820
+ E9BE 7374616E646172
+ E9C5 64206F6E206472
+ E9CC 6976652004
+ E9D1 20736372617463  SURES   FCB     " scratch disc in drive? ",4
+ E9D8 68206469736320
+ E9DF 696E2064726976
+ E9E6 653F2004
 
- E9E9 8EE9A8          DF      LDX     #DISFOS
- E9EC BDF51E                  JSR     PDATA1
- E9EF BDF58C                  JSR     INHEX      ; get drive No
- E9F2 B7DF8E                  STA     DRIVE
- E9F5 8EDF8B                  LDX     #DRIVE-3
- E9F8 BDF4AE                  JSR     RST        ; restore to 00
- E9FB 7FDFF4                  CLR     DEN        ; set single density
- E9FE 8EE9D0                  LDX     #SURES     ; prompt for scratch
- EA01 BDF51E                  JSR     PDATA1     ; disc in drive
- EA04 BDF16C                  JSR     INCH       ; get reply
- EA07 8159                    CMPA    #'Y'       ; if not 'Y'
- EA09 102606D2                LBNE    CONTRL     ; then abort
- EA0D 86FF            FMT     LDA     #$FF       ; else,initialise
- EA0F B7DF8F                  STA     TRACK      ; (01-1)
- EA12 108E0002                LDY     #$0002     ; (track/sector)
- EA16 4F              FMT1    CLRA
- EA17 B7DF90                  STA     SECTOR     ; (01-1)
- EA1A 7CDF8F                  INC     TRACK
- EA1D B6DF8F                  LDA     TRACK
- EA20 C601                    LDB     #1
- EA22 BDF50B                  JSR     SEEK
+ E9EA 8EE9A9          DF      LDX     #DISFOS
+ E9ED BDF51E                  JSR     PDATA1
+ E9F0 BDF58C                  JSR     INHEX      ; get drive No
+ E9F3 B7DF8E                  STA     DRIVE
+ E9F6 8EDF8B                  LDX     #DRIVE-3
+ E9F9 BDF4AE                  JSR     RST        ; restore to 00
+ E9FC 7FDFF4                  CLR     DEN        ; set single density
+ E9FF 8EE9D1                  LDX     #SURES     ; prompt for scratch
+ EA02 BDF51E                  JSR     PDATA1     ; disc in drive
+ EA05 BDF16C                  JSR     INCH       ; get reply
+ EA08 8159                    CMPA    #'Y'       ; if not 'Y'
+ EA0A 102606D1                LBNE    CONTRL     ; then abort
+ EA0E 86FF            FMT     LDA     #$FF       ; else,initialise
+ EA10 B7DF8F                  STA     TRACK      ; (01-1)
+ EA13 108E0002                LDY     #$0002     ; (track/sector)
+ EA17 4F              FMT1    CLRA
+ EA18 B7DF90                  STA     SECTOR     ; (01-1)
+ EA1B 7CDF8F                  INC     TRACK
+ EA1E B6DF8F                  LDA     TRACK
+ EA21 C601                    LDB     #1
+ EA23 BDF50B                  JSR     SEEK
                       ;* This is written to all tracks
- EA25 4F                      CLRA
- EA26 8E0190                  LDX     #0400      ; starting this addr
- EA29 C606                    LDB     #6
- EA2B 1700FA                  LBSR    WABT       ; 6 bytes---00
- EA2E 86FC                    LDA     #$FC
- EA30 A780                    STA     ,X+        ; 1 bytes---FC
- EA32 CCFF07                  LDD     #$FF07
- EA35 1700F0                  LBSR    WABT       ; 7 bytes---FF
+ EA26 4F                      CLRA
+ EA27 8E0190                  LDX     #0400      ; starting this addr
+ EA2A C606                    LDB     #6
+ EA2C 1700FA                  LBSR    WABT       ; 6 bytes---00
+ EA2F 86FC                    LDA     #$FC
+ EA31 A780                    STA     ,X+        ; 1 bytes---FC
+ EA33 CCFF07                  LDD     #$FF07
+ EA36 1700F0                  LBSR    WABT       ; 7 bytes---FF
                       ;* This written to all sectors
- EA38 4F              FMT2    CLRA
- EA39 7CDF90                  INC     SECTOR
- EA3C C606                    LDB     #6
- EA3E 1700E7                  LBSR    WABT       ; 6 bytes---00
- EA41 86FE                    LDA     #$FE
- EA43 A780                    STA     ,X+        ; 1 bytes---FE
- EA45 B6DF8F                  LDA     TRACK
- EA48 A780                    STA     ,X+        ; 1 bytes---[TRACK]
- EA4A 4F                      CLRA
- EA4B A780                    STA     ,X+        ; 1 bytes---00
- EA4D B6DF90                  LDA     SECTOR
- EA50 A780                    STA     ,X+        ; 1 bytes---[SECTOR]
- EA52 8601                    LDA     #1
- EA54 A780                    STA     ,X+        ; 1 bytes---01
- EA56 86F7                    LDA     #$F7
- EA58 A780                    STA     ,X+        ; 1 bytes---F7
- EA5A CCFF0B                  LDD     #$FF0B
- EA5D 1700C8                  LBSR    WABT       ; 11 bytes---FF
- EA60 4F                      CLRA
- EA61 C606                    LDB     #6
- EA63 1700C2                  LBSR    WABT       ; 6 bytes---00
- EA66 86FB                    LDA     #$FB
- EA68 A780                    STA     ,X+        ; 1 bytes---FB
+ EA39 4F              FMT2    CLRA
+ EA3A 7CDF90                  INC     SECTOR
+ EA3D C606                    LDB     #6
+ EA3F 1700E7                  LBSR    WABT       ; 6 bytes---00
+ EA42 86FE                    LDA     #$FE
+ EA44 A780                    STA     ,X+        ; 1 bytes---FE
+ EA46 B6DF8F                  LDA     TRACK
+ EA49 A780                    STA     ,X+        ; 1 bytes---[TRACK]
+ EA4B 4F                      CLRA
+ EA4C A780                    STA     ,X+        ; 1 bytes---00
+ EA4E B6DF90                  LDA     SECTOR
+ EA51 A780                    STA     ,X+        ; 1 bytes---[SECTOR]
+ EA53 8601                    LDA     #1
+ EA55 A780                    STA     ,X+        ; 1 bytes---01
+ EA57 86F7                    LDA     #$F7
+ EA59 A780                    STA     ,X+        ; 1 bytes---F7
+ EA5B CCFF0B                  LDD     #$FF0B
+ EA5E 1700C8                  LBSR    WABT       ; 11 bytes---FF
+ EA61 4F                      CLRA
+ EA62 C606                    LDB     #6
+ EA64 1700C2                  LBSR    WABT       ; 6 bytes---00
+ EA67 86FB                    LDA     #$FB
+ EA69 A780                    STA     ,X+        ; 1 bytes---FB
                       ;* Enter track/sector link, clear data bytes,
                       ;* update track/sector link.
- EA6A 1F20                    TFR     Y,D        ; get T/S link addr
- EA6C ED81                    STD     ,X++       ; enter it
- EA6E 5C                      INCB
- EA6F C10B                    CMPB    #11        ; all sectors done ?
- EA71 260A                    BNE     FMT3       ; no,continue
- EA73 4C                      INCA               ; yes,update T/S
- EA74 C601                    LDB     #1         ; link address
- EA76 8128                    CMPA    #40        ; all tracks done ?
- EA78 2603                    BNE     FMT3       ; no,continue
- EA7A CC0000                  LDD     #0         ; yes,clear T/S link
- EA7D 1F02            FMT3    TFR     D,Y        ; save updated link
- EA7F 4F                      CLRA               ; clear data bytes
- EA80 C6FE                    LDB     #254       ; 254 bytes---00
- EA82 1700A3                  LBSR    WABT
- EA85 86F7                    LDA     #$F7
- EA87 A780                    STA     ,X+        ; 1 bytes---F7
- EA89 CCFF0E                  LDD     #$FF0E
- EA8C 170099                  LBSR    WABT       ; 14 bytes---FF
- EA8F B6DF90                  LDA     SECTOR
- EA92 810A                    CMPA    #10        ; last sector ?
- EA94 26A2                    BNE     FMT2       ; no,do next
- EA96 86FF                    LDA     #$FF
- EA98 5F                      CLRB
- EA99 17008C                  LBSR    WABT       ; 256 bytes---FF
+ EA6B 1F20                    TFR     Y,D        ; get T/S link addr
+ EA6D ED81                    STD     ,X++       ; enter it
+ EA6F 5C                      INCB
+ EA70 C10B                    CMPB    #11        ; all sectors done ?
+ EA72 260A                    BNE     FMT3       ; no,continue
+ EA74 4C                      INCA               ; yes,update T/S
+ EA75 C601                    LDB     #1         ; link address
+ EA77 8128                    CMPA    #40        ; all tracks done ?
+ EA79 2603                    BNE     FMT3       ; no,continue
+ EA7B CC0000                  LDD     #0         ; yes,clear T/S link
+ EA7E 1F02            FMT3    TFR     D,Y        ; save updated link
+ EA80 4F                      CLRA               ; clear data bytes
+ EA81 C6FE                    LDB     #254       ; 254 bytes---00
+ EA83 1700A3                  LBSR    WABT
+ EA86 86F7                    LDA     #$F7
+ EA88 A780                    STA     ,X+        ; 1 bytes---F7
+ EA8A CCFF0E                  LDD     #$FF0E
+ EA8D 170099                  LBSR    WABT       ; 14 bytes---FF
+ EA90 B6DF90                  LDA     SECTOR
+ EA93 810A                    CMPA    #10        ; last sector ?
+ EA95 26A2                    BNE     FMT2       ; no,do next
+ EA97 86FF                    LDA     #$FF
+ EA99 5F                      CLRB
+ EA9A 17008C                  LBSR    WABT       ; 256 bytes---FF
                       ;* Write a track to disc
- EA9C 8E0190                  LDX     #0400
- EA9F 86F4                    LDA     #$F4       ; write track cmd.
- EAA1 17077E                  LBSR    FCMD
- EAA4 B6FF10          FMT4    LDA     COMREG     ; get status
- EAA7 8502                    BITA    #2         ; D-reg empty ?
- EAA9 2705                    BEQ     FMT5
- EAAB A680                    LDA     ,X+        ; yes,load it
- EAAD B7FF13                  STA     DATREG
- EAB0 B6FF10          FMT5    LDA     COMREG
- EAB3 8501                    BITA    #1         ; busy ?
- EAB5 26ED                    BNE     FMT4       ; yes,wait
- EAB7 B6DF8F                  LDA     TRACK
- EABA 8127                    CMPA    #39        ; last track ?
- EABC 1026FF56                LBNE    FMT1       ; no,do next
+ EA9D 8E0190                  LDX     #0400
+ EAA0 86F4                    LDA     #$F4       ; write track cmd.
+ EAA2 17077D                  LBSR    FCMD
+ EAA5 B6FF10          FMT4    LDA     COMREG     ; get status
+ EAA8 8502                    BITA    #2         ; D-reg empty ?
+ EAAA 2705                    BEQ     FMT5
+ EAAC A680                    LDA     ,X+        ; yes,load it
+ EAAE B7FF13                  STA     DATREG
+ EAB1 B6FF10          FMT5    LDA     COMREG
+ EAB4 8501                    BITA    #1         ; busy ?
+ EAB6 26ED                    BNE     FMT4       ; yes,wait
+ EAB8 B6DF8F                  LDA     TRACK
+ EABB 8127                    CMPA    #39        ; last track ?
+ EABD 1026FF56                LBNE    FMT1       ; no,do next
                       ;* Remove link addr.from final directory sector
- EAC0 8EDF8B                  LDX     #DRIVE-3
- EAC3 BDF4AE                  JSR     RST
- EAC6 8EDE80                  LDX     #BUFFER    ; read T/S 00/0A
- EAC9 4F                      CLRA               ; into buffer
- EACA C60A                    LDB     #10        ; zero the link addr
- EACC BDF4A2                  JSR     READ       ; (no more directory sectors)
- EACF 8EDE80                  LDX     #BUFFER
- EAD2 6F84                    CLR     ,X
- EAD4 6F01                    CLR     1,X
- EAD6 4F                      CLRA
- EAD7 C60A                    LDB     #10        ; and write it
- EAD9 BDF4A6                  JSR     WRITE      ; back to disc
+ EAC1 8EDF8B                  LDX     #DRIVE-3
+ EAC4 BDF4AE                  JSR     RST
+ EAC7 8EDE80                  LDX     #BUFFER    ; read T/S 00/0A
+ EACA 4F                      CLRA               ; into buffer
+ EACB C60A                    LDB     #10        ; zero the link addr
+ EACD BDF4A2                  JSR     READ       ; (no more directory sectors)
+ EAD0 8EDE80                  LDX     #BUFFER
+ EAD3 6F84                    CLR     ,X
+ EAD5 6F01                    CLR     1,X
+ EAD7 4F                      CLRA
+ EAD8 C60A                    LDB     #10        ; and write it
+ EADA BDF4A6                  JSR     WRITE      ; back to disc
                       ;* Enter data to Sys.Information sector
- EADC 8EDE80                  LDX     #BUFFER
- EADF 4F                      CLRA
- EAE0 C603                    LDB     #3
- EAE2 BDF4A2                  JSR     READ       ; read T/S 00/03
- EAE5 8EDE80                  LDX     #BUFFER
- EAE8 6F84                    CLR     ,X         ; clear link addr
- EAEA 6F01                    CLR     1,X
- EAEC CC5343                  LDD     #$5343     ; enter name of disc
- EAEF ED8810                  STD     16,X
- EAF2 CC5241                  LDD     #$5241     ; (SCRATCH!)
- EAF5 ED8812                  STD     18,X
- EAF8 CC5443                  LDD     #$5443
- EAFB ED8814                  STD     20,X
- EAFE CC4821                  LDD     #$4821
- EB01 ED8816                  STD     22,X
- EB04 CC0001                  LDD     #1         ; enter Vol. No
- EB07 ED881B                  STD     27,X
- EB0A CC0101                  LDD     #$0101     ; enter start of
- EB0D ED881D                  STD     29,X       ; free chain
- EB10 CC270A                  LDD     #$270A     ; enter end of
- EB13 ED881F                  STD     31,X       ; free chain and
- EB16 ED8826                  STD     38,X       ; highest sector adr
- EB19 CC0186                  LDD     #$0186     ; enter length of
- EB1C ED8821                  STD     33,X       ; free chain. (ie.
- EB1F 4F                      CLRA               ; sectors left)
- EB20 C603                    LDB     #3
- EB22 BDF4A6                  JSR     WRITE      ; write it back
- EB25 7EF0DF                  JMP     CONTRL
+ EADD 8EDE80                  LDX     #BUFFER
+ EAE0 4F                      CLRA
+ EAE1 C603                    LDB     #3
+ EAE3 BDF4A2                  JSR     READ       ; read T/S 00/03
+ EAE6 8EDE80                  LDX     #BUFFER
+ EAE9 6F84                    CLR     ,X         ; clear link addr
+ EAEB 6F01                    CLR     1,X
+ EAED CC5343                  LDD     #$5343     ; enter name of disc
+ EAF0 ED8810                  STD     16,X
+ EAF3 CC5241                  LDD     #$5241     ; (SCRATCH!)
+ EAF6 ED8812                  STD     18,X
+ EAF9 CC5443                  LDD     #$5443
+ EAFC ED8814                  STD     20,X
+ EAFF CC4821                  LDD     #$4821
+ EB02 ED8816                  STD     22,X
+ EB05 CC0001                  LDD     #1         ; enter Vol. No
+ EB08 ED881B                  STD     27,X
+ EB0B CC0101                  LDD     #$0101     ; enter start of
+ EB0E ED881D                  STD     29,X       ; free chain
+ EB11 CC270A                  LDD     #$270A     ; enter end of
+ EB14 ED881F                  STD     31,X       ; free chain and
+ EB17 ED8826                  STD     38,X       ; highest sector adr
+ EB1A CC0186                  LDD     #$0186     ; enter length of
+ EB1D ED8821                  STD     33,X       ; free chain. (ie.
+ EB20 4F                      CLRA               ; sectors left)
+ EB21 C603                    LDB     #3
+ EB23 BDF4A6                  JSR     WRITE      ; write it back
+ EB26 7EF0DF                  JMP     CONTRL
                       ;*
                       ;* This subroutine stores ACCA in [B] locations
                       ;* starting at location [X]
- EB28 3404            WABT    PSHS    B
- EB2A A780            WABT1   STA     ,X+
- EB2C 5A                      DECB
- EB2D 26FB                    BNE     WABT1
- EB2F 3584                    PULS    B,PC
+ EB29 3404            WABT    PSHS    B
+ EB2B A780            WABT1   STA     ,X+
+ EB2D 5A                      DECB
+ EB2E 26FB                    BNE     WABT1
+ EB30 3584                    PULS    B,PC
                       ;*
                       ;* Random read test on drive.
- EB31 0D52616E646F6D  TDMES   FCB     $0D,"Random sector read on drive ",4
- EB38 20736563746F72
- EB3F 2072656164206F
- EB46 6E206472697665
- EB4D 2004
- EB4F 48697420616E79  TDMES1  FCB     "Hit any key to stop.",4
- EB56 206B657920746F
- EB5D 2073746F702E04
- EB64 61742074726163  ERR2    FCB     "at track/sector ",4
- EB6B 6B2F736563746F
- EB72 722004
+ EB32 0D52616E646F6D  TDMES   FCB     $0D,"Random sector read on drive ",4
+ EB39 20736563746F72
+ EB40 2072656164206F
+ EB47 6E206472697665
+ EB4E 2004
+ EB50 48697420616E79  TDMES1  FCB     "Hit any key to stop.",4
+ EB57 206B657920746F
+ EB5E 2073746F702E04
+ EB65 61742074726163  ERR2    FCB     "at track/sector ",4
+ EB6C 6B2F736563746F
+ EB73 722004
 
- EB75 8EEB31          TD      LDX     #TDMES
- EB78 BDF51E                  JSR     PDATA1
- EB7B BDF58C                  JSR     INHEX      ; get drive No
- EB7E B7DF8E                  STA     DRIVE
- EB81 8EEB4F                  LDX     #TDMES1
- EB84 BDF525                  JSR     PSTRNG
- EB87 8EDF8B                  LDX     #(DRIVE-3)
- EB8A BDF4AE                  JSR     RST
- EB8D BDF5BA          TDLOOP  JSR     RANDOM     ; get a random No
- EB90 840F                    ANDA    #$0F       ; 15 max
- EB92 8B01                    ADDA    #1         ; >0
- EB94 810A                    CMPA    #10        ; >10 ?
- EB96 2EF5                    BGT     TDLOOP     ; yes,get another
- EB98 B7DF90                  STA     SECTOR     ; else,store it
- EB9B BDF5BA          TDLP2   JSR     RANDOM     ; get a random No
- EB9E 843F                    ANDA    #$3F       ; 63 max
- EBA0 8127                    CMPA    #39        ; >39 ?
- EBA2 2EF7                    BGT     TDLP2      ; yes,get another
- EBA4 B7DF8F                  STA     TRACK      ; else,set random
- EBA7 F6DF90                  LDB     SECTOR     ; track and sector
- EBAA 8EDE80                  LDX     #BUFFER
- EBAD BDF4A2                  JSR     READ       ; read into buffer
- EBB0 260E                    BNE     TDLP9      ; read error if <> 0
- EBB2 BDF131                  JSR     STATUS     ; key pressed ?
- EBB5 27D6                    BEQ     TDLOOP     ; no,continue
- EBB7 8EDF8B                  LDX     #(DRIVE-3) ; yes,
- EBBA BDF4AE                  JSR     RST        ; restore to 00
- EBBD 7EF0DF                  JMP     CONTRL     ; and abort
- EBC0 8EE8CD          TDLP9   LDX     #ERR1      ; report ----
- EBC3 BDF51E                  JSR     PDATA1
- EBC6 F7DF91                  STB     TEMP
- EBC9 8EDF91                  LDX     #TEMP
- EBCC BDF5B3                  JSR     OUT2HS     ; error No.'x', at
- EBCF 8EEB64                  LDX     #ERR2
- EBD2 BDF51E                  JSR     PDATA1
- EBD5 8EDF8F                  LDX     #TRACK
- EBD8 BDF5B1                  JSR     OUT4HS     ; 'track/sector'
- EBDB 20B0                    BRA     TDLOOP     ; continue
+ EB76 8EEB32          TD      LDX     #TDMES
+ EB79 BDF51E                  JSR     PDATA1
+ EB7C BDF58C                  JSR     INHEX      ; get drive No
+ EB7F B7DF8E                  STA     DRIVE
+ EB82 8EEB50                  LDX     #TDMES1
+ EB85 BDF525                  JSR     PSTRNG
+ EB88 8EDF8B                  LDX     #(DRIVE-3)
+ EB8B BDF4AE                  JSR     RST
+ EB8E BDF5BA          TDLOOP  JSR     RANDOM     ; get a random No
+ EB91 840F                    ANDA    #$0F       ; 15 max
+ EB93 8B01                    ADDA    #1         ; >0
+ EB95 810A                    CMPA    #10        ; >10 ?
+ EB97 2EF5                    BGT     TDLOOP     ; yes,get another
+ EB99 B7DF90                  STA     SECTOR     ; else,store it
+ EB9C BDF5BA          TDLP2   JSR     RANDOM     ; get a random No
+ EB9F 843F                    ANDA    #$3F       ; 63 max
+ EBA1 8127                    CMPA    #39        ; >39 ?
+ EBA3 2EF7                    BGT     TDLP2      ; yes,get another
+ EBA5 B7DF8F                  STA     TRACK      ; else,set random
+ EBA8 F6DF90                  LDB     SECTOR     ; track and sector
+ EBAB 8EDE80                  LDX     #BUFFER
+ EBAE BDF4A2                  JSR     READ       ; read into buffer
+ EBB1 260E                    BNE     TDLP9      ; read error if <> 0
+ EBB3 BDF131                  JSR     STATUS     ; key pressed ?
+ EBB6 27D6                    BEQ     TDLOOP     ; no,continue
+ EBB8 8EDF8B                  LDX     #(DRIVE-3) ; yes,
+ EBBB BDF4AE                  JSR     RST        ; restore to 00
+ EBBE 7EF0DF                  JMP     CONTRL     ; and abort
+ EBC1 8EE8CE          TDLP9   LDX     #ERR1      ; report ----
+ EBC4 BDF51E                  JSR     PDATA1
+ EBC7 F7DF91                  STB     TEMP
+ EBCA 8EDF91                  LDX     #TEMP
+ EBCD BDF5B3                  JSR     OUT2HS     ; error No.'x', at
+ EBD0 8EEB65                  LDX     #ERR2
+ EBD3 BDF51E                  JSR     PDATA1
+ EBD6 8EDF8F                  LDX     #TRACK
+ EBD9 BDF5B1                  JSR     OUT4HS     ; 'track/sector'
+ EBDC 20B0                    BRA     TDLOOP     ; continue
                       ;*
                       ;* Test drive stepping.
- EBDD 0D546573742073  TSMESS  FCB     $0D,"Test stepping on drive ",4
- EBE4 74657070696E67
- EBEB 206F6E20647269
- EBF2 76652004
+ EBDE 0D546573742073  TSMESS  FCB     $0D,"Test stepping on drive ",4
+ EBE5 74657070696E67
+ EBEC 206F6E20647269
+ EBF3 76652004
 
- EBF6 8EEBDD          TS      LDX     #TSMESS
- EBF9 BDF51E                  JSR     PDATA1
- EBFC BDF58C                  JSR     INHEX      ; get drive No
- EBFF B7DF8E                  STA     DRIVE
- EC02 8EDF8B                  LDX     #(DRIVE-3)
- EC05 BDF4B7                  JSR     DRV        ; select drive
- EC08 8628            TSLOOP  LDA     #40        ; track 40,sector 1
- EC0A C601                    LDB     #1
- EC0C BDF50B                  JSR     SEEK
- EC0F BDF4AE                  JSR     RST        ; restore to 00
- EC12 BDF131                  JSR     STATUS     ; key pressed ?
- EC15 102604C6                LBNE    CONTRL     ; yes,abort
- EC19 20ED                    BRA     TSLOOP     ; no,do it again
+ EBF7 8EEBDE          TS      LDX     #TSMESS
+ EBFA BDF51E                  JSR     PDATA1
+ EBFD BDF58C                  JSR     INHEX      ; get drive No
+ EC00 B7DF8E                  STA     DRIVE
+ EC03 8EDF8B                  LDX     #(DRIVE-3)
+ EC06 BDF4B7                  JSR     DRV        ; select drive
+ EC09 8628            TSLOOP  LDA     #40        ; track 40,sector 1
+ EC0B C601                    LDB     #1
+ EC0D BDF50B                  JSR     SEEK
+ EC10 BDF4AE                  JSR     RST        ; restore to 00
+ EC13 BDF131                  JSR     STATUS     ; key pressed ?
+ EC16 102604C5                LBNE    CONTRL     ; yes,abort
+ EC1A 20ED                    BRA     TSLOOP     ; no,do it again
                       ;*
                       ;*
                       ;********************************************
@@ -1365,327 +1365,327 @@
                       ;********************************************
                       ;* LIB COMMANDS
                       ;* Boot Flex from floppy 0 regardless of allocation
- EC1B 7FDF9D          BF      CLR     DDSTAB     ; set Drv.0=floppy 0
- EC1E 16F707                  LBRA    BO         ; jump to loader
- EC21 7EF0DF                  JMP     CONTRL     ; this appears to be redundant ?
+ EC1C 7FDF9D          BF      CLR     DDSTAB     ; set Drv.0=floppy 0
+ EC1F 16F707                  LBRA    BO         ; jump to loader
+ EC22 7EF0DF                  JMP     CONTRL     ; this appears to be redundant ?
                       ;*
                       ;* Display RTC non volatile data
- EC24 0D              DCMES   FCB     $0D
- EC25 446973706C6179          FCC     "Display RTC contents."
- EC2C 2052544320636F
- EC33 6E74656E74732E
- EC3A 04                      FCB     $04
+ EC25 0D              DCMES   FCB     $0D
+ EC26 446973706C6179          FCC     "Display RTC contents."
+ EC2D 2052544320636F
+ EC34 6E74656E74732E
+ EC3B 04                      FCB     $04
 
- EC3B 8EEC24          DC      LDX     #DCMES     ; print header
- EC3E BDF51E                  JSR     PDATA1
- EC41 BDF512                  JSR     PCRLF
- EC44 5F                      CLRB               ; point to 1st byte
- EC45 8E000E                  LDX     #$000E
- EC48 8D2B                    BSR     PBLIN      ; time, date & regs (14 bytes)
- EC4A 8E0001                  LDX     #$0001
- EC4D 8D26                    BSR     PBLIN      ; configuration SW (1byte)
- EC4F 8E0001                  LDX     #$0001
- EC52 8D21                    BSR     PBLIN      ; baudrates (1 byte)
- EC54 8E0004                  LDX     #$0004
- EC57 8D1C                    BSR     PBLIN      ; disc allocations (4 bytes)
- EC59 8E000B                  LDX     #$000B
- EC5C 8D17                    BSR     PBLIN      ; ttyset (11 bytes)
- EC5E 8E0002                  LDX     #$0002
- EC61 8D12                    BSR     PBLIN      ; asn (2 bytes)
- EC63 8E0008                  LDX     #$0008
- EC66 8D0D                    BSR     PBLIN      ; GDC defaults (8 bytes)
- EC68 8E0007                  LDX     #$0007
- EC6B 8D08                    BSR     PBLIN      ; reserved (7 bytes)
- EC6D 8E0010                  LDX     #$0010
- EC70 8D03                    BSR     PBLIN      ; not used (16 bytes available)
- EC72 7EF0DF                  JMP     CONTRL
+ EC3C 8EEC25          DC      LDX     #DCMES     ; print header
+ EC3F BDF51E                  JSR     PDATA1
+ EC42 BDF512                  JSR     PCRLF
+ EC45 5F                      CLRB               ; point to 1st byte
+ EC46 8E000E                  LDX     #$000E
+ EC49 8D2B                    BSR     PBLIN      ; time, date & regs (14 bytes)
+ EC4B 8E0001                  LDX     #$0001
+ EC4E 8D26                    BSR     PBLIN      ; configuration SW (1byte)
+ EC50 8E0001                  LDX     #$0001
+ EC53 8D21                    BSR     PBLIN      ; baudrates (1 byte)
+ EC55 8E0004                  LDX     #$0004
+ EC58 8D1C                    BSR     PBLIN      ; disc allocations (4 bytes)
+ EC5A 8E000B                  LDX     #$000B
+ EC5D 8D17                    BSR     PBLIN      ; ttyset (11 bytes)
+ EC5F 8E0002                  LDX     #$0002
+ EC62 8D12                    BSR     PBLIN      ; asn (2 bytes)
+ EC64 8E0008                  LDX     #$0008
+ EC67 8D0D                    BSR     PBLIN      ; GDC defaults (8 bytes)
+ EC69 8E0007                  LDX     #$0007
+ EC6C 8D08                    BSR     PBLIN      ; reserved (7 bytes)
+ EC6E 8E0010                  LDX     #$0010
+ EC71 8D03                    BSR     PBLIN      ; not used (16 bytes available)
+ EC73 7EF0DF                  JMP     CONTRL
                       ;*
                       ;* Prints a line of bytes
- EC75 BDF5EA          PBLIN   JSR     GETRTC     ; get byte
- EC78 5C                      INCB               ; point to next
- EC79 B7DF91                  STA     TEMP
- EC7C 3410                    PSHS    X
- EC7E 8EDF91                  LDX     #TEMP      ; output bytes
- EC81 BDF5B3                  JSR     OUT2HS
- EC84 3510                    PULS    X
- EC86 301F                    LEAX    -$01,X
- EC88 26EB                    BNE     PBLIN      ; until line finished
- EC8A BDF512                  JSR     PCRLF
- EC8D 39                      RTS
+ EC76 BDF5EA          PBLIN   JSR     GETRTC     ; get byte
+ EC79 5C                      INCB               ; point to next
+ EC7A B7DF91                  STA     TEMP
+ EC7D 3410                    PSHS    X
+ EC7F 8EDF91                  LDX     #TEMP      ; output bytes
+ EC82 BDF5B3                  JSR     OUT2HS
+ EC85 3510                    PULS    X
+ EC87 301F                    LEAX    -$01,X
+ EC89 26EB                    BNE     PBLIN      ; until line finished
+ EC8B BDF512                  JSR     PCRLF
+ EC8E 39                      RTS
                       ;*
                       ;* Modify RTC non volatile data
- EC8E 0D              MCMES   FCB     $0D
- EC8F 52544320657861          FCC     "RTC examine and alter"
- EC96 6D696E6520616E
- EC9D 6420616C746572
- ECA4 2066726F6D20            FCC     " from "
- ECAA 04                      FCB     $04
+ EC8F 0D              MCMES   FCB     $0D
+ EC90 52544320657861          FCC     "RTC examine and alter"
+ EC97 6D696E6520616E
+ EC9E 6420616C746572
+ ECA5 2066726F6D20            FCC     " from "
+ ECAB 04                      FCB     $04
 
- ECAB 8EEC8E          MC      LDX     #MCMES
- ECAE BDF51E                  JSR     PDATA1     ; print header
- ECB1 BDF567                  JSR     BYTE       ; input offset
- ECB4 1F89                    TFR     A,B
- ECB6 C43F            MC1     ANDB    #$3F
- ECB8 BDF512                  JSR     PCRLF
- ECBB F7DF91                  STB     TEMP
- ECBE 8EDF91                  LDX     #TEMP
- ECC1 BDF5B3                  JSR     OUT2HS     ; print offset
- ECC4 BDF5EA                  JSR     GETRTC     ; get that byte
- ECC7 B7DF91                  STA     TEMP
- ECCA 8EDF91                  LDX     #TEMP
- ECCD BDF5A9                  JSR     OUT2H      ; and print it
- ECD0 BDF16C                  JSR     INCH       ; input a char
- ECD3 8120                    CMPA    #$20       ; was it a space ?
- ECD5 2609                    BNE     MC2
- ECD7 BDF567                  JSR     BYTE       ; yes,input a byte
- ECDA BDF608                  JSR     PUTRTC     ; put in RTC
- ECDD 5C                      INCB               ; point to next
- ECDE 20D6                    BRA     MC1        ; and jump to it
- ECE0 810D            MC2     CMPA    #$0D       ; was it <cr> ?
- ECE2 2603                    BNE     MC3
- ECE4 5C                      INCB               ; yes,point to next
- ECE5 20CF                    BRA     MC1
- ECE7 812D            MC3     CMPA    #$2D       ; was it a '-' ?
- ECE9 102603F2                LBNE    CONTRL     ; no,exit
- ECED 5A                      DECB               ; yes,backpeddle 1
- ECEE 20C6                    BRA     MC1
+ ECAC 8EEC8F          MC      LDX     #MCMES
+ ECAF BDF51E                  JSR     PDATA1     ; print header
+ ECB2 BDF567                  JSR     BYTE       ; input offset
+ ECB5 1F89                    TFR     A,B
+ ECB7 C43F            MC1     ANDB    #$3F
+ ECB9 BDF512                  JSR     PCRLF
+ ECBC F7DF91                  STB     TEMP
+ ECBF 8EDF91                  LDX     #TEMP
+ ECC2 BDF5B3                  JSR     OUT2HS     ; print offset
+ ECC5 BDF5EA                  JSR     GETRTC     ; get that byte
+ ECC8 B7DF91                  STA     TEMP
+ ECCB 8EDF91                  LDX     #TEMP
+ ECCE BDF5A9                  JSR     OUT2H      ; and print it
+ ECD1 BDF16C                  JSR     INCH       ; input a char
+ ECD4 8120                    CMPA    #$20       ; was it a space ?
+ ECD6 2609                    BNE     MC2
+ ECD8 BDF567                  JSR     BYTE       ; yes,input a byte
+ ECDB BDF608                  JSR     PUTRTC     ; put in RTC
+ ECDE 5C                      INCB               ; point to next
+ ECDF 20D6                    BRA     MC1        ; and jump to it
+ ECE1 810D            MC2     CMPA    #$0D       ; was it <cr> ?
+ ECE3 2603                    BNE     MC3
+ ECE5 5C                      INCB               ; yes,point to next
+ ECE6 20CF                    BRA     MC1
+ ECE8 812D            MC3     CMPA    #$2D       ; was it a '-' ?
+ ECEA 102603F1                LBNE    CONTRL     ; no,exit
+ ECEE 5A                      DECB               ; yes,backpeddle 1
+ ECEF 20C6                    BRA     MC1
                       ;*
                       ;* Find byte string [There is a BUG in this routine ?]
                       ;*
- ECF0 0D              FIMES   FCB     $0D
- ECF1 46696E64206279          FCC     "Find byte string from"
- ECF8 74652073747269
- ECFF 6E672066726F6D
- ED06 20                      FCC     " "
- ED07 04                      FCB     $04
- ED08 0D0A            EBSMS   FCB     $0D,$0A
- ED0A 656E7465722062          FCC     "enter byte string  "
- ED11 79746520737472
- ED18 696E672020
- ED1D 04                      FCB     $04
+ ECF1 0D              FIMES   FCB     $0D
+ ECF2 46696E64206279          FCC     "Find byte string from"
+ ECF9 74652073747269
+ ED00 6E672066726F6D
+ ED07 20                      FCC     " "
+ ED08 04                      FCB     $04
+ ED09 0D0A            EBSMS   FCB     $0D,$0A
+ ED0B 656E7465722062          FCC     "enter byte string  "
+ ED12 79746520737472
+ ED19 696E672020
+ ED1E 04                      FCB     $04
                       ;* Get start & end addresses and load the string templet
- ED1E 8EECF0          FI      LDX     #FIMES
- ED21 BDF51E                  JSR     PDATA1
- ED24 BDF55C                  JSR     BADDR      ; input 'from'
- ED27 BFDF94                  STX     YTEMP      ; store it
- ED2A 8EE473                  LDX     #TOS
- ED2D BDF51E                  JSR     PDATA1
- ED30 BDF55C                  JSR     BADDR      ; input 'to'
- ED33 BFDF96                  STX     TTO        ; store it
- ED36 8EED08                  LDX     #EBSMS
- ED39 BDF51E                  JSR     PDATA1
- ED3C 8EDE80                  LDX     #BUFFER
- ED3F 5F                      CLRB               ; clr. count
- ED40 BDF567          FI1     JSR     BYTE       ; input a byte
- ED43 A780                    STA     ,X+        ; put in buffer
- ED45 5C                      INCB               ; inc. count
- ED46 BDF16C                  JSR     INCH       ; input a char
- ED49 8120                    CMPA    #$20       ; was it a space ?
- ED4B 27F3                    BEQ     FI1        ; yes,get next byte
+ ED1F 8EECF1          FI      LDX     #FIMES
+ ED22 BDF51E                  JSR     PDATA1
+ ED25 BDF55C                  JSR     BADDR      ; input 'from'
+ ED28 BFDF94                  STX     YTEMP      ; store it
+ ED2B 8EE474                  LDX     #TOS
+ ED2E BDF51E                  JSR     PDATA1
+ ED31 BDF55C                  JSR     BADDR      ; input 'to'
+ ED34 BFDF96                  STX     TTO        ; store it
+ ED37 8EED09                  LDX     #EBSMS
+ ED3A BDF51E                  JSR     PDATA1
+ ED3D 8EDE80                  LDX     #BUFFER
+ ED40 5F                      CLRB               ; clr. count
+ ED41 BDF567          FI1     JSR     BYTE       ; input a byte
+ ED44 A780                    STA     ,X+        ; put in buffer
+ ED46 5C                      INCB               ; inc. count
+ ED47 BDF16C                  JSR     INCH       ; input a char
+ ED4A 8120                    CMPA    #$20       ; was it a space ?
+ ED4C 27F3                    BEQ     FI1        ; yes,get next byte
                       ;* Search for a match with the templet
- ED4D F7DF91                  STB     TEMP       ; length of templet
- ED50 BEDF94                  LDX     YTEMP      ; point to start adr
- ED53 108EDE80                LDY     #BUFFER    ; & start of templet
- ED57 A680            FI2     LDA     ,X+        ; compare charater
- ED59 A1A0                    CMPA    ,Y+
- ED5B 2608                    BNE     FI3        ; no match, branch
- ED5D 5A                      DECB               ; end of string ?
- ED5E 26F7                    BNE     FI2        ; no, try next char
- ED60 BDF512                  JSR     PCRLF      ; yes,do CRLF
- ED63 8D11                    BSR     FI5        ; print out result
- ED65 F6DF91          FI3     LDB     TEMP       ; reset count
- ED68 108EDE80                LDY     #BUFFER    ; point to 1st char
- ED6C BCDF96                  CMPX    TTO        ; end of search block ?
- ED6F 2702                    BEQ     FI4        ; yes,exit
+ ED4E F7DF91                  STB     TEMP       ; length of templet
+ ED51 BEDF94                  LDX     YTEMP      ; point to start adr
+ ED54 108EDE80                LDY     #BUFFER    ; & start of templet
+ ED58 A680            FI2     LDA     ,X+        ; compare charater
+ ED5A A1A0                    CMPA    ,Y+
+ ED5C 2608                    BNE     FI3        ; no match, branch
+ ED5E 5A                      DECB               ; end of string ?
+ ED5F 26F7                    BNE     FI2        ; no, try next char
+ ED61 BDF512                  JSR     PCRLF      ; yes,do CRLF
+ ED64 8D11                    BSR     FI5        ; print out result
+ ED66 F6DF91          FI3     LDB     TEMP       ; reset count
+ ED69 108EDE80                LDY     #BUFFER    ; point to 1st char
+ ED6D BCDF96                  CMPX    TTO        ; end of search block ?
+ ED70 2702                    BEQ     FI4        ; yes,exit
                       ;* BUG here. Should LEAX -1,X first...
- ED71 20E4                    BRA     FI2        ; no,continue search
- ED73 7EF0DF          FI4     JMP     CONTRL
+ ED72 20E4                    BRA     FI2        ; no,continue search
+ ED74 7EF0DF          FI4     JMP     CONTRL
                       ;* Print results (if any)
- ED76 3436            FI5     PSHS    Y,X,D
- ED78 B6DF91                  LDA     TEMP       ; get length of string
- ED7B 40                      NEGA
- ED7C 3086                    LEAX    A,X        ; sub.from current adr
- ED7E 1F12                    TFR     X,Y        ; copy to Y
- ED80 313A                    LEAY    -$06,Y     ; Y points to string-6
- ED82 BFDF92                  STX     XTEMP
- ED85 8EDF92                  LDX     #XTEMP     ; get addr.of string
- ED88 BDF5B1                  JSR     OUT4HS     ; print it
- ED8B 1F21                    TFR     Y,X        ; point to string-6
- ED8D C610                    LDB     #$10       ; print out 16 bytes
- ED8F A6A0            FI6     LDA     ,Y+
- ED91 B7DF92                  STA     XTEMP
- ED94 8EDF92                  LDX     #XTEMP
- ED97 BDF5B3                  JSR     OUT2HS
- ED9A 5A                      DECB
- ED9B 26F2                    BNE     FI6
- ED9D BDF5B5                  JSR     OUTS       ; followed by 2 spaces
- EDA0 BDF5B5                  JSR     OUTS
- EDA3 3130                    LEAY    -$10,Y     ; back to string-6
- EDA5 C610                    LDB     #$10       ; now print ascii
- EDA7 A6A0            FI7     LDA     ,Y+
- EDA9 8120                    CMPA    #$20       ; is it printable ?
- EDAB 2C02                    BGE     FI8        ; yes,print it
- EDAD 862E                    LDA     #$2E       ; no,substitute dot
- EDAF BDF16E          FI8     JSR     OUTCH
- EDB2 5A                      DECB
- EDB3 26F2                    BNE     FI7
- EDB5 35B6                    PULS    PC,Y,X,D
+ ED77 3436            FI5     PSHS    Y,X,D
+ ED79 B6DF91                  LDA     TEMP       ; get length of string
+ ED7C 40                      NEGA
+ ED7D 3086                    LEAX    A,X        ; sub.from current adr
+ ED7F 1F12                    TFR     X,Y        ; copy to Y
+ ED81 313A                    LEAY    -$06,Y     ; Y points to string-6
+ ED83 BFDF92                  STX     XTEMP
+ ED86 8EDF92                  LDX     #XTEMP     ; get addr.of string
+ ED89 BDF5B1                  JSR     OUT4HS     ; print it
+ ED8C 1F21                    TFR     Y,X        ; point to string-6
+ ED8E C610                    LDB     #$10       ; print out 16 bytes
+ ED90 A6A0            FI6     LDA     ,Y+
+ ED92 B7DF92                  STA     XTEMP
+ ED95 8EDF92                  LDX     #XTEMP
+ ED98 BDF5B3                  JSR     OUT2HS
+ ED9B 5A                      DECB
+ ED9C 26F2                    BNE     FI6
+ ED9E BDF5B5                  JSR     OUTS       ; followed by 2 spaces
+ EDA1 BDF5B5                  JSR     OUTS
+ EDA4 3130                    LEAY    -$10,Y     ; back to string-6
+ EDA6 C610                    LDB     #$10       ; now print ascii
+ EDA8 A6A0            FI7     LDA     ,Y+
+ EDAA 8120                    CMPA    #$20       ; is it printable ?
+ EDAC 2C02                    BGE     FI8        ; yes,print it
+ EDAE 862E                    LDA     #$2E       ; no,substitute dot
+ EDB0 BDF16E          FI8     JSR     OUTCH
+ EDB3 5A                      DECB
+ EDB4 26F2                    BNE     FI7
+ EDB6 35B6                    PULS    PC,Y,X,D
                       ;*
                       ;* Set baud Rate
                       ;*
- EDB7 0D              SBMES   FCB     $0D
- EDB8 53657420626175          FCC     "Set baud rate for acia "
- EDBF 64207261746520
- EDC6 666F7220616369
- EDCD 6120
- EDCF 04                      FCB     $04
- EDD0 20626175642072  SBRMS   FCC     " baud rate = "
- EDD7 617465203D20
- EDDD 04                      FCB     $04
- EDDE 20426175642072  EBRNK   FCC     " Baud rate not known."
- EDE5 617465206E6F74
- EDEC 206B6E6F776E2E
- EDF3 04                      FCB     $04
+ EDB8 0D              SBMES   FCB     $0D
+ EDB9 53657420626175          FCC     "Set baud rate for acia "
+ EDC0 64207261746520
+ EDC7 666F7220616369
+ EDCE 6120
+ EDD0 04                      FCB     $04
+ EDD1 20626175642072  SBRMS   FCC     " baud rate = "
+ EDD8 617465203D20
+ EDDE 04                      FCB     $04
+ EDDF 20426175642072  EBRNK   FCC     " Baud rate not known."
+ EDE6 617465206E6F74
+ EDED 206B6E6F776E2E
+ EDF4 04                      FCB     $04
 
- EDF4 8EEDB7          SB      LDX     #SBMES
- EDF7 BDF51E                  JSR     PDATA1
- EDFA BDF58C                  JSR     INHEX      ; get acia No
- EDFD 8401                    ANDA    #$01       ; NB.if acia2,A=0
- EDFF B7DF91                  STA     TEMP       ; store it
- EE02 8EEDD0                  LDX     #SBRMS     ; ask for baud rate
- EE05 BDF51E                  JSR     PDATA1
- EE08 BDF16C                  JSR     INCH       ; input first 2 digits
- EE0B 1F89                    TFR     A,B        ; (ascii/decimal),of
- EE0D BDF16C                  JSR     INCH       ; reqd.baud rate
- EE10 1E89                    EXG     A,B        ; put them in order
- EE12 1E02                    EXG     D,Y        ; and store in Y
- EE14 8EEE76                  LDX     #TBAUD     ; use look-up table
- EE17 10AC84          SB1     CMPY    ,X         ; found it ?
- EE1A 2710                    BEQ     SB2
- EE1C 3006                    LEAX    $06,X      ; no,try next
- EE1E 8CEED0                  CMPX    #EBAUD
- EE21 26F4                    BNE     SB1        ; all tried ?
- EE23 8EEDDE                  LDX     #EBRNK     ; yes,error exit
- EE26 BDF51E                  JSR     PDATA1
- EE29 7EF0DF                  JMP     CONTRL
- EE2C A602            SB2     LDA     $02,X      ; print out last 3 digits
- EE2E BDF16E                  JSR     OUTCH      ; of baud rate
- EE31 A603                    LDA     $03,X
- EE33 BDF16E                  JSR     OUTCH
- EE36 A604                    LDA     $04,X
- EE38 BDF16E                  JSR     OUTCH
- EE3B A605                    LDA     $05,X      ; pick-up RTC code and set baud rate
- EE3D 8EFF0C                  LDX     #BAUD      ; select register for
- EE40 F6DF91                  LDB     TEMP       ; nominated acia
- EE43 F7DF92                  STB     XTEMP
- EE46 3A                      ABX
- EE47 A784                    STA     ,X         ; load code
- EE49 B7DF91                  STA     TEMP       ; save code
- EE4C C60F                    LDB     #$0F       ; get existing RTC
- EE4E BDF5EA                  JSR     GETRTC
- EE51 7DDF92                  TST     XTEMP      ; which acia ?
- EE54 2607                    BNE     SB3        ; acia1,branch
- EE56 84F0                    ANDA    #$F0       ; erase acia2 code
- EE58 BBDF91                  ADDA    TEMP       ; subs. new code
- EE5B 2011                    BRA     SB4        ; go put in clock
- EE5D F6DF91          SB3     LDB     TEMP       ; was acia1. get code
- EE60 58                      ASLB               ; shift into high nibble
- EE61 58                      ASLB
+ EDF5 8EEDB8          SB      LDX     #SBMES
+ EDF8 BDF51E                  JSR     PDATA1
+ EDFB BDF58C                  JSR     INHEX      ; get acia No
+ EDFE 8401                    ANDA    #$01       ; NB.if acia2,A=0
+ EE00 B7DF91                  STA     TEMP       ; store it
+ EE03 8EEDD1                  LDX     #SBRMS     ; ask for baud rate
+ EE06 BDF51E                  JSR     PDATA1
+ EE09 BDF16C                  JSR     INCH       ; input first 2 digits
+ EE0C 1F89                    TFR     A,B        ; (ascii/decimal),of
+ EE0E BDF16C                  JSR     INCH       ; reqd.baud rate
+ EE11 1E89                    EXG     A,B        ; put them in order
+ EE13 1E02                    EXG     D,Y        ; and store in Y
+ EE15 8EEE77                  LDX     #TBAUD     ; use look-up table
+ EE18 10AC84          SB1     CMPY    ,X         ; found it ?
+ EE1B 2710                    BEQ     SB2
+ EE1D 3006                    LEAX    $06,X      ; no,try next
+ EE1F 8CEED1                  CMPX    #EBAUD
+ EE22 26F4                    BNE     SB1        ; all tried ?
+ EE24 8EEDDF                  LDX     #EBRNK     ; yes,error exit
+ EE27 BDF51E                  JSR     PDATA1
+ EE2A 7EF0DF                  JMP     CONTRL
+ EE2D A602            SB2     LDA     $02,X      ; print out last 3 digits
+ EE2F BDF16E                  JSR     OUTCH      ; of baud rate
+ EE32 A603                    LDA     $03,X
+ EE34 BDF16E                  JSR     OUTCH
+ EE37 A604                    LDA     $04,X
+ EE39 BDF16E                  JSR     OUTCH
+ EE3C A605                    LDA     $05,X      ; pick-up RTC code and set baud rate
+ EE3E 8EFF0C                  LDX     #BAUD      ; select register for
+ EE41 F6DF91                  LDB     TEMP       ; nominated acia
+ EE44 F7DF92                  STB     XTEMP
+ EE47 3A                      ABX
+ EE48 A784                    STA     ,X         ; load code
+ EE4A B7DF91                  STA     TEMP       ; save code
+ EE4D C60F                    LDB     #$0F       ; get existing RTC
+ EE4F BDF5EA                  JSR     GETRTC
+ EE52 7DDF92                  TST     XTEMP      ; which acia ?
+ EE55 2607                    BNE     SB3        ; acia1,branch
+ EE57 84F0                    ANDA    #$F0       ; erase acia2 code
+ EE59 BBDF91                  ADDA    TEMP       ; subs. new code
+ EE5C 2011                    BRA     SB4        ; go put in clock
+ EE5E F6DF91          SB3     LDB     TEMP       ; was acia1. get code
+ EE61 58                      ASLB               ; shift into high nibble
  EE62 58                      ASLB
  EE63 58                      ASLB
- EE64 C4F0                    ANDB    #$F0
- EE66 840F                    ANDA    #$0F       ; erase acia1 code
- EE68 F7DF91                  STB     TEMP
- EE6B BBDF91                  ADDA    TEMP       ; subs. new code
- EE6E C60F            SB4     LDB     #$0F       ; store in RTC
- EE70 BDF608                  JSR     PUTRTC
- EE73 7EF0DF                  JMP     CONTRL
+ EE64 58                      ASLB
+ EE65 C4F0                    ANDB    #$F0
+ EE67 840F                    ANDA    #$0F       ; erase acia1 code
+ EE69 F7DF91                  STB     TEMP
+ EE6C BBDF91                  ADDA    TEMP       ; subs. new code
+ EE6F C60F            SB4     LDB     #$0F       ; store in RTC
+ EE71 BDF608                  JSR     PUTRTC
+ EE74 7EF0DF                  JMP     CONTRL
                       * Look-up table
- EE76 3530202020      TBAUD   FCC     "50   "
- EE7B 00                      FCB     $00
- EE7C 3735202020              FCC     "75   "
- EE81 01                      FCB     $01
- EE82 3131302020              FCC     "110  "
- EE87 02                      FCB     $02
- EE88 3133352020              FCC     "135  "
- EE8D 03                      FCB     $03
- EE8E 3135302020              FCC     "150  "
- EE93 04                      FCB     $04
- EE94 3330302020              FCC     "300  "
- EE99 06                      FCB     $06
- EE9A 3630302020              FCC     "600  "
- EE9F 07                      FCB     $07
- EEA0 3132303020              FCC     "1200 "
- EEA5 08                      FCB     $08
- EEA6 3138303020              FCC     "1800 "
- EEAB 09                      FCB     $09
- EEAC 3234303020              FCC     "2400 "
- EEB1 0A                      FCB     $0A
- EEB2 3336303020              FCC     "3600 "
- EEB7 0B                      FCB     $0B
- EEB8 3438303020              FCC     "4800 "
- EEBD 0C                      FCB     $0C
- EEBE 3732303020              FCC     "7200 "
- EEC3 0D                      FCB     $0D
- EEC4 3936303020              FCC     "9600 "
- EEC9 0E                      FCB     $0E
- EECA 3139323030              FCC     "19200"
- EECF 0F                      FCB     $0F
+ EE77 3530202020      TBAUD   FCC     "50   "
+ EE7C 00                      FCB     $00
+ EE7D 3735202020              FCC     "75   "
+ EE82 01                      FCB     $01
+ EE83 3131302020              FCC     "110  "
+ EE88 02                      FCB     $02
+ EE89 3133352020              FCC     "135  "
+ EE8E 03                      FCB     $03
+ EE8F 3135302020              FCC     "150  "
+ EE94 04                      FCB     $04
+ EE95 3330302020              FCC     "300  "
+ EE9A 06                      FCB     $06
+ EE9B 3630302020              FCC     "600  "
+ EEA0 07                      FCB     $07
+ EEA1 3132303020              FCC     "1200 "
+ EEA6 08                      FCB     $08
+ EEA7 3138303020              FCC     "1800 "
+ EEAC 09                      FCB     $09
+ EEAD 3234303020              FCC     "2400 "
+ EEB2 0A                      FCB     $0A
+ EEB3 3336303020              FCC     "3600 "
+ EEB8 0B                      FCB     $0B
+ EEB9 3438303020              FCC     "4800 "
+ EEBE 0C                      FCB     $0C
+ EEBF 3732303020              FCC     "7200 "
+ EEC4 0D                      FCB     $0D
+ EEC5 3936303020              FCC     "9600 "
+ EECA 0E                      FCB     $0E
+ EECB 3139323030              FCC     "19200"
+ EED0 0F                      FCB     $0F
                       ;*
                       ;* Seems to be not used...
                       ;*
- EED0 FF29FFAB0052    EBAUD   FCB     $FF,$29,$FF,$AB,$00,$52  ;EEFE: FF 29 FF AB 00 52 '.)...R'
- EED6 FFA90250FFAB            FCB     $FF,$A9,$02,$50,$FF,$AB  ;EF04: FF A9 02 50 FF AB '...P..'
- EEDC 0012FFAB0210            FCB     $00,$12,$FF,$AB,$02,$10  ;EF0A: 00 12 FF AB 02 10 '......'
- EEE2 FFAB0010FFAB            FCB     $FF,$AB,$00,$10,$FF,$AB  ;EF10: FF AB 00 10 FF AB '......'
- EEE8 0250FFAB0212            FCB     $02,$50,$FF,$AB,$02,$12  ;EF16: 02 50 FF AB 02 12 '.P....'
- EEEE FFAB0050FFA9            FCB     $FF,$AB,$00,$50,$FF,$A9  ;EF1C: FF AB 00 50 FF A9 '...P..'
- EEF4 0252FFAB0050            FCB     $02,$52,$FF,$AB,$00,$50  ;EF22: 02 52 FF AB 00 50 '.R...P'
- EEFA FFA90212FFAB            FCB     $FF,$A9,$02,$12,$FF,$AB  ;EF28: FF A9 02 12 FF AB '......'
- EF00 0250FFEB0010            FCB     $02,$50,$FF,$EB,$00,$10  ;EF2E: 02 50 FF EB 00 10 '.P....'
- EF06 FFAB0010FFAB            FCB     $FF,$AB,$00,$10,$FF,$AB  ;EF34: FF AB 00 10 FF AB '......'
- EF0C 0050FF0B0010            FCB     $00,$50,$FF,$0B,$00,$10  ;EF3A: 00 50 FF 0B 00 10 '.P....'
- EF12 0000FBFF0000            FCB     $00,$00,$FB,$FF,$00,$00  ;EF40: 00 00 FB FF 00 00 '......'
- EF18 FBFF0000FBFF            FCB     $FB,$FF,$00,$00,$FB,$FF  ;EF46: FB FF 00 00 FB FF '......'
- EF1E 0000FBFF0000            FCB     $00,$00,$FB,$FF,$00,$00  ;EF4C: 00 00 FB FF 00 00 '......'
- EF24 FBFF0000FFFF            FCB     $FB,$FF,$00,$00,$FF,$FF  ;EF52: FB FF 00 00 FF FF '......'
- EF2A 0000FBFF0000            FCB     $00,$00,$FB,$FF,$00,$00  ;EF58: 00 00 FB FF 00 00 '......'
- EF30 FFFF0000FBFF            FCB     $FF,$FF,$00,$00,$FB,$FF  ;EF5E: FF FF 00 00 FB FF '......'
- EF36 0000FFFF0000            FCB     $00,$00,$FF,$FF,$00,$00  ;EF64: 00 00 FF FF 00 00 '......'
- EF3C FBFF0000FBFF            FCB     $FB,$FF,$00,$00,$FB,$FF  ;EF6A: FB FF 00 00 FB FF '......'
- EF42 0000FFFF0000            FCB     $00,$00,$FF,$FF,$00,$00  ;EF70: 00 00 FF FF 00 00 '......'
- EF48 FBFF0000FFFF            FCB     $FB,$FF,$00,$00,$FF,$FF  ;EF76: FB FF 00 00 FF FF '......'
- EF4E 0800FFFFA9FF            FCB     $08,$00,$FF,$FF,$A9,$FF  ;EF7C: 08 00 FF FF A9 FF '......'
- EF54 1000A9FF5000            FCB     $10,$00,$A9,$FF,$50,$00  ;EF82: 10 00 A9 FF 50 00 '....P.'
- EF5A ABFF1000A9FD            FCB     $AB,$FF,$10,$00,$A9,$FD  ;EF88: AB FF 10 00 A9 FD '......'
- EF60 5000A9FF5000            FCB     $50,$00,$A9,$FF,$50,$00  ;EF8E: 50 00 A9 FF 50 00 'P...P.'
- EF66 A9FF5200A9FF            FCB     $A9,$FF,$52,$00,$A9,$FF  ;EF94: A9 FF 52 00 A9 FF '..R...'
- EF6C 5200A9FD5002            FCB     $52,$00,$A9,$FD,$50,$02  ;EF9A: 52 00 A9 FD 50 02 'R...P.'
- EF72 A9FF1200A9FD            FCB     $A9,$FF,$12,$00,$A9,$FD  ;EFA0: A9 FF 12 00 A9 FD '......'
- EF78 1002A9FF5000            FCB     $10,$02,$A9,$FF,$50,$00  ;EFA6: 10 02 A9 FF 50 00 '....P.'
- EF7E A9FD5002A1FF            FCB     $A9,$FD,$50,$02,$A1,$FF  ;EFAC: A9 FD 50 02 A1 FF '..P...'
- EF84 5200A9FD1202            FCB     $52,$00,$A9,$FD,$12,$02  ;EFB2: 52 00 A9 FD 12 02 'R.....'
- EF8A A9FF5200A9FD            FCB     $A9,$FF,$52,$00,$A9,$FD  ;EFB8: A9 FF 52 00 A9 FD '..R...'
- EF90 52020000FFFF            FCB     $52,$02,$00,$00,$FF,$FF  ;EFBE: 52 02 00 00 FF FF 'R.....'
- EF96 0000FFFB0000            FCB     $00,$00,$FF,$FB,$00,$00  ;EFC4: 00 00 FF FB 00 00 '......'
- EF9C FFFB0000FFFB            FCB     $FF,$FB,$00,$00,$FF,$FB  ;EFCA: FF FB 00 00 FF FB '......'
- EFA2 0000FFFB0000            FCB     $00,$00,$FF,$FB,$00,$00  ;EFD0: 00 00 FF FB 00 00 '......'
- EFA8 FFFB0000FFFB            FCB     $FF,$FB,$00,$00,$FF,$FB  ;EFD6: FF FB 00 00 FF FB '......'
- EFAE 0000FFFB0000            FCB     $00,$00,$FF,$FB,$00,$00  ;EFDC: 00 00 FF FB 00 00 '......'
- EFB4 FFFF0000FFFB            FCB     $FF,$FF,$00,$00,$FF,$FB  ;EFE2: FF FF 00 00 FF FB '......'
- EFBA 0000FFFB0000            FCB     $00,$00,$FF,$FB,$00,$00  ;EFE8: 00 00 FF FB 00 00 '......'
- EFC0 FFFB0000FFFB            FCB     $FF,$FB,$00,$00,$FF,$FB  ;EFEE: FF FB 00 00 FF FB '......'
- EFC6 0008FFFB0000            FCB     $00,$08,$FF,$FB,$00,$00  ;EFF4: 00 08 FF FB 00 00 '......'
- EFCC FFFF0038FFC9            FCB     $FF,$FF,$00,$38,$FF,$C9  ;EFFA: FF FF 00 38 FF C9 '...8..'
+ EED1 FF29FFAB0052    EBAUD   FCB     $FF,$29,$FF,$AB,$00,$52  ;EEFE: FF 29 FF AB 00 52 '.)...R'
+ EED7 FFA90250FFAB            FCB     $FF,$A9,$02,$50,$FF,$AB  ;EF04: FF A9 02 50 FF AB '...P..'
+ EEDD 0012FFAB0210            FCB     $00,$12,$FF,$AB,$02,$10  ;EF0A: 00 12 FF AB 02 10 '......'
+ EEE3 FFAB0010FFAB            FCB     $FF,$AB,$00,$10,$FF,$AB  ;EF10: FF AB 00 10 FF AB '......'
+ EEE9 0250FFAB0212            FCB     $02,$50,$FF,$AB,$02,$12  ;EF16: 02 50 FF AB 02 12 '.P....'
+ EEEF FFAB0050FFA9            FCB     $FF,$AB,$00,$50,$FF,$A9  ;EF1C: FF AB 00 50 FF A9 '...P..'
+ EEF5 0252FFAB0050            FCB     $02,$52,$FF,$AB,$00,$50  ;EF22: 02 52 FF AB 00 50 '.R...P'
+ EEFB FFA90212FFAB            FCB     $FF,$A9,$02,$12,$FF,$AB  ;EF28: FF A9 02 12 FF AB '......'
+ EF01 0250FFEB0010            FCB     $02,$50,$FF,$EB,$00,$10  ;EF2E: 02 50 FF EB 00 10 '.P....'
+ EF07 FFAB0010FFAB            FCB     $FF,$AB,$00,$10,$FF,$AB  ;EF34: FF AB 00 10 FF AB '......'
+ EF0D 0050FF0B0010            FCB     $00,$50,$FF,$0B,$00,$10  ;EF3A: 00 50 FF 0B 00 10 '.P....'
+ EF13 0000FBFF0000            FCB     $00,$00,$FB,$FF,$00,$00  ;EF40: 00 00 FB FF 00 00 '......'
+ EF19 FBFF0000FBFF            FCB     $FB,$FF,$00,$00,$FB,$FF  ;EF46: FB FF 00 00 FB FF '......'
+ EF1F 0000FBFF0000            FCB     $00,$00,$FB,$FF,$00,$00  ;EF4C: 00 00 FB FF 00 00 '......'
+ EF25 FBFF0000FFFF            FCB     $FB,$FF,$00,$00,$FF,$FF  ;EF52: FB FF 00 00 FF FF '......'
+ EF2B 0000FBFF0000            FCB     $00,$00,$FB,$FF,$00,$00  ;EF58: 00 00 FB FF 00 00 '......'
+ EF31 FFFF0000FBFF            FCB     $FF,$FF,$00,$00,$FB,$FF  ;EF5E: FF FF 00 00 FB FF '......'
+ EF37 0000FFFF0000            FCB     $00,$00,$FF,$FF,$00,$00  ;EF64: 00 00 FF FF 00 00 '......'
+ EF3D FBFF0000FBFF            FCB     $FB,$FF,$00,$00,$FB,$FF  ;EF6A: FB FF 00 00 FB FF '......'
+ EF43 0000FFFF0000            FCB     $00,$00,$FF,$FF,$00,$00  ;EF70: 00 00 FF FF 00 00 '......'
+ EF49 FBFF0000FFFF            FCB     $FB,$FF,$00,$00,$FF,$FF  ;EF76: FB FF 00 00 FF FF '......'
+ EF4F 0800FFFFA9FF            FCB     $08,$00,$FF,$FF,$A9,$FF  ;EF7C: 08 00 FF FF A9 FF '......'
+ EF55 1000A9FF5000            FCB     $10,$00,$A9,$FF,$50,$00  ;EF82: 10 00 A9 FF 50 00 '....P.'
+ EF5B ABFF1000A9FD            FCB     $AB,$FF,$10,$00,$A9,$FD  ;EF88: AB FF 10 00 A9 FD '......'
+ EF61 5000A9FF5000            FCB     $50,$00,$A9,$FF,$50,$00  ;EF8E: 50 00 A9 FF 50 00 'P...P.'
+ EF67 A9FF5200A9FF            FCB     $A9,$FF,$52,$00,$A9,$FF  ;EF94: A9 FF 52 00 A9 FF '..R...'
+ EF6D 5200A9FD5002            FCB     $52,$00,$A9,$FD,$50,$02  ;EF9A: 52 00 A9 FD 50 02 'R...P.'
+ EF73 A9FF1200A9FD            FCB     $A9,$FF,$12,$00,$A9,$FD  ;EFA0: A9 FF 12 00 A9 FD '......'
+ EF79 1002A9FF5000            FCB     $10,$02,$A9,$FF,$50,$00  ;EFA6: 10 02 A9 FF 50 00 '....P.'
+ EF7F A9FD5002A1FF            FCB     $A9,$FD,$50,$02,$A1,$FF  ;EFAC: A9 FD 50 02 A1 FF '..P...'
+ EF85 5200A9FD1202            FCB     $52,$00,$A9,$FD,$12,$02  ;EFB2: 52 00 A9 FD 12 02 'R.....'
+ EF8B A9FF5200A9FD            FCB     $A9,$FF,$52,$00,$A9,$FD  ;EFB8: A9 FF 52 00 A9 FD '..R...'
+ EF91 52020000FFFF            FCB     $52,$02,$00,$00,$FF,$FF  ;EFBE: 52 02 00 00 FF FF 'R.....'
+ EF97 0000FFFB0000            FCB     $00,$00,$FF,$FB,$00,$00  ;EFC4: 00 00 FF FB 00 00 '......'
+ EF9D FFFB0000FFFB            FCB     $FF,$FB,$00,$00,$FF,$FB  ;EFCA: FF FB 00 00 FF FB '......'
+ EFA3 0000FFFB0000            FCB     $00,$00,$FF,$FB,$00,$00  ;EFD0: 00 00 FF FB 00 00 '......'
+ EFA9 FFFB0000FFFB            FCB     $FF,$FB,$00,$00,$FF,$FB  ;EFD6: FF FB 00 00 FF FB '......'
+ EFAF 0000FFFB0000            FCB     $00,$00,$FF,$FB,$00,$00  ;EFDC: 00 00 FF FB 00 00 '......'
+ EFB5 FFFF0000FFFB            FCB     $FF,$FF,$00,$00,$FF,$FB  ;EFE2: FF FF 00 00 FF FB '......'
+ EFBB 0000FFFB0000            FCB     $00,$00,$FF,$FB,$00,$00  ;EFE8: 00 00 FF FB 00 00 '......'
+ EFC1 FFFB0000FFFB            FCB     $FF,$FB,$00,$00,$FF,$FB  ;EFEE: FF FB 00 00 FF FB '......'
+ EFC7 0008FFFB0000            FCB     $00,$08,$FF,$FB,$00,$00  ;EFF4: 00 08 FF FB 00 00 '......'
+ EFCD FFFF0038FFC9            FCB     $FF,$FF,$00,$38,$FF,$C9  ;EFFA: FF FF 00 38 FF C9 '...8..'
                       ;*
                       ;* Wait 1ms routine
                       ;* Input A = number of ms to wait
- EFD2 C6C8            WAIT1MS LDB     #200
- EFD4 5A              LOOPW   DECB
- EFD5 26FD                    BNE     LOOPW
- EFD7 4A                      DECA
- EFD8 26F8                    BNE     WAIT1MS
- EFDA 39                      RTS
+ EFD3 C6C8            WAIT1MS LDB     #200
+ EFD5 5A              LOOPW   DECB
+ EFD6 26FD                    BNE     LOOPW
+ EFD8 4A                      DECA
+ EFD9 26F8                    BNE     WAIT1MS
+ EFDB 39                      RTS
                       ;*
                       ;*
                              ORG   PROM+$1000
@@ -1819,7 +1819,7 @@
  F0CE B7FF01                 STA   PIA1+1        ; setup keyboard port
  F0D1 8606                   LDA   #$06          ; set Drv 0,SD,and
  F0D3 B7FF02                 STA   SYSREG        ; Rom at $E000
- F0D6 7EE0EB                 JMP   MINIT1        ; do rest of setup
+ F0D6 7EE0EC                 JMP   MINIT1        ; do rest of setup
                       ;* (jump back here)
  F0D9 8EE000          MINITR LDX   #HDR          ; Print header after reset.
  F0DC BDF51E                 JSR   PDATA1
@@ -1827,14 +1827,14 @@
  F0DF B6FF02          CONTRL LDA   SYSREG
  F0E2 8A04                   ORA   #4            ; Map in bottom 4k of eprom.
  F0E4 B7FF02                 STA   SYSREG
- F0E7 8EE027                 LDX   #PROMPT
+ F0E7 8EE028                 LDX   #PROMPT
  F0EA BDF51E                 JSR   PDATA1
  F0ED 8D7D                   BSR   INCH          ; Get two byte command into Y.
  F0EF 1F89                   TFR   A,B
  F0F1 8D79                   BSR   INCH
  F0F3 1E89                   EXG   A,B
  F0F5 1F02                   TFR   D,Y
- F0F7 8EE1FF          PARSE  LDX   #COMTAB       ; Point to start of command table.
+ F0F7 8EE200          PARSE  LDX   #COMTAB       ; Point to start of command table.
  F0FA 10AC81          NEXT   CMPY  ,X++          ; Look for match.
  F0FD 2602                   BNE   NOPE          ; No match.
  F0FF 6E94                   JMP   [,X]          ; Found it, so jump to routine.
@@ -1842,11 +1842,11 @@
  F103 A684                   LDA   ,X            ; Check for end of table.
  F105 81FF                   CMPA  #$FF
  F107 26F1                   BNE   NEXT          ; If not the end then try next entry.
- F109 8EE02C          WHAT   LDX   #NOTTHS       ; No match so print message.
+ F109 8EE02D          WHAT   LDX   #NOTTHS       ; No match so print message.
  F10C BDF51E                 JSR   PDATA1
  F10F 20CE                   BRA   CONTRL
                       *
- F111 8EE040          UNEXP  LDX   #UNMESS       ; Unexpected interrupt ... Don't Panic!
+ F111 8EE041          UNEXP  LDX   #UNMESS       ; Unexpected interrupt ... Don't Panic!
  F114 BDF525                 JSR   PSTRNG
  F117 1A50                   ORCC  #%01010000    ; Set interupt masks.
  F119 7EF08E                 JMP   RESET
@@ -2252,14 +2252,14 @@
  F3B4 35B6                        PULS    A,B,X,Y,PC
                       ;*
                       ;* Wait cf card command ready
- F3B6 8D09            CMDWAIT     BSR     DATWAIT             ; wait data ready
+ F3B6 8D09            CMDWAIT     BSR     DATWAIT             ; status register valid only if busy bit clear
  F3B8 C60F            CWLOOP      LDB     #IDE_STATUS         ; ask status register
  F3BA 8D26                        BSR     READ_IDE
  F3BC 8540                        BITA    #RDYBIT             ; read ready bit
  F3BE 27F8                        BEQ     CWLOOP              ; wait ready bit set
  F3C0 39                          RTS
                       ;*
-                      ;* Wait cf card data ready with time out
+                      ;* Wait cf card data ready
  F3C1 C60F            DATWAIT     LDB     #IDE_STATUS         ; ask status register
  F3C3 8D1D                        BSR     READ_IDE            ; A receive status register
  F3C5 8580                        BITA    #BSYBIT             ; read busy bit
@@ -2368,7 +2368,7 @@
                       ;* Detect and init disk typ 2 & 3 CF on 8255 ide port
  F45F C60E            INIDT2      LDB     #IDE_LBA3           ; set lba3 for master cf
  F461 86E0                        LDA     #LBA3MST
- F463 B7DE7D                      STA     LBA3                ; keep ram table sync
+ F463 B7DE7D                      STA     LBA3                ; sync ram table
  F466 BDF3CA                      JSR     WRT_IDE
 
  F469 CC0000                      LDD     #$0000
@@ -3842,7 +3842,7 @@
  FFF4 F128                      FDB      SWI2                Software interupt two.
  FFF6 F124                      FDB      FIRQ                Fast interupt request.
  FFF8 F120                      FDB      IRQ                 Interupt request.
- FFFA E574                      FDB      SWI                 Software interupt.
+ FFFA E575                      FDB      SWI                 Software interupt.
  FFFC F11C                      FDB      NMI                 Non-maskable interupt.
  FFFE F08E            VCRST     FDB      RESET               Cold start.
                       ;*
@@ -3850,56 +3850,56 @@
                                 END
 
 SYMBOL TABLE
-     ACIA1 00 FF08     ACIA2 00 FF04       ARC 02 FA29   ASCLOOP 02 E60B
+     ACIA1 00 FF08     ACIA2 00 FF04       ARC 02 FA29   ASCLOOP 02 E60C
     ATTOFF 02 FC61     ATTON 02 FC58     ATTRI 00 DFE1     BADDR 02 F55C
-      BAUD 00 FF0C      BEEP 02 F61D        BF 02 EC1B    BLANKD 00 DFFF
-        BO 02 E328       BO1 02 E340       BO2 02 E351       BO3 02 E357
-       BO4 02 E36A       BO5 02 E374     BODIS 02 E320    BOFAIL 02 E37E
-     BOFL1 02 E391     BOFL2 02 E3A1     BOFL3 02 E3B5     BOFL4 02 E3C2
-     BOMES 02 E2FA    BSYBIT 00 0080    BUFFER 02 DE80      BYTE 02 F567
-     CALD1 02 E478    CALDIS 02 E455       CCR 02 FC36      CCT2 02 FBA2
-     CCT2G 02 FB8B        CD 02 E4A0       CD1 02 E4CB     CDOWN 02 FC17
-     CFMST 02 E094     CFSLV 02 E0A7    CHKDRQ 02 F435    CHKDT2 02 F43E
+      BAUD 00 FF0C      BEEP 02 F61D        BF 02 EC1C    BLANKD 00 DFFF
+        BO 02 E329       BO1 02 E341       BO2 02 E352       BO3 02 E358
+       BO4 02 E36B       BO5 02 E375     BODIS 02 E321    BOFAIL 02 E37F
+     BOFL1 02 E392     BOFL2 02 E3A2     BOFL3 02 E3B6     BOFL4 02 E3C3
+     BOMES 02 E2FB    BSYBIT 00 0080    BUFFER 02 DE80      BYTE 02 F567
+     CALD1 02 E479    CALDIS 02 E456       CCR 02 FC36      CCT2 02 FBA2
+     CCT2G 02 FB8B        CD 02 E4A1       CD1 02 E4CC     CDOWN 02 FC17
+     CFMST 02 E095     CFSLV 02 E0A8    CHKDRQ 02 F435    CHKDT2 02 F43E
     CHKRDY 02 F4E7    CHKVEC 02 DFAB     CHOME 02 FC33    CINCHN 00 D3E5
     CIRCLE 02 F9D8     CLEAR 02 F87C    CLEART 02 FAC2    CLEARX 02 F89E
      CLEF1 02 FC0A     CLEFT 02 FC01     CLIN1 02 FCED     CLINE 02 FCD6
      CLINK 02 FAF1    CLR_R0 00 FFD6    CLR_R1 00 FFD8     CLTXT 02 FAEF
    CMDWAIT 02 F3B6     CMOV1 02 FC76     CMOV2 02 FC83     CMOVE 02 FC6A
-       COL 00 DFDA     COLDS 00 CD00    COMREG 00 FF10    COMTAB 02 E1FF
-    CONPRS 02 E4DF     CONST 00 DFD8   CONTINI 02 E1F4    CONTRL 02 F0DF
-        CP 02 E4F6     CPRTC 02 E40F      CRET 02 FC24     CRIG1 02 FC16
+       COL 00 DFDA     COLDS 00 CD00    COMREG 00 FF10    COMTAB 02 E200
+    CONPRS 02 E4E0     CONST 00 DFD8   CONTINI 02 E1F5    CONTRL 02 F0DF
+        CP 02 E4F7     CPRTC 02 E410      CRET 02 FC24     CRIG1 02 FC16
     CRIGHT 02 FC0B     CRLFS 02 F50F     CSETB 02 FD01     CTYPE 00 DFEA
        CUP 02 FC28    CURBOX 02 FC52    CURDRV 00 DFB6    CUROFF 02 FC3A
      CURON 02 FC43    CURSOL 02 FC4C    CURSOR 00 DFE5    CWLOOP 02 F3B8
         D0 00 DFD0        D1 00 DFD1        D2 00 DFD2        D4 00 DFD4
-    DATREG 00 FF13   DATWAIT 02 F3C1        DC 02 EC3B     DCMES 02 EC24
+    DATREG 00 FF13   DATWAIT 02 F3C1        DC 02 EC3C     DCMES 02 EC25
       DDEN 02 F2E1    DDSTAB 02 DF9D     DELAY 02 F542    DELAY1 02 F544
-    DELAY2 02 F551       DEN 00 DFF4      DEN1 00 DFF5        DF 02 E9E9
-     DINIT 02 F4EF    DINIT1 02 F4F0    DINIT2 02 F4FE    DISFOS 02 E9A8
-    DISRES 02 E719        DM 00 DFD6        DN 00 DFCE        DR 02 E75A
-       DR1 02 E760     DRIVE 02 DF8E    DRIVE1 02 F4CC    DRIVE2 02 F4DA
+    DELAY2 02 F551       DEN 00 DFF4      DEN1 00 DFF5        DF 02 E9EA
+     DINIT 02 F4EF    DINIT1 02 F4F0    DINIT2 02 F4FE    DISFOS 02 E9A9
+    DISRES 02 E71A        DM 00 DFD6        DN 00 DFCE        DR 02 E75B
+       DR1 02 E761     DRIVE 02 DF8E    DRIVE1 02 F4CC    DRIVE2 02 F4DA
     DROMSZ 00 DFFB    DRQBIT 00 0008       DRV 02 F4B7    DRVDT2 02 F367
-    DRVERR 02 F389    DRVVEC 02 DFA9     DUMMY 02 F130     EBAUD 02 EED0
-     EBRNK 02 EDDE     EBSMS 02 ED08 ENDDRVDT2 02 F382  ENDIDERW 02 F3F4
-    ENDINI 02 F49A      ERR1 02 E8CD      ERR2 02 EB64    ERRBIT 00 0001
-    ESCFLG 00 DFEB      FAST 02 F341      FCMD 02 F222        FI 02 ED1E
-       FI1 02 ED40       FI2 02 ED57       FI3 02 ED65       FI4 02 ED73
-       FI5 02 ED76       FI6 02 ED8F       FI7 02 EDA7       FI8 02 EDAF
+    DRVERR 02 F389    DRVVEC 02 DFA9     DUMMY 02 F130     EBAUD 02 EED1
+     EBRNK 02 EDDF     EBSMS 02 ED09 ENDDRVDT2 02 F382  ENDIDERW 02 F3F4
+    ENDINI 02 F49A      ERR1 02 E8CE      ERR2 02 EB65    ERRBIT 00 0001
+    ESCFLG 00 DFEB      FAST 02 F341      FCMD 02 F222        FI 02 ED1F
+       FI1 02 ED41       FI2 02 ED58       FI3 02 ED66       FI4 02 ED74
+       FI5 02 ED77       FI6 02 ED90       FI7 02 EDA8       FI8 02 EDB0
      FIGG2 02 F6E0     FIGG3 02 F6F0     FIGS2 02 F6B9     FIGS3 02 F6C7
-     FIGSF 02 F6A9     FIGSG 02 F6CE      FILL 02 F85D    FILMES 02 E501
-     FIMES 02 ECF0      FIRQ 02 F124     FIRQV 02 DF86     FLASH 00 DFFD
-      FLC2 02 FB61     FLCUR 02 FB4A        FM 02 E522       FM1 02 E541
-       FMT 02 EA0D      FMT1 02 EA16      FMT2 02 EA38      FMT3 02 EA7D
-      FMT4 02 EAA4      FMT5 02 EAB0     FROMS 02 E94F      GCOM 02 F641
+     FIGSF 02 F6A9     FIGSG 02 F6CE      FILL 02 F85D    FILMES 02 E502
+     FIMES 02 ECF1      FIRQ 02 F124     FIRQV 02 DF86     FLASH 00 DFFD
+      FLC2 02 FB61     FLCUR 02 FB4A        FM 02 E523       FM1 02 E542
+       FMT 02 EA0E      FMT1 02 EA17      FMT2 02 EA39      FMT3 02 EA7E
+      FMT4 02 EAA5      FMT5 02 EAB1     FROMS 02 E950      GCOM 02 F641
      GCOM1 02 F646     GCOM2 02 F64F     GCRG1 02 F7C8     GCRG2 02 F7D1
      GCRG3 02 F7EB     GCRG4 02 F7F3       GDC 00 FF14     GDCI2 02 F8DB
     GDCINI 02 F8D3     GETA1 02 F193     GETA2 02 F199    GETCRG 02 F7B2
     GETCRT 02 FA85    GETRTC 02 F5EA    GETTIM 02 F5DD     GFIGS 00 DFCD
-     GMODE 00 DFCB     GOFLX 02 E419    GPARAM 00 DFC3     GPCH2 02 FB6B
+     GMODE 00 DFCB     GOFLX 02 E41A    GPARAM 00 DFC3     GPCH2 02 FB6B
      GPCHR 02 FB63      GPRM 02 F653     GPRM2 02 F655     GPRMI 02 F662
-     GRAPH 02 F814     GTIM2 02 F5E1     GZOOM 00 DFCC        HD 02 E5D2
-       HD1 02 E5EF       HD2 02 E5F7       HD3 02 E606       HD4 02 E5DE
-    HDCONT 02 E617    HDMES1 02 E59B       HDR 02 E000    HEXDUS 02 E581
+     GRAPH 02 F814     GTIM2 02 F5E1     GZOOM 00 DFCC        HD 02 E5D3
+       HD1 02 E5F0       HD2 02 E5F8       HD3 02 E607       HD4 02 E5DF
+    HDCONT 02 E618    HDMES1 02 E59C       HDR 02 E000    HEXDUS 02 E582
     IDE_A0 00 0001    IDE_A1 00 0002    IDE_A2 00 0004 IDE_CMD_READ 00 0020
  IDE_CMD_SET_FEAT 00 00EF IDE_CMD_WRITE 00 0030 IDE_COMMAND 00 000F   IDE_CS0 00 0008
    IDE_CS1 00 0010  IDE_DATA 00 0008   IDE_ERR 00 0009 IDE_FEA_16BIT 00 0081
@@ -3908,81 +3908,81 @@ SYMBOL TABLE
  IDE_STATUS 00 000F    IDE_WR 00 0020    IGNORE 02 FC27     ILOOP 02 F473
     ILOOP1 02 F476      INC1 02 F155      INC2 02 F161      INCH 02 F16C
      INCH1 02 F153     INHEX 02 F58C    INHEX1 02 F5A1    INIDT2 02 F45F
-     INIT2 02 E123     INIT3 02 E160     INIT4 02 E18C    INITXT 02 FAF2
+     INIT2 02 E124     INIT3 02 E161     INIT4 02 E18D    INITXT 02 FAF2
     INIVEC 02 DFAF     INKEY 02 F18D        IO 00 FF00     IPORT 02 DF8C
-       IRQ 02 F120      IRQV 02 DF84      IRTC 02 E119     ITRET 02 FB16
-        JF 02 E2A3     JFMES 02 E289        JU 02 E27D     JUMES 02 E268
+       IRQ 02 F120      IRQV 02 DF84      IRTC 02 E11A     ITRET 02 FB16
+        JF 02 E2A4     JFMES 02 E28A        JU 02 E27E     JUMES 02 E269
         L1 02 F09F      LBA0 02 DE7A      LBA1 02 DE7B      LBA2 02 DE7C
-      LBA3 02 DE7D   LBA3MST 00 00E0   LBA3SLV 00 00F0     LDTB1 02 E3E7
-     LDTB2 02 E3F7     LDTBL 02 E3E0    LENGHS 02 E7A6      LINE 02 F92B
-     LINE1 02 F942     LINE2 02 F956     LINE3 02 F969        LK 02 E687
-       LK1 02 E698    LOAKES 02 E65E   LOOPRST 02 E1B2     LOOPW 02 EFD4
-    MAPOUT 02 F637      MASK 02 F66D        MC 02 ECAB       MC1 02 ECB6
-       MC2 02 ECE0       MC3 02 ECE7     MCA02 00 CA02     MCMES 02 EC8E
-     MDFC4 00 DFC4     MDFFA 00 DFFA        ME 02 E6E0       ME1 02 E6E9
-       ME2 02 E6FD       MED 02 E703    MEMEXS 02 E6A4    MINIT1 02 E0EB
+      LBA3 02 DE7D   LBA3MST 00 00E0   LBA3SLV 00 00F0     LDTB1 02 E3E8
+     LDTB2 02 E3F8     LDTBL 02 E3E1    LENGHS 02 E7A7      LINE 02 F92B
+     LINE1 02 F942     LINE2 02 F956     LINE3 02 F969        LK 02 E688
+       LK1 02 E699    LOAKES 02 E65F   LOOPRST 02 E1B3     LOOPW 02 EFD5
+    MAPOUT 02 F637      MASK 02 F66D        MC 02 ECAC       MC1 02 ECB7
+       MC2 02 ECE1       MC3 02 ECE8     MCA02 00 CA02     MCMES 02 EC8F
+     MDFC4 00 DFC4     MDFFA 00 DFFA        ME 02 E6E1       ME1 02 E6EA
+       ME2 02 E6FE       MED 02 E704    MEMEXS 02 E6A5    MINIT1 02 E0EC
     MINITR 02 F0D9      MODE 02 F82F     MODE1 02 F842   MSTCFOK 02 DE7E
-     MSTOK 02 F485      NEXT 02 F0FA     NEXT2 02 E3DD     NEXTB 02 E3C7
-       NMI 02 F11C      NMIV 02 DF82     NOFLX 02 E30C      NOPE 02 F101
-     NORAM 02 E6C5    NOTHEX 02 F5A2    NOTPRT 02 E615    NOTRDY 02 F45A
-    NOTTHS 02 E02C    NVC0Z1 02 F336    NVZ0C1 02 F33B       OFF 02 F7FC
+     MSTOK 02 F485      NEXT 02 F0FA     NEXT2 02 E3DE     NEXTB 02 E3C8
+       NMI 02 F11C      NMIV 02 DF82     NOFLX 02 E30D      NOPE 02 F101
+     NORAM 02 E6C6    NOTHEX 02 F5A2    NOTPRT 02 E616    NOTRDY 02 F45A
+    NOTTHS 02 E02D    NVC0Z1 02 F336    NVZ0C1 02 F33B       OFF 02 F7FC
         ON 02 F808     OPORT 02 DF8D     OUT2H 02 F5A9    OUT2HA 02 F5AB
     OUT2HS 02 F5B3    OUT4HS 02 F5B1     OUTCH 02 F16E     OUTHL 02 F579
      OUTHR 02 F57D      OUTS 02 F5B5         P 02 F51B     P1TBL 02 F9A3
    PARMLOP 02 F39C     PARSE 02 F0F7     PART1 00 DFBB     PART2 00 DFBF
      PAUS1 02 F22A     PAUS2 02 F22D     PAUS3 02 F230     PAUSE 02 F227
-     PBLIN 02 EC75     PCRLF 02 F512    PDATA1 02 F51E     PFAIL 02 E068
-      PIA1 00 FF00      PIA2 00 FF1C        PM 02 E645     POINT 02 F91F
-    POKMES 02 E634     PORTA 00 FF1C     PORTB 00 FF1D     PORTC 00 FF1E
+     PBLIN 02 EC76     PCRLF 02 F512    PDATA1 02 F51E     PFAIL 02 E069
+      PIA1 00 FF00      PIA2 00 FF1C        PM 02 E646     POINT 02 F91F
+    POKMES 02 E635     PORTA 00 FF1C     PORTB 00 FF1D     PORTC 00 FF1E
   PORTCTRL 00 FF1F    PRINTA 02 F52A    PRINTX 02 F536      PROM 00 E000
-    PROMPT 02 E027     PRTC2 02 F60A    PSPEED 00 DFF9    PSTRNG 02 F525
+    PROMPT 02 E028     PRTC2 02 F60A    PSPEED 00 DFF9    PSTRNG 02 F525
      PTIM2 02 F5FF     PUTA1 02 F1A2     PUTA2 02 F1AD    PUTRTC 02 F608
     PUTTIM 02 F5FB    PUTVID 02 F19F     QBUSY 02 F21A     QINT0 02 F1B8
      QINT1 02 F1BE     QINT2 02 F1C4     QUICK 02 F4EB    QUIVEC 02 DFAD
        RAM 00 DE00    RANDOM 02 F5BA     RDDT2 02 F3FB     RDFL1 02 F23F
      RDFL2 02 F24B     RDFL3 02 F251     RDFL4 02 F25A     RDFL5 02 F26F
-     RDFLP 02 F231    RDLOOP 02 F407     RDSEC 02 E387       RDY 02 F455
+     RDFLP 02 F231    RDLOOP 02 F407     RDSEC 02 E388       RDY 02 F455
     RDYBIT 00 0040 RD_IDE_8255 00 0092      READ 02 F4A2  READ_IDE 02 F3E2
-    REASES 02 E8A0    REAVEC 02 DFA1      RECT 02 F9AB     REGDP 00 DFFC
-     RESET 02 F08E      RNDM 02 DF98       ROW 00 DFD9        RP 02 E560
-       RP1 02 E56F       RPT 02 F5BE        RS 02 E8E2     RSFLP 02 F2AE
-       RST 02 F4AE      RST1 02 F4B3    RSTRNG 02 E731    RSTVEC 02 DFA7
-       RTC 00 FF18   RTCFAIL 00 DFB5     RTCOK 02 E1A1    RUNPRS 02 E54D
-    RWEXIT 02 F430        SB 02 EDF4       SB1 02 EE17       SB2 02 EE2C
-       SB3 02 EE5D       SB4 02 EE6E     SBMES 02 EDB7     SBRMS 02 EDD0
+    REASES 02 E8A1    REAVEC 02 DFA1      RECT 02 F9AB     REGDP 00 DFFC
+     RESET 02 F08E      RNDM 02 DF98       ROW 00 DFD9        RP 02 E561
+       RP1 02 E570       RPT 02 F5BE        RS 02 E8E3     RSFLP 02 F2AE
+       RST 02 F4AE      RST1 02 F4B3    RSTRNG 02 E732    RSTVEC 02 DFA7
+       RTC 00 FF18   RTCFAIL 00 DFB5     RTCOK 02 E1A2    RUNPRS 02 E54E
+    RWEXIT 02 F430        SB 02 EDF5       SB1 02 EE18       SB2 02 EE2D
+       SB3 02 EE5E       SB4 02 EE6F     SBMES 02 EDB8     SBRMS 02 EDD1
      SCRAT 00 DF80     SCRD1 02 FCC6    SCRDWN 02 FCA9     SCRUP 02 FC8C
-    SCRUP1 02 FC97    SCTCNT 02 DE79      SDEN 02 F2DD      SECS 02 E8C4
+    SCRUP1 02 FC97    SCTCNT 02 DE79      SDEN 02 F2DD      SECS 02 E8C5
     SECTOR 02 DF90      SEEK 02 F50B    SEEVEC 02 DFB3     SELD0 02 F2FC
      SELD1 02 F306    SETCRG 02 F75B    SETCRT 02 FA68      SETD 02 F30E
     SETFEA 02 DE78    SETLBA 02 F38D     SETP2 02 F6A0    SETPAR 02 F6F7
     SETPAT 02 F696    SETPEN 02 F67F    SET_R0 00 FFD7    SET_R1 00 FFD9
-    SHIMES 02 E789        SI 02 E2C3     SIMES 02 E2AF     SKFL1 02 F2E7
+    SHIMES 02 E78A        SI 02 E2C4     SIMES 02 E2B0     SKFL1 02 F2E7
      SKFL2 02 F2E9     SKFLP 02 F2C4      SLOW 02 F34E     SLOW2 02 F366
-   SLVCFOK 02 DE7F        SM 02 E7AF       SM1 02 E7D0        SO 02 E2E9
-     SOMES 02 E2D4     SPEED 00 DFF7     SPRM2 02 F73F    SSTACK 00 DE6F
+   SLVCFOK 02 DE7F        SM 02 E7B0       SM1 02 E7D1        SO 02 E2EA
+     SOMES 02 E2D5     SPEED 00 DFF7     SPRM2 02 F73F    SSTACK 00 DE6F
      STACK 02 DF80     STAT1 02 F143     STAT2 02 F148    STATUS 02 F131
-      STEP 00 DFF6     SURES 02 E9D0       SWI 02 E574      SWI2 02 F128
+      STEP 00 DFF6     SURES 02 E9D1       SWI 02 E575      SWI2 02 F128
      SWI2V 02 DF88      SWI3 02 F12C     SWI3V 02 DF8A    SYSREG 00 FF02
-     TABIN 02 F17B    TABLE1 02 E41F    TABLE2 02 E437    TABOUT 02 F181
-    TABSRT 02 F1CA     TBAUD 02 EE76    TCCACT 02 FBC1    TCONST 02 E0B9
-        TD 02 EB75    TDLOOP 02 EB8D     TDLP2 02 EB9B     TDLP9 02 EBC0
-     TDMES 02 EB31    TDMES1 02 EB4F      TEMP 02 DF91    TESMES 02 E7DD
+     TABIN 02 F17B    TABLE1 02 E420    TABLE2 02 E438    TABOUT 02 F181
+    TABSRT 02 F1CA     TBAUD 02 EE77    TCCACT 02 FBC1    TCONST 02 E0BA
+        TD 02 EB76    TDLOOP 02 EB8E     TDLP2 02 EB9C     TDLP9 02 EBC1
+     TDMES 02 EB32    TDMES1 02 EB50      TEMP 02 DF91    TESMES 02 E7DE
       TEXT 02 FAA4   TFRPARM 02 F393       TL1 00 DFF0       TL2 00 DFF2
-        TM 02 E825       TM1 02 E84E       TM2 02 E86E       TM3 02 E86B
-       TM4 02 E854       TM5 02 E843      TMS1 02 E7F0      TMS2 02 E806
-      TMS3 02 E812       TOS 02 E473     TQINT 02 F187     TRACK 02 DF8F
-     TRACS 02 E8BC        TS 02 EBF6       TS1 00 DFEC       TS2 00 DFEE
-    TSLOOP 02 EC08    TSMESS 02 EBDD     TSTEP 00 DFF8       TTO 02 DF96
+        TM 02 E826       TM1 02 E84F       TM2 02 E86F       TM3 02 E86C
+       TM4 02 E855       TM5 02 E844      TMS1 02 E7F1      TMS2 02 E807
+      TMS3 02 E813       TOS 02 E474     TQINT 02 F187     TRACK 02 DF8F
+     TRACS 02 E8BD        TS 02 EBF7       TS1 00 DFEC       TS2 00 DFEE
+    TSLOOP 02 EC09    TSMESS 02 EBDE     TSTEP 00 DFF8       TTO 02 DF96
      TTYBS 00 CC00    TXTRAM 00 CA00        U1 02 F0B3       U1L 02 F0BA
-     UNEXP 02 F111    UNMESS 02 E040     UPDPA 02 FAFE    VALUES 02 E498
+     UNEXP 02 F111    UNMESS 02 E041     UPDPA 02 FAFE    VALUES 02 E499
      VCRST 02 FFFE    VERIFY 02 F4AA    VERVEC 02 DFA5     VIDC1 02 FB28
      VIDC2 02 FB32     VIDC3 02 FB45     VIDCC 02 FBB5     VIDCH 02 FB1C
      VRFLP 02 F2A3     VSYN2 02 F74B     VSYN3 02 F752     VSYNC 02 F749
-      WABT 02 EB28     WABT1 02 EB2A   WAIT1MS 02 EFD2      WARM 02 F507
+      WABT 02 EB29     WABT1 02 EB2B   WAIT1MS 02 EFD3      WARM 02 F507
      WARMS 02 DF9C    WARVEC 02 DFB1      WHAT 02 F109     WRDT2 02 F415
      WRFL1 02 F27F     WRFL2 02 F28B     WRFL3 02 F291     WRFL4 02 F29A
-     WRFLP 02 F272    WRIMES 02 E934     WRITE 02 F4A6    WRIVEC 02 DFA3
-    WRLOOP 02 F422   WRT_IDE 02 F3CA WR_IDE_8255 00 0080        WS 02 E956
+     WRFLP 02 F272    WRIMES 02 E935     WRITE 02 F4A6    WRIVEC 02 DFA3
+    WRLOOP 02 F422   WRT_IDE 02 F3CA WR_IDE_8255 00 0080        WS 02 E957
     XCOORD 00 DFB7     XTEMP 02 DF92    YCOORD 00 DFB9     YTEMP 02 DF94
       ZOOM 02 F846     ZOOM1 02 F859
 538 SYMBOLS

@@ -249,7 +249,7 @@ BLANKD  EQU   $DFFF        ; ?
 
 ;* LIB MINIT
 HDR     FCB     $0A,$0D
-        FCC     '+++ Mon09 Ver 5.0 Ph. Roehr 2025 +++'
+        FCC     '+++ Mon09 Ver 5.0B Ph. Roehr 2025 +++'
         FCB     $04
 PROMPT  FCB     $0A,$0D
         FCC     '=>'
@@ -2113,14 +2113,14 @@ PARMLOP     BSR     CMDWAIT
             PULS    A,B,X,Y,PC
 ;*
 ;* Wait cf card command ready
-CMDWAIT     BSR     DATWAIT             ; wait data ready
+CMDWAIT     BSR     DATWAIT             ; status register valid only if busy bit clear
 CWLOOP      LDB     #IDE_STATUS         ; ask status register
             BSR     READ_IDE
             BITA    #RDYBIT             ; read ready bit
             BEQ     CWLOOP              ; wait ready bit set
             RTS
 ;*
-;* Wait cf card data ready with time out
+;* Wait cf card data ready
 DATWAIT     LDB     #IDE_STATUS         ; ask status register
             BSR     READ_IDE            ; A receive status register
             BITA    #BSYBIT             ; read busy bit
@@ -2229,7 +2229,7 @@ NOTRDY      JSR     NVZ0C1              ; error - clear Z - set C
 ;* Detect and init disk typ 2 & 3 CF on 8255 ide port
 INIDT2      LDB     #IDE_LBA3           ; set lba3 for master cf
             LDA     #LBA3MST
-            STA     LBA3                ; keep ram table sync
+            STA     LBA3                ; sync ram table
             JSR     WRT_IDE
 
             LDD     #$0000
