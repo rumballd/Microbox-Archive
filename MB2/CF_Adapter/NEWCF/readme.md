@@ -3,4 +3,4 @@ The format used is compatible with Michael Evenson FloppyMaintenance.
 
 WARNING : The track number can be set up to 256. Because each sector (65536 if tracks is set to 256) must be re writed in this case formatting is looonnnggg, very very loooonnnnggggg...
 
-Consider seriously to use Linux dd or similar and the image provided here instead.
+Seriously consider to use Linux dd or similar and the image provided here instead.
