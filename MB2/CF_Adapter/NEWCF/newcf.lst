@@ -1,0 +1,714 @@
+                      ;*********************************************************
+                      ;*                                                       *
+                      ;* COMPACT FLASH FORMAT UTILITY                          *
+                      ;*                                                       *
+                      ;* WRITED FOR MICROBOX][ BY PH. ROEHR 05/2025            *
+                      ;*                                                       *
+                      ;* THIS VERSION IS FOR CF CONNECTED TO 8255 VIA          *
+                      ;* AND 16 BITS DATA TRANSFER                             *
+                      ;*                                                       *
+                      ;*********************************************************
+
+ 0000                 MINS0   EQU     $00
+ 0001                 MINS1   EQU     $01
+ 00FF                 SECSZ   EQU     $FF         ; 256 BYTES/SECTORS FOR FLEX (0->FF)
+ 0800                 SECBUF  EQU     $800        ; BUFFER FOR PREPARING SECTOR IN MEMORY
+ 08FF                 ENDBUF  EQU     SECBUF+SECSZ
+
+                      ;* STANDARD PRE-NAMED LABEL EQUATES
+ CC0E                 SYSMTH  EQU     $CC0E       ; SYSTEM DATE MONTH
+ CC0F                 SYSDAY  EQU     $CC0F       ; DAY
+ CC10                 SYSYR   EQU     $CC10       ; YEAR
+ CD03                 WARMS   EQU     $CD03
+ CD15                 GETCHR  EQU     $CD15
+ CD18                 PUTCHR  EQU     $CD18
+ CD1B                 INBUFF  EQU     $CD1B
+ CD1E                 PSTRNG  EQU     $CD1E
+ CD24                 PCRLF   EQU     $CD24
+ CD2D                 GETFIL  EQU     $CD2D
+ CD39                 OUTDEC  EQU     $CD39
+ CD3C                 OUTHEX  EQU     $CD3C
+ CD42                 GETHEX  EQU     $CD42
+ CD45                 OUTADR  EQU     $CD45
+ CD48                 INDEC   EQU     $CD48
+ CC0B                 ASNPRM  EQU     $CC0B       ; ASN PARAMETERS
+
+                      ;* ASCII CODE EQUATES
+ 0004                 EOT     EQU     $04
+ 0020                 SPC     EQU     $20
+
+                      ;* MICROBOX][ ADDRESSES
+
+ FF00                 IO      EQU   $FF00        ; BASE IO ADDRESS
+ FF1C                 PIA2    EQU   IO+28        ; $FF1C
+
+                      ;*********************************
+                      ;* COMPACT FLASH SYSTEM EQUATES  *
+                      ;*********************************
+
+                      ;* ABSOLUTE PIA PORT ADDRESSES
+
+ FF1C                 PORTA               EQU     PIA2
+ FF1D                 PORTB               EQU     PIA2+1
+ FF1E                 PORTC               EQU     PIA2+2
+ FF1F                 PORTCTRL            EQU     PIA2+3
+
+                      ;* PIA CONTROL BYTES FOR READ AND WRITE TO IDE DRIVE
+
+ 0092                 RD_IDE_8255         EQU     $92     ; %10010010 PORT C CTRL OUT, PORT A/B DATA INPUT
+ 0080                 WR_IDE_8255         EQU     $80     ; %10000000 ALL 3 PORTS OUTPUT
+
+                      ;* PIA CTRL PORT BIT FUNCTIONS
+
+ 0001                 IDE_A0              EQU     $01
+ 0002                 IDE_A1              EQU     $02
+ 0004                 IDE_A2              EQU     $04
+ 0008                 IDE_CS0             EQU     $08     ; INVERTED ON BOARD - SO SET FOR SELECT
+ 0010                 IDE_CS1             EQU     $10     ; INVERTED - SO SET FOR SELECT
+ 0020                 IDE_WR              EQU     $20     ; INVERTED - SO SET FOR WRITE
+ 0040                 IDE_RD              EQU     $40     ; INVERTED - SO SET FOR READ
+ 0080                 IDE_RST             EQU     $80     ; INVERTED - SO SET FOR RESET
+
+                      ; COMPACT FLASH REGISTER CONSTANTS FOR A BETTER READING OF THE CODE
+
+ 0008                 IDE_DATA            EQU     IDE_CS0                      ; DATA R/W
+ 0009                 IDE_ERR             EQU     IDE_CS0+IDE_A0               ; READ ERROR CODE
+ 0009                 IDE_SET_FEAT        EQU     IDE_CS0+IDE_A0               ; WRITE FEATURE
+ 000A                 IDE_SEC_CNT         EQU     IDE_CS0+IDE_A1               ; NUMBER OF SECTORS TO TRANSFER
+ 000B                 IDE_LBA0            EQU     IDE_CS0+IDE_A1+IDE_A0        ; SECTOR ADDRESS LBA 0 [BITS 0:7]
+ 000C                 IDE_LBA1            EQU     IDE_CS0+IDE_A2               ; SECTOR ADDRESS LBA 1 [BITS 8:15]
+ 000D                 IDE_LBA2            EQU     IDE_CS0+IDE_A2+IDE_A0        ; SECTOR ADDRESS LBA 2 [BITS 16:23]
+ 000E                 IDE_LBA3            EQU     IDE_CS0+IDE_A2+IDE_A1        ; SECTOR ADDRESS LBA 3 [BITS 24:27 (LSB)]
+ 000F                 IDE_COMMAND         EQU     IDE_CS0+IDE_A2+IDE_A1+IDE_A0 ; WRITE COMMAND
+ 000F                 IDE_STATUS          EQU     IDE_CS0+IDE_A2+IDE_A1+IDE_A0 ; READ CF STATUS
+
+                      ;* IDE COMMAND CONSTANTS. THESE SHOULD NEVER CHANGE.
+
+ 0020                 IDE_CMD_READ        EQU     $20                 ; READ A LBA
+ 0030                 IDE_CMD_WRITE       EQU     $30                 ; WRITE A LBA
+ 00EF                 IDE_CMD_SET_FEAT    EQU     $EF                 ; SET FEATURES
+ 00EC                 IDE_CMD_ID          EQU     $EC                 ; CF ID COMMAND
+
+                      ;* FEATURE REQUESTS
+
+ 0081                 IDE_FEA_16BIT       EQU     $81
+ 0001                 IDE_FEA_8BIT        EQU     $01
+ 00E0                 LBA3MST             EQU     $E0                 ; LBA3 FOR IDE MASTER
+ 00F0                 LBA3SLV             EQU     $F0                 ; LBA3 FOR IDE SLAVE
+
+                      ;* CF CONTROL BITS
+
+ 0008                 DRQBIT              EQU     %00001000           ; DATA REQUEST BIT = CF STATUS BIT 3
+ 0040                 RDYBIT              EQU     %01000000           ; READY BIT = BIT 6
+ 0080                 BSYBIT              EQU     %10000000           ; BUSY BIT = BIT 7
+ 0001                 ERRBIT              EQU     %00000001           ; ERROR BIT = BIT 0
+
+                      ;* FLEX PARAMS
+
+ DE7E                 MSTCFOK EQU     $DE7E       ; CF PRESENT FLAGS
+ DE7F                 SLVCFOK EQU     $DE7F
+ DF9D                 DDSTAB  EQU     $DF9D       ; PHYS -> FLEX DISK TABLE
+
+
+                              ORG     $0100
+
+                      ;* VARIOUS PARAM IN RAM
+
+ 0100                 SETFEA  RMB     1          ; SET FEATURE 8 OR 16 BITS MODE
+ 0101                 SCTCNT  RMB     1          ; SECTOR COUNT FOR R/W (ALWAYS 1)
+ 0102                 LBA0    RMB     1          ; LBA7 TO LBA0
+ 0103                 LBA1    RMB     1          ; LBA15 TO LBA8
+ 0104                 LBA2    RMB     1          ; LBA23 TO LBA 16
+ 0105                 LBA3    RMB     1          ; B7=1 / B6=1 FOR LBA / B5=1 / B4=0 MASTER B4=1 SLAVE / B3->B0 LBA27 TO LBA24
+
+ 0106 00              FAKMS   FCB     $00        ; FAKE MSB MAX SECTOR
+ 0107 FF              MAXS    FCB     255        ; 256 SECTORS ON TRACK (0-FF)
+ 0108 00              FAKMT   FCB     $00        ; FAKE MSB MAX TRACK
+ 0109 7A              MAXT    FCB     122        ; MAX 256 TRACKS (0-FF) / 122 DEFAULT
+ 010A                 TRACK   RMB     1
+ 010B                 SECT    RMB     1
+ 010C                 LBA10   RMB     2
+ 010E                 MAXLBA  RMB     2
+ 0110                 FKFCB   RMB     4
+ 0114 00000000000000  VOLNAM  FCB     0,0,0,0,0,0,0,0,0,0,0
+ 011B 00000000
+ 011F 0000            VOLNUM  FCB     0,0
+
+                              ORG     $1000
+
+ 1000 200C            NEWCF   BRA     FORM1       ; BEGIN
+ 1002 01              VN      FCB     1           ; VERSION
+
+ 1003 BDCD1E          OUTIN   JSR     PSTRNG      ; DISPLAY STRING
+ 1006 BDCD15          OUTIN2  JSR     GETCHR      ; GET RESPONSE
+ 1009 845F                    ANDA    #$5F        ; UPPER CASE
+ 100B 8159                    CMPA    #'Y'        ; COMPARE TO Y SO Z IS SET IF YES
+ 100D 39                      RTS
+                      ;*
+                      ;* PROGRAM START
+ 100E BDCD24          FORM1   JSR     PCRLF
+ 1011 BDCD42                  JSR     GETHEX      ; GET FLEX DRIVE NUMBER FROM COMMAND LINE
+ 1014 102500E4                LBCS    EXIT        ; EXIT ON ERROR
+ 1018 1F10                    TFR     X,D
+
+ 101A 7DDE7E                  TST     MSTCFOK     ; MASTER CF PRESENT ?
+ 101D 102700DB                LBEQ    EXIT        ; NO THEN EXIT
+ 1021 8EDF9D                  LDX     #DDSTAB
+ 1024 A685                    LDA     B,X         ; LOAD PHYS DISK NUMBER
+ 1026 8102                    CMPA    #$02        ; MASTER ?
+ 1028 2604                    BNE     TSTSLV      ; NO GO TO TEST SLAVE
+ 102A 86E0                    LDA     #LBA3MST
+ 102C 2008                    BRA     CONTIN0     ; CONTINUE
+ 102E 8103            TSTSLV  CMPA    #$03        ; SLAVE ?
+ 1030 102600C8                LBNE    EXIT        ; NO EXIT
+ 1034 86F0                    LDA     #LBA3SLV
+
+ 1036 B70105          CONTIN0 STA     LBA3        ; STORE LBA3 IN RAM
+
+ 1039 F1CC0B                  CMPB    ASNPRM      ; ENSURE COMPACT FLASH ASKED IS NOT SYSTEM DISK
+ 103C 2606                    BNE     CONTIN      ; COMPARE ASN-SYSTEM TO CF DISK NUMBER
+ 103E 8E12B4                  LDX     #MSGCFS     ; IF YES DISPLAY MSG AND EXIT
+ 1041 7E10FF                  JMP     EXIT2
+
+ 1044 BDCD24          CONTIN  JSR     PCRLF
+ 1047 BD1437                  JSR     INICF8      ; INIT COMPACT FLASH
+ 104A 2706                    BEQ     CONTIN1     ; GO TO FORMAT IF OK (Z SET)
+ 104C 8E12E5                  LDX     #CFINIER    ; ERROR AFTER CF INIT - DISPLAY
+ 104F 7E10FF                  JMP     EXIT2       ; AND EXIT
+
+ 1052 8E1275          CONTIN1 LDX     #CFINIOK    ; DISPLAY MSG CF INIT OK
+ 1055 BDCD1E                  JSR     PSTRNG
+ 1058 8E0800                  LDX     #SECBUF     ; BUFFER ADDRESS
+ 105B BD14E2                  JSR     RDCF        ; READ CF PARAMETERS
+ 105E 8E1290                  LDX     #MSGLBA     ; DISPLAY MSG PARAM OK
+ 1061 BDCD1E                  JSR     PSTRNG
+ 1064 BD1451                  JSR     INICF16     ; SWITCH CF BACK TO 16 BITS MODE
+ 1067 2706                    BEQ     CONTIN2     ; GO TO FORMAT IF OK (Z SET)
+ 1069 8E12E5                  LDX     #CFINIER    ; ERROR AFTER CF INIT - DISPLAY
+ 106C 7E10FF                  JMP     EXIT2       ; AND EXIT
+
+ 106F 8E0800          CONTIN2 LDX     #SECBUF
+ 1072 30887B                  LEAX    123,X       ; GET MAX LBA IN BUFFER (MSW H)
+ 1075 BDCD3C                  JSR     OUTHEX      ; DISPLAY IT
+ 1078 301F                    LEAX    -1,X        ; GET MAX LBA IN BUFFER (MSW L)
+ 107A BDCD3C                  JSR     OUTHEX      ; DISPLAY IT
+ 107D 301F                    LEAX    -1,X        ; GET MAX LBA IN BUFFER (LSW H)
+ 107F BDCD3C                  JSR     OUTHEX      ; DISPLAY IT
+ 1082 301F                    LEAX    -1,X        ; GET MAX LBA IN BUFFER (LSW L)
+ 1084 BDCD3C                  JSR     OUTHEX      ; DISPLAY IT
+ 1087 BDCD24                  JSR     PCRLF
+
+ 108A 8E1265                  LDX     #SURES      ; ASK IF SURE
+ 108D 17FF73                  LBSR    OUTIN
+ 1090 10260068                LBNE    EXIT        ; EXIT IF NOT
+ 1094 8E1307                  LDX     #SCRDS      ; ASK IF SCRATCH DISK SURE
+ 1097 BDCD1E                  JSR     PSTRNG
+ 109A 17FF69                  LBSR    OUTIN2      ; GET RESPONSE
+ 109D 1026005B                LBNE    EXIT        ; EXIT IF SCRATCH NOT SURE
+
+ 10A1 BDCD24          FORM20  JSR     PCRLF
+ 10A4 8E13CD                  LDX     #SECNUM     ; SECTOR NUMBER MSG
+ 10A7 BDCD1E                  JSR     PSTRNG
+ 10AA 8E00FF                  LDX     #255        ; WE USE 256 SECTORS (0-255)
+ 10AD BF0106                  STX     FAKMS
+
+ 10B0 8E13FB          FORM30  LDX     #TRKNUM     ; ASK TRACK NUMBER
+ 10B3 BDCD1E                  JSR     PSTRNG
+ 10B6 BDCD1B                  JSR     INBUFF
+ 10B9 BDCD48                  JSR     INDEC
+ 10BC 25F2                    BCS     FORM30
+ 10BE 8C0002                  CMPX    #$0002      ; CHECK IF >= 2
+ 10C1 2FED                    BLE     FORM30
+ 10C3 8C00FF                  CMPX    #$00FF      ; CHECK IF <= 255
+ 10C6 22E8                    BHI     FORM30
+ 10C8 301F                    LEAX    -1,X        ; SUBSTRACT 1 BECAUSE TRACK ARE NUMBERED 0 TO MAXT
+ 10CA BF0108                  STX     FAKMT
+
+ 10CD 8E137D          FORM40  LDX     #MNSTR      ; ASK VOLUME NAME
+ 10D0 BDCD1E                  JSR     PSTRNG
+ 10D3 BDCD1B                  JSR     INBUFF
+ 10D6 8E0110                  LDX     #FKFCB
+ 10D9 BDCD2D                  JSR     GETFIL
+
+ 10DC 8E138C          FORM27  LDX     #NUMSTR     ; ASK VOLUME NUMBER
+ 10DF BDCD1E                  JSR     PSTRNG
+ 10E2 BDCD1B                  JSR     INBUFF
+ 10E5 BDCD48                  JSR     INDEC
+ 10E8 25F2                    BCS     FORM27
+ 10EA BF011F                  STX     VOLNUM
+
+ 10ED B60109                  LDA     MAXT
+ 10F0 4C                      INCA
+ 10F1 C600                    LDB     #$00
+ 10F3 FD010E                  STD     MAXLBA      ; STORE TOTAL LBA ON DISK
+ 10F6 BDCD24                  JSR     PCRLF
+ 10F9 7E1108                  JMP     FORMAT      ; GO TO FORMAT IF OK
+                      ;*
+                      ;* EXIT ROUTINES
+ 10FC 8E1320          EXIT    LDX     #ABORTS
+ 10FF BDCD1E          EXIT2   JSR     PSTRNG
+ 1102 BDCD24                  JSR     PCRLF
+ 1105 7ECD03                  JMP     WARMS       ; EXIT
+                      ;*
+                      ;* MAIN FORMATTING LOOP
+ 1108 8E0800          FORMAT  LDX     #SECBUF     ; CLEAR BUFFER
+ 110B 6F80            CLRBUF  CLR     ,X+
+ 110D 8C0900                  CMPX    #ENDBUF+1   ; FLEX SECTOR IS 256 BYTES
+ 1110 26F9                    BNE     CLRBUF
+
+ 1112 8E139D                  LDX     #INITRK     ; DISPLAY WRITE TR/SECTOR MESSAGE
+ 1115 BDCD1E                  JSR     PSTRNG
+
+ 1118 7F010A                  CLR     TRACK       ; SET TRACK 0
+ 111B 7F010B                  CLR     SECT        ; SET SECTOR 0
+ 111E CC0000                  LDD     #$0000
+ 1121 FD010C                  STD     LBA10       ; SET LBA NUM AT 0
+
+ 1124 B6010A                  LDA     TRACK
+ 1127 BE010C                  LDX     LBA10       ; X STORE THE CURRENT LBA NUMBER
+ 112A B70800          FLOOP1  STA     SECBUF      ; STORE TRACK IN FIRST BUFFER BYTE
+ 112D F6010B                  LDB     SECT        ; LOAD SECTOR
+ 1130 5C                      INCB                ; POINT TO THE NEXT SECTOR
+ 1131 F70801                  STB     SECBUF+1    ; STORE SECTOR+1 IN SECOND BUFFER BYTE
+
+ 1134 BD1179                  JSR     WTSECT      ; WRITE SECTOR TO CF
+ 1137 3001                    LEAX    1,X         ; INC LBA NUMBER
+ 1139 BF010C                  STX     LBA10       ; STORE INTO RAM
+
+ 113C F7010B                  STB     SECT        ; STORE NEXT SECT IN RAM
+ 113F F10107                  CMPB    MAXS        ; IS SECTOR = $FF
+ 1142 26E6                    BNE     FLOOP1      ; NO DO AGAIN FOR NEXT SECTOR
+
+ 1144 7F010B                  CLR     SECT        ; RESET SECTOR TO 0
+ 1147 4C                      INCA                ; NEXT TRACK
+                      ;* LAST SECTOR OF EACH TRACK MUST BE WRITE 2X
+ 1148 B70800                  STA     SECBUF      ; STORE TRACK IN FIRST BUFFER BYTE
+ 114B F6010B                  LDB     SECT
+ 114E 5C                      INCB
+ 114F F70801                  STB     SECBUF+1    ; STORE SECTOR IN SECOND BUFFER BYTE
+ 1152 BD1179                  JSR     WTSECT      ; WRITE SECTOR TO CF
+ 1155 3001                    LEAX    1,X         ; INC LBA NUMBER
+ 1157 BF010C                  STX     LBA10       ; STORE INTO RAM10
+
+ 115A B10109                  CMPA    MAXT        ; IS TRACK N° > MAX TRACK
+ 115D 2205                    BHI     ENDFORM     ; YES END FORMAT
+ 115F B7010A                  STA     TRACK       ; NO STORE
+ 1162 20C6                    BRA     FLOOP1      ; AND DO AGAIN FOR NEXT TRACK
+
+ 1164 7F0800          ENDFORM CLR     SECBUF      ; SET 00-00 INTO LAST SECTOR OF LAST TRACK (END FREE CHAIN)
+ 1167 7F0801                  CLR     SECBUF+1
+ 116A B60109                  LDA     MAXT
+ 116D F60107                  LDB     MAXS
+ 1170 FD010C                  STD     LBA10
+ 1173 BD1179                  JSR     WTSECT
+
+ 1176 7E11D5                  JMP     SETSIR      ; END OF FORMATTING LOOP - GO TO SETUP SIR
+                      ;*
+                      ;* WRITE SECTOR TO CF
+ 1179 3416            WTSECT  PSHS    A,B,X
+ 117B FC010C                  LDD     LBA10       ; UPDATE LBA TABLE IN RAM
+ 117E B70103                  STA     LBA1
+ 1181 F70102                  STB     LBA0
+ 1184 8608                    LDA     #$08        ; LOAD BACKSPACE
+ 1186 BDCD18                  JSR     PUTCHR
+ 1189 BDCD18                  JSR     PUTCHR
+ 118C BDCD18                  JSR     PUTCHR
+ 118F BDCD18                  JSR     PUTCHR
+ 1192 BDCD18                  JSR     PUTCHR
+ 1195 BDCD18                  JSR     PUTCHR
+ 1198 BDCD18                  JSR     PUTCHR
+ 119B BDCD18                  JSR     PUTCHR
+ 119E BDCD18                  JSR     PUTCHR
+ 11A1 BDCD18                  JSR     PUTCHR
+ 11A4 BDCD18                  JSR     PUTCHR
+ 11A7 BDCD18                  JSR     PUTCHR
+ 11AA BDCD18                  JSR     PUTCHR
+ 11AD 8E010A                  LDX     #TRACK
+ 11B0 BDCD45                  JSR     OUTADR      ; DISPLAY TRACK AND SECTOR
+ 11B3 8620                    LDA     #SPC
+ 11B5 BDCD18                  JSR     PUTCHR      ; DISPLAY SPC
+ 11B8 8E0105                  LDX     #LBA3
+ 11BB BDCD3C                  JSR     OUTHEX      ; DISPLAY LBA3
+ 11BE 8E0104                  LDX     #LBA2
+ 11C1 BDCD3C                  JSR     OUTHEX      ; DISPLAY LBA2
+ 11C4 8E0103                  LDX     #LBA1
+ 11C7 BDCD3C                  JSR     OUTHEX      ; DISPLAY LBA1
+ 11CA 8E0102                  LDX     #LBA0
+ 11CD BDCD3C                  JSR     OUTHEX      ; DISPLAY LBA0
+ 11D0 BD14FA                  JSR     WRCF        ; WRITE SECTOR TO CF
+ 11D3 3596                    PULS    A,B,X,PC
+                      ;*
+                      ;* SETUP THE SIR IN BUFFER THEN WRITE IT INTO TR 0 / SEC 3
+ 11D5 8E0800          SETSIR  LDX     #SECBUF     ; POINT TO BUFFER
+ 11D8 6F80            CLRL    CLR     ,X+         ; CLEAR 16 FIRST BYTES
+ 11DA 8C0810                  CMPX    #SECBUF+16
+ 11DD 26F9                    BNE     CLRL
+ 11DF 108E0114                LDY     #VOLNAM     ; TRANSFERT 11 BYTES AS VOLUME NAME
+ 11E3 E6A0            NAML    LDB     ,Y+
+ 11E5 E780                    STB     ,X+         ; WRITE TO BUFFER
+ 11E7 108C011F                CMPY    #VOLNAM+11
+ 11EB 26F6                    BNE     NAML
+ 11ED ECA4                    LDD     ,Y          ; LOAD TWO BYTES AS VOLUME NUMBER
+ 11EF ED81                    STD     ,X++        ; WRITE TO BUFFER
+ 11F1 C601                    LDB     #01         ; SET 01 FOR FIRST FREE TRACK AND SECTOR
+ 11F3 E780                    STB     ,X+
+ 11F5 E780                    STB     ,X+
+ 11F7 F60109                  LDB     MAXT        ; SET MAX TRACK AS LAST FREE TRACK
+ 11FA E780                    STB     ,X+
+ 11FC F60107                  LDB     MAXS        ; SET MAX SECTOR AS LAST FREE SECTOR
+ 11FF E780                    STB     ,X+
+ 1201 FC010E                  LDD     MAXLBA      ; LOAD MAX SECTORS ON CF
+ 1204 B30106                  SUBD    FAKMS       ; SUBSTRACT TRACK 0 SECTORS (EXCEPT S0)
+ 1207 B30108                  SUBD    FAKMT       ; SUBSTRACT SECTOR 0 OF EACH TRACK
+ 120A 830001                  DECD                ; BECAUSE WE HAVE MAXT+1 TRACKS
+ 120D ED81                    STD     ,X++        ; WRITE HOW MANY FREE SECTORS ON DISK
+ 120F F6CC0E                  LDB     SYSMTH      ; SET MONTH
+ 1212 E780                    STB     ,X+
+ 1214 F6CC0F                  LDB     SYSDAY      ; SET DAY
+ 1217 E780                    STB     ,X+
+ 1219 F6CC10                  LDB     SYSYR       ; SET YEAR
+ 121C E780                    STB     ,X+
+ 121E F60109                  LDB     MAXT        ; SET MAX TRACK
+ 1221 E780                    STB     ,X+
+ 1223 F60107                  LDB     MAXS        ; SET MAX SECTOR
+ 1226 E784                    STB     ,X
+ 1228 4F                      CLRA                ; SIR LAY IN TR 0
+ 1229 C603                    LDB     #$03        ; SEC 3
+ 122B FD010C                  STD     LBA10
+ 122E BD1179                  JSR     WTSECT      ; WRITE SIR BUFFER TO CF
+ 1231 8E1331                  LDX     #MSGSIR     ; DISPLAY SIR MESSAGE
+ 1234 BDCD1E                  JSR     PSTRNG
+ 1237 7E123A                  JMP     SETDIR      ; GO TO DIR SETUP
+                      ;*
+                      ;* DIR SETUP (NOT REALLY REQUIRED, FOR CLARITY ONLY)
+                      ;* HERE WE HAVE JUST TO PUT 00-00 INTO LAST SECTOR
+                      ;* OF TRACK 0 TO END THE DIRECTORY SECTORS CHAIN
+ 123A 7F0800          SETDIR  CLR     SECBUF      ; SET 00-00 INTO LAST SECTOR OF TRACK 0 (END DIR CHAIN)
+ 123D 7F0801                  CLR     SECBUF+1
+ 1240 4F                      CLRA
+ 1241 F60107                  LDB     MAXS
+ 1244 FD010C                  STD     LBA10
+ 1247 BD1179                  JSR     WTSECT
+ 124A 8E1346                  LDX     #MSGDIR     ; DISPLAY DIR MESSAGE
+ 124D BDCD1E                  JSR     PSTRNG
+                      ;*
+                      ;* ALL DONE
+ 1250 BDCD24                  JSR     PCRLF
+ 1253 8E136C                  LDX     #SECST      ; DISPLAY SECTOR NUMBER MESSAGE
+ 1256 BDCD1E                  JSR     PSTRNG
+ 1259 8E010E                  LDX     #MAXLBA
+ 125C BDCD39                  JSR     OUTDEC      ; DISPLAY NUMBER OF SECTORS
+                      ;*
+                      ;* EXIT AFTER FORMAT
+ 125F 8E135B          ENDMSG  LDX     #CMPLTE     ; SET MESSAGE FORMAT COMPLETE
+ 1262 7E10FF                  JMP     EXIT2       ; NOW EXIT
+                      ;*
+                      ;* DISPLAYED MESSAGES
+ 1265 41524520594F55  SURES   FCC     "ARE YOU SURE ? "
+ 126C 2053555245203F
+ 1273 20
+ 1274 04                      FCB     EOT
+ 1275 434F4D50414354  CFINIOK FCC     "COMPACT FLASH INITIALIZED."
+ 127C 20464C41534820
+ 1283 494E495449414C
+ 128A 495A45442E
+ 128F 04                      FCB     EOT
+ 1290 544F54414C204C  MSGLBA  FCC     "TOTAL LBA ON COMPACT FLASH (HEX) : "
+ 1297 4241204F4E2043
+ 129E 4F4D5041435420
+ 12A5 464C4153482028
+ 12AC 48455829203A20
+ 12B3 04                      FCB     EOT
+ 12B4 434F4D50414354  MSGCFS  FCC     "COMPACT FLASH SET AS SYSTEM DISK - CAN'T FORMAT."
+ 12BB 20464C41534820
+ 12C2 53455420415320
+ 12C9 53595354454D20
+ 12D0 4449534B202D20
+ 12D7 43414E27542046
+ 12DE 4F524D41542E
+ 12E4 04                      FCB     EOT
+ 12E5 4552524F522049  CFINIER FCC     "ERROR INITIALIZING COMPACT FLASH."
+ 12EC 4E495449414C49
+ 12F3 5A494E4720434F
+ 12FA 4D504143542046
+ 1301 4C4153482E
+ 1306 04                      FCB     EOT
+ 1307 53435241544348  SCRDS   FCC     "SCRATCH COMPACT FLASH ? "
+ 130E 20434F4D504143
+ 1315 5420464C415348
+ 131C 203F20
+ 131F 04                      FCB     EOT
+ 1320 464F524D415420  ABORTS  FCC     "FORMAT ABORTED !"
+ 1327 41424F52544544
+ 132E 2021
+ 1330 04                      FCB     EOT
+ 1331 53495220425549  MSGSIR  FCC     "SIR BUILD AND WRITE."
+ 1338 4C4420414E4420
+ 133F 57524954452E
+ 1345 04                      FCB     EOT
+ 1346 44495220425549  MSGDIR  FCC     "DIR BUILD AND WRITE."
+ 134D 4C4420414E4420
+ 1354 57524954452E
+ 135A 04                      FCB     EOT
+ 135B 464F524D415420  CMPLTE  FCC     "FORMAT COMPLETE."
+ 1362 434F4D504C4554
+ 1369 452E
+ 136B 04                      FCB     EOT
+ 136C 544F54414C2053  SECST   FCC     "TOTAL SECTORS = "
+ 1373 4543544F525320
+ 137A 3D20
+ 137C 04                      FCB     EOT
+ 137D 564F4C554D4520  MNSTR   FCC     "VOLUME NAME ? "
+ 1384 4E414D45203F20
+ 138B 04                      FCB     EOT
+ 138C 564F4C554D4520  NUMSTR  FCC     "VOLUME NUMBER ? "
+ 1393 4E554D42455220
+ 139A 3F20
+ 139C 04                      FCB     EOT
+ 139D 57524954452054  INITRK  FCC     "WRITE TRACK/SECTOR + LBA3-2-1-0 :              "
+ 13A4 5241434B2F5345
+ 13AB 43544F52202B20
+ 13B2 4C4241332D322D
+ 13B9 312D30203A2020
+ 13C0 20202020202020
+ 13C7 2020202020
+ 13CC 04                      FCB     EOT
+ 13CD 534543544F5253  SECNUM  FCC     "SECTORS PER TRACK IS FIXED TO 256 (0 TO 255) "
+ 13D4 20504552205452
+ 13DB 41434B20495320
+ 13E2 46495845442054
+ 13E9 4F203235362028
+ 13F0 3020544F203235
+ 13F7 352920
+ 13FA 04                      FCB     EOT
+ 13FB 484F57204D414E  TRKNUM  FCC     "HOW MANY TRACKS (2 TO 255, 122 RECOMMENDED FOR 16 MB CF) ? "
+ 1402 5920545241434B
+ 1409 5320283220544F
+ 1410 203235352C2031
+ 1417 3232205245434F
+ 141E 4D4D454E444544
+ 1425 20464F52203136
+ 142C 204D4220434629
+ 1433 203F20
+ 1436 04                      FCB     EOT
+                      ;*
+                      ;* INITIALIZE CF CARD IN 8 BITS MODE
+ 1437 7F0104          INICF8  CLR     LBA2            ; CLR ALL LBA (BUT NOT LBA3)
+ 143A 7F0103                  CLR     LBA1
+ 143D 7F0102                  CLR     LBA0
+ 1440 8601                    LDA     #IDE_FEA_8BIT   ; PREPARE THE CF FOR 8 BITS MODE
+ 1442 B70100                  STA     SETFEA          ; SET CF CARD FEATURES
+ 1445 8601                    LDA     #$01
+ 1447 B70101                  STA     SCTCNT          ; 1X LBA R/W DATA TRANSFER
+ 144A BD14A2                  JSR     TFRPARM         ; TRANSFER PARAMS IN MASTER CF AND ENABLE
+ 144D BD14C5                  JSR     CFERR           ; CHECK IF CF ERROR
+ 1450 39                      RTS
+                      ;*
+                      ;* INITIALIZE BOTH CF CARDS IN 16 BITS MODE
+                      ;* DUE TO IDE BUS RESET WE RELOAD PARAMS FOR MST AND SLV CF
+ 1451 8692            INICF16 LDA     #RD_IDE_8255
+ 1453 B7FF1F                  STA     PORTCTRL        ; SET PORT C AS OUTPUT
+ 1456 8680                    LDA     #IDE_RST        ; DO A IDE BUS RESET
+ 1458 B7FF1E                  STA     PORTC
+ 145B 860A                    LDA     #10             ; KEEP RESET LOW > 25 ΜS
+ 145D 4A              LOOPRST DECA
+ 145E 26FD                    BNE     LOOPRST
+ 1460 7FFF1E                  CLR     PORTC
+ 1463 8632                    LDA     #50
+ 1465 BD1499                  JSR     WAIT1MS         ; WAIT > 50 MS FOR CF TO COMPLETE INIT
+
+ 1468 7F0104                  CLR     LBA2            ; CLR ALL LBA (BUT NOT LBA3)
+ 146B 7F0103                  CLR     LBA1
+ 146E 7F0102                  CLR     LBA0
+ 1471 8681                    LDA     #IDE_FEA_16BIT  ; PREPARE THE CF FOR 16 BITS MODE
+ 1473 B70100                  STA     SETFEA          ; SET CF CARD FEATURES
+ 1476 8601                    LDA     #$01
+ 1478 B70101                  STA     SCTCNT          ; 1X LBA R/W DATA TRANSFER
+ 147B B60105                  LDA     LBA3
+ 147E 3402                    PSHS    A               ; SAVE LBA3
+ 1480 86E0                    LDA     #LBA3MST
+ 1482 B70105                  STA     LBA3
+ 1485 BD14A2                  JSR     TFRPARM         ; TRANSFER PARAMS IN MASTER CF AND ENABLE
+ 1488 86F0                    LDA     #LBA3SLV
+ 148A B70105                  STA     LBA3
+ 148D BD14A2                  JSR     TFRPARM         ; TRANSFER PARAMS IN SLAVE CF AND ENABLE
+ 1490 3502                    PULS    A
+ 1492 B70105                  STA     LBA3            ; RESTORE LBA3
+ 1495 BD14C5                  JSR     CFERR           ; CHECK IF CF ERROR
+ 1498 39                      RTS
+                      ;*
+                      ;* WAIT 1MS ROUTINE
+                      ;* INPUT A = NUMBER OF MS TO WAIT
+ 1499 C6C8            WAIT1MS LDB     #200
+ 149B 5A              LOOPW   DECB
+ 149C 26FD                    BNE     LOOPW
+ 149E 4A                      DECA
+ 149F 26F8                    BNE     WAIT1MS
+ 14A1 39                      RTS
+                      ;*
+                      ;* TRANSFER PARAMS TABLE FROM MEMORY TO CF
+                      ;* AND ENABLE DATA
+ 14A2 3436            TFRPARM     PSHS    A,B,X,Y
+ 14A4 8E0106                      LDX     #LBA3+1             ; LOAD TABLE ADDRESS + 1
+ 14A7 108E000E                    LDY     #IDE_LBA3           ; LOAD 1ST CF REGISTER TO WRITE
+
+ 14AB 8D21            PARMLOP     BSR     CMDWAIT
+ 14AD 1F20                        TFR     Y,D                 ; GET Y LSB INTO B
+ 14AF A682                        LDA     ,-X                 ; WITH PRE DECR LOAD PARAM FROM TABLE
+ 14B1 8D6F                        BSR     WRT_IDE             ; WRITE PARAM IN CF
+ 14B3 313F                        LEAY    -1,Y                ; CHANGE CF REGISTER
+ 14B5 108C0008                    CMPY    #IDE_SET_FEAT-1     ; CHECK IF 6 PARAMS LOADED IN CF
+ 14B9 26F0                        BNE     PARMLOP             ; IF 6 PARAMS NOT LOADED DO AGAIN
+
+ 14BB 8D11                        BSR     CMDWAIT
+ 14BD 86EF                        LDA     #IDE_CMD_SET_FEAT   ; NOW ENABLE FEATURES
+ 14BF C60F                        LDB     #IDE_COMMAND
+ 14C1 8D5F                        BSR     WRT_IDE
+ 14C3 35B6                        PULS    A,B,X,Y,PC
+                      ;*
+                      ;* CHECK CF ERROR
+                      ;* RETURN   Z=0 ERROR
+                      ;*          Z=1 NO ERROR
+ 14C5 8D12            CFERR       BSR     DATWAIT             ; STATUS REGISTER VALID ONLY IF BUSY BIT CLEAR
+ 14C7 C60F                        LDB     #IDE_STATUS         ; ASK STATUS REGISTER
+ 14C9 8D6F                        BSR     READ_IDE
+ 14CB 8501                        BITA    #ERRBIT             ; READ ERROR BIT
+ 14CD 39                          RTS
+                      ;*
+                      ;* WAIT CF CARD COMMAND READY
+ 14CE 8D09            CMDWAIT     BSR     DATWAIT             ; STATUS REGISTER VALID ONLY IF BUSY BIT CLEAR
+ 14D0 C60F            CWLOOP      LDB     #IDE_STATUS         ; ASK STATUS REGISTER
+ 14D2 8D66                        BSR     READ_IDE
+ 14D4 8540                        BITA    #RDYBIT             ; READ READY BIT
+ 14D6 27F8                        BEQ     CWLOOP              ; WAIT READY BIT SET
+ 14D8 39                          RTS
+                      ;*
+                      ;* WAIT CF CARD DATA READY
+ 14D9 C60F            DATWAIT     LDB     #IDE_STATUS         ; ASK STATUS REGISTER
+ 14DB 8D5D                        BSR     READ_IDE            ; A RECEIVE STATUS REGISTER
+ 14DD 8580                        BITA    #BSYBIT             ; READ BUSY BIT
+ 14DF 26F8                        BNE     DATWAIT             ; NOT CLEAR ? YES DO AGAIN
+ 14E1 39                          RTS
+                      ;*
+                      ;* READ CF PARAMETERS
+                      ;* (X=ADDR OF BUFFER)
+ 14E2 3436            RDCF        PSHS    Y,X,B,A
+
+ 14E4 8DE8                        BSR     CMDWAIT
+ 14E6 86EC                        LDA     #IDE_CMD_ID         ; SEND ID COMMAND TO CF
+ 14E8 C60F                        LDB     #IDE_COMMAND
+ 14EA 8D36                        BSR     WRT_IDE
+
+ 14EC 8D2B            RDLOOP      BSR     CHKDRQ
+ 14EE 2727                        BEQ     RWEXIT              ; Z SET ? YES END OF LOOP
+ 14F0 8DE7                        BSR     DATWAIT
+ 14F2 C608                        LDB     #IDE_DATA
+ 14F4 8D44                        BSR     READ_IDE            ; READ THE DATA BYTE FROM CF
+ 14F6 A780                        STA     ,X+                 ; WRITE IT TO THE BUFFER
+ 14F8 20F2                        BRA     RDLOOP
+                      ;*
+                      ;* WRITE A SECTOR TO DISK TYP 8255 / IDE
+                      ;* (A=TRACK,B=SECTOR,X=ADDR OF A SECTOR BUFFER)
+ 14FA 3436            WRCF        PSHS    Y,X,B,A
+
+ 14FC 8DA4                        BSR     TFRPARM             ; SET PARAMS IN CF
+
+ 14FE 8DCE                        BSR     CMDWAIT
+ 1500 8630                        LDA     #IDE_CMD_WRITE      ; SEND WRITE COMMAND TO THE CF CARD
+ 1502 C60F                        LDB     #IDE_COMMAND        ; LOAD COMMAND REGISTER ADDRESS
+ 1504 8D1C                        BSR     WRT_IDE             ; SEND COMMAND TO THE CF CARD
+
+ 1506 8E0800                      LDX     #SECBUF
+ 1509 8D0E            WRLOOP      BSR     CHKDRQ
+ 150B 270A                        BEQ     RWEXIT              ; Z SET ? YES END OF LOOP
+ 150D 8DCA                        BSR     DATWAIT
+ 150F A680                        LDA     ,X+                 ; READ THE BYTE FROM THE BUFFER
+ 1511 C608                        LDB     #IDE_DATA           ; WRITE THE DATA BYTE TO CF
+ 1513 8D0D                        BSR     WRT_IDE
+ 1515 20F2                        BRA     WRLOOP
+
+ 1517 35B6            RWEXIT      PULS    Y,X,B,A,PC
+                      ;*
+                      ;* CHECK CF DRQ BIT
+                      ;* RETURN Z=0 IF DRQ SET
+                      ;*        Z=1 IF DRQ NOT SET
+ 1519 8DBE            CHKDRQ      BSR     DATWAIT
+ 151B C60F                        LDB     #IDE_STATUS
+ 151D 8D1B                        BSR     READ_IDE
+ 151F 8508                        BITA    #DRQBIT
+ 1521 39                          RTS
+                      ;*
+                      ;* DO A ONE BYTE WRITE CYCLE TO IDE
+                      ;* B = CF REGISTER WHERE TO WRITE
+                      ;* A = BYTE TO WRITE
+ 1522 3402            WRT_IDE     PSHS    A
+ 1524 8680                        LDA     #WR_IDE_8255        ; SET 8255 A/B/C FOR OUTPUT
+ 1526 B7FF1F                      STA     PORTCTRL
+ 1529 3502                        PULS    A
+ 152B B7FF1C                      STA     PORTA               ; PREPARE LSB ON OUTPUT D0-D7
+ 152E F7FF1E                      STB     PORTC               ; SET CF REGISTER ADDRESS
+ 1531 CA20                        ORB     #IDE_WR             ; ASSERT WR LINE
+ 1533 F7FF1E                      STB     PORTC
+ 1536 C820                        EORB    #IDE_WR             ; PREPARE FOR WR LINE RELEASE
+ 1538 2012                        BRA     ENDIDERW
+                      ;*
+                      ;* DO A ONE BYTE READ CYCLE FROM IDE
+                      ;* B = CF REGISTER TO READ
+                      ;* A = BYTE READ
+ 153A 8692            READ_IDE    LDA     #RD_IDE_8255        ; SET 8255 A/B FOR INPUT C FOR OUTPUT
+ 153C B7FF1F                      STA     PORTCTRL
+ 153F F7FF1E                      STB     PORTC               ; SET CF REGISTER ADDRESS
+ 1542 CA40                        ORB     #IDE_RD             ; ASSERT RD LINE
+ 1544 F7FF1E                      STB     PORTC
+ 1547 B6FF1C                      LDA     PORTA               ; READ LSB FROM D0-D7
+ 154A C840                        EORB    #IDE_RD             ; PREPARE FOR RD LINE RELEASE
+
+ 154C F7FF1E          ENDIDERW    STB     PORTC               ; RELEASE LINE
+ 154F 7FFF1E                      CLR     PORTC               ; RELEASE IDE DEVICE
+ 1552 39                          RTS
+
+                      ;* COMPACT FLASH FLEX LOADER
+                      ;* !!! NO NEED OF A BOOT SECTOR ON THE MICROBOX !!!
+
+ 1000                             END    NEWCF
+
+SYMBOL TABLE
+    ABORTS 02 1320    ASNPRM 00 CC0B    BSYBIT 00 0080     CFERR 02 14C5
+   CFINIER 02 12E5   CFINIOK 02 1275    CHKDRQ 02 1519    CLRBUF 02 110B
+      CLRL 02 11D8   CMDWAIT 02 14CE    CMPLTE 02 135B    CONTIN 02 1044
+   CONTIN0 02 1036   CONTIN1 02 1052   CONTIN2 02 106F    CWLOOP 02 14D0
+   DATWAIT 02 14D9    DDSTAB 00 DF9D    DRQBIT 00 0008    ENDBUF 00 08FF
+   ENDFORM 02 1164  ENDIDERW 02 154C    ENDMSG 02 125F       EOT 00 0004
+    ERRBIT 00 0001      EXIT 02 10FC     EXIT2 02 10FF     FAKMS 02 0106
+     FAKMT 02 0108     FKFCB 02 0110    FLOOP1 02 112A     FORM1 02 100E
+    FORM20 02 10A1    FORM27 02 10DC    FORM30 02 10B0    FORM40 02 10CD
+    FORMAT 02 1108    GETCHR 00 CD15    GETFIL 00 CD2D    GETHEX 00 CD42
+    IDE_A0 00 0001    IDE_A1 00 0002    IDE_A2 00 0004 IDE_CMD_ID 00 00EC
+ IDE_CMD_READ 00 0020 IDE_CMD_SET_FEAT 00 00EF IDE_CMD_WRITE 00 0030 IDE_COMMAND 00 000F
+   IDE_CS0 00 0008   IDE_CS1 00 0010  IDE_DATA 00 0008   IDE_ERR 00 0009
+ IDE_FEA_16BIT 00 0081 IDE_FEA_8BIT 00 0001  IDE_LBA0 00 000B  IDE_LBA1 00 000C
+  IDE_LBA2 00 000D  IDE_LBA3 00 000E    IDE_RD 00 0040   IDE_RST 00 0080
+ IDE_SEC_CNT 00 000A IDE_SET_FEAT 00 0009 IDE_STATUS 00 000F    IDE_WR 00 0020
+    INBUFF 00 CD1B     INDEC 00 CD48   INICF16 02 1451    INICF8 02 1437
+    INITRK 02 139D        IO 00 FF00      LBA0 02 0102      LBA1 02 0103
+     LBA10 02 010C      LBA2 02 0104      LBA3 02 0105   LBA3MST 00 00E0
+   LBA3SLV 00 00F0   LOOPRST 02 145D     LOOPW 02 149B    MAXLBA 02 010E
+      MAXS 02 0107      MAXT 02 0109     MINS0 00 0000     MINS1 00 0001
+     MNSTR 02 137D    MSGCFS 02 12B4    MSGDIR 02 1346    MSGLBA 02 1290
+    MSGSIR 02 1331   MSTCFOK 00 DE7E      NAML 02 11E3     NEWCF 02 1000
+    NUMSTR 02 138C    OUTADR 00 CD45    OUTDEC 00 CD39    OUTHEX 00 CD3C
+     OUTIN 02 1003    OUTIN2 02 1006   PARMLOP 02 14AB     PCRLF 00 CD24
+      PIA2 00 FF1C     PORTA 00 FF1C     PORTB 00 FF1D     PORTC 00 FF1E
+  PORTCTRL 00 FF1F    PSTRNG 00 CD1E    PUTCHR 00 CD18      RDCF 02 14E2
+    RDLOOP 02 14EC    RDYBIT 00 0040 RD_IDE_8255 00 0092  READ_IDE 02 153A
+    RWEXIT 02 1517     SCRDS 02 1307    SCTCNT 02 0101    SECBUF 00 0800
+    SECNUM 02 13CD     SECST 02 136C     SECSZ 00 00FF      SECT 02 010B
+    SETDIR 02 123A    SETFEA 02 0100    SETSIR 02 11D5   SLVCFOK 00 DE7F
+       SPC 00 0020     SURES 02 1265    SYSDAY 00 CC0F    SYSMTH 00 CC0E
+     SYSYR 00 CC10   TFRPARM 02 14A2     TRACK 02 010A    TRKNUM 02 13FB
+    TSTSLV 02 102E        VN 02 1002    VOLNAM 02 0114    VOLNUM 02 011F
+   WAIT1MS 02 1499     WARMS 00 CD03      WRCF 02 14FA    WRLOOP 02 1509
+   WRT_IDE 02 1522 WR_IDE_8255 00 0080    WTSECT 02 1179
+143 SYMBOLS
+
+0 error(s), 0 warning(s)
