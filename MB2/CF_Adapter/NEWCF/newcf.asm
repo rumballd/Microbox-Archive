@@ -541,7 +541,6 @@ RDLOOP      BSR     CHKDRQ
             BRA     RDLOOP
 ;*
 ;* WRITE A SECTOR TO DISK TYP 8255 / IDE
-;* (A=TRACK,B=SECTOR,X=ADDR OF A SECTOR BUFFER)
 WRCF        PSHS    Y,X,B,A
 
             BSR     TFRPARM             ; SET PARAMS IN CF
