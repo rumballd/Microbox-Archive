@@ -9,8 +9,6 @@
 ;*                                                       *
 ;*********************************************************
 
-MINS0   EQU     $00
-MINS1   EQU     $01
 SECSZ   EQU     $FF         ; 256 BYTES/SECTORS FOR FLEX (0->FF)
 SECBUF  EQU     $800        ; BUFFER FOR PREPARING SECTOR IN MEMORY
 ENDBUF  EQU     SECBUF+SECSZ
