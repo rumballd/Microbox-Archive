@@ -15,7 +15,7 @@ With the jumper you can connect pin 20 of ide connector to +5 V or to 0 V. Usual
 
 In case of external power supply of the CF adapter or the IDE device be careful with this jumper.
 
-This interface has been tested with a Compact Flash boards adapter and with a master and a slave board.
+This interface has been tested with a Compact Flash boards adapter and with master and slave boards.
 
 In order to use this board you need a modified monitor (see Monitor).
 
