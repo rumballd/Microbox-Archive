@@ -13,7 +13,7 @@ Zip file is ready for pcb manufacturing. The bom is simple :
 
 With the jumper you can connect pin 20 of ide connector to +5 V or to 0 V. Usually pin 20 is removed from most IDE device but some adapter (not all) can be powered by this way.
 
-In case of external power supply of the CF adapter or the IDE Device be careful with this jumper.
+In case of external power supply of the CF adapter or the IDE device be careful with this jumper.
 
 This interface has been tested with a Compact Flash boards adapter and with a master and a slave board.
 
